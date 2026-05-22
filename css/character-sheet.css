@@ -1,0 +1,530 @@
+/* ============================================================
+   Abberanth Companion — Character Sheet Styles
+   ============================================================ */
+
+/* ---------- Points Bar ---------- */
+.cs-points-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 1rem;
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.cs-points-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#points-used {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+  transition: color 0.2s;
+}
+
+#points-used.over-budget { color: #e05050; }
+
+#points-remaining {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* ---------- Identity ---------- */
+.cs-identity {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.cs-identity-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.6fr 1fr 0.55fr 1fr 1.1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.cs-gp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.cs-field label,
+.cs-section-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cs-section-title {
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cs-section-note {
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+/* ---------- Input Styles ---------- */
+.cs-text-input,
+.cs-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.825rem;
+  padding: 0.38rem 0.6rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+
+.cs-text-input:focus,
+.cs-select:focus {
+  outline: none;
+  border-color: var(--accent-purple);
+}
+
+.cs-select { cursor: pointer; }
+
+/* Compact number input for point-buy values */
+.cs-num-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  width: 40px;
+  text-align: center;
+  -moz-appearance: textfield;
+  transition: border-color var(--transition);
+  flex-shrink: 0;
+}
+.cs-num-input::-webkit-outer-spin-button,
+.cs-num-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.cs-num-input:focus { outline: none; border-color: var(--accent-purple); }
+
+/* Wide number for things like AC, moves */
+.cs-num-input.wide { width: 56px; }
+
+/* Inline dice button */
+.cs-dice-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+.cs-dice-btn:hover {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: #fff;
+}
+
+/* ---------- Main Body Grid ---------- */
+.cs-body {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.cs-left,
+.cs-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Generic section card */
+.cs-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.1rem 0.9rem;
+}
+
+/* ---------- Attribute Rows ---------- */
+.cs-attr-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.cs-attr-row:last-child { border-bottom: none; }
+
+.cs-attr-name {
+  flex: 1;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+/* ---------- Resource Rows ---------- */
+.cs-resource-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.cs-resource-row:last-child { border-bottom: none; }
+
+.cs-resource-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  width: 52px;
+  flex-shrink: 0;
+}
+.cs-resource-label.hp   { color: #d888cc; }   /* rose-purple */
+.cs-resource-label.mana { color: #80b0f8; }   /* cornflower blue */
+.cs-resource-label.stam { color: #70d8f0; }   /* cyan-blue */
+
+.cs-resource-track {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.cs-resource-sep { color: var(--text-muted); font-size: 0.8rem; }
+.cs-resource-dot { margin: 0 0.15rem; }
+
+/* Calculated max value display */
+.cs-resource-calc {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* "pts" label before the points input */
+.cs-resource-pts-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-right: 0.1rem;
+}
+
+/* ---------- Combat Section ---------- */
+.cs-combat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.cs-combat-row:last-child { border-bottom: none; }
+
+.cs-combat-label {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.cs-battle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+.cs-battle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cs-battle-item label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Injury rows */
+.cs-injury-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.cs-injury-row:last-child { border-bottom: none; }
+
+.cs-injury-label {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.cs-injury-label.common   { color: #9098e8; }   /* soft periwinkle */
+.cs-injury-label.harsh    { color: #c078e0; }   /* violet */
+.cs-injury-label.critical { color: #d050a8; }   /* purple-pink */
+.cs-injury-label.fatal    { color: #c02880; }   /* deep magenta */
+
+/* ---------- Skills Section ---------- */
+.cs-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.cs-skill-category-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid;
+}
+.cs-skill-category-title.physical {
+  color: var(--accent-teal);
+  border-color: rgba(42,138,138,0.4);
+}
+.cs-skill-category-title.social {
+  color: var(--accent-gold);
+  border-color: rgba(201,146,58,0.4);
+}
+.cs-skill-category-title.mental {
+  color: #a070e0;
+  border-color: rgba(110,68,168,0.4);
+}
+
+.cs-skill-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(42,47,69,0.6);
+}
+.cs-skill-row:last-child { border-bottom: none; }
+
+.cs-skill-name {
+  flex: 1;
+  font-size: 0.74rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ---------- Magical Wells ---------- */
+.cs-wells-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.cs-well-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.4rem 0.5rem;
+  transition: border-color var(--transition);
+}
+.cs-well-item:has(input:focus) { border-color: var(--accent-purple); }
+
+.cs-well-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a070e0;
+}
+
+.cs-well-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ---------- AC Display ---------- */
+.cs-ac-display {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+/* ---------- Tailed Race Toggle ---------- */
+.cs-tailed-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.cs-tailed-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cs-tailed-label input[type="checkbox"] {
+  accent-color: var(--accent-purple);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.cs-tailed-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Armor Section ---------- */
+.cs-armor-section {
+  margin-top: 1.25rem;
+}
+
+.cs-armor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem 1.5rem;
+}
+
+.cs-armor-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.1rem 0;
+}
+
+/* Highlight tail slot subtly */
+.cs-armor-slot--tail {
+  border-top: 1px dashed var(--border);
+  margin-top: 0.25rem;
+  padding-top: 0.4rem;
+  grid-column: 1 / -1;   /* tail spans full width */
+}
+
+.cs-armor-slot-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  width: 112px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cs-armor-slot--tail .cs-armor-slot-label {
+  color: var(--accent-gold);
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+.cs-armor-name {
+  flex: 1;
+  font-size: 0.76rem;
+  padding: 0.3rem 0.45rem;
+}
+
+.cs-armor-value {
+  width: 46px;
+  flex-shrink: 0;
+}
+
+/* ---------- Status Badge ---------- */
+.cs-status-badge {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.75rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+
+/* ---------- Spells ---------- */
+.cs-spell-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+}
+.cs-spell-slot:last-child { margin-bottom: 0; }
+
+.cs-spell-name {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.cs-spell-slot.filled { border-style: solid; border-color: var(--border-glow); }
+.cs-spell-slot.filled .cs-spell-name { color: var(--text-primary); font-style: normal; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .cs-body { grid-template-columns: 1fr; }
+  .cs-identity-grid { grid-template-columns: repeat(3, 1fr); }
+  .cs-skills-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 680px) {
+  .cs-identity-grid { grid-template-columns: repeat(2, 1fr); }
+  .cs-skills-grid { grid-template-columns: 1fr; }
+  .cs-wells-grid { grid-template-columns: repeat(3, 1fr); }
+}

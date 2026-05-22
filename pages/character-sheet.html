@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Sheet — Abberanth Companion</title>
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/character-sheet.css" />
+</head>
+<body>
+
+  <!-- ======== Sidebar ======== -->
+  <aside id="sidebar">
+    <div id="sidebar-logo">
+      <span class="logo-title">Abberanth</span>
+      <span class="logo-subtitle">Companion</span>
+    </div>
+    <nav>
+      <span class="nav-section-label">Home</span>
+      <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
+      <span class="nav-section-label">Lore</span>
+      <a href="timelines.html"><span class="nav-icon">📜</span> Timelines</a>
+      <a href="npcs.html"><span class="nav-icon">🧙</span> NPCs</a>
+      <span class="nav-section-label">Combat</span>
+      <a href="monsters.html"><span class="nav-icon">🐉</span> Monsters</a>
+      <span class="nav-section-label">Characters</span>
+      <a href="characters.html"><span class="nav-icon">⚔️</span> Player Characters</a>
+      <a href="character-sheet.html"><span class="nav-icon">📋</span> Character Sheet</a>
+    </nav>
+    <button id="dice-trigger">🎲 Roll Dice</button>
+    <div id="sidebar-footer">
+      <span id="sidebar-user-email"></span>
+      <button id="logout-btn">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ======== Main Content ======== -->
+  <main id="main">
+
+    <!-- DM banner — shown when DM is viewing a player's sheet -->
+    <div id="dm-view-banner" class="dm-view-banner" style="display:none;">
+      <span>🎭 Viewing <strong id="dm-view-player"></strong>'s sheet — changes save to their account</span>
+      <a href="characters.html" class="dm-view-back">← Back to Players</a>
+    </div>
+
+    <!-- Points Bar -->
+    <div class="cs-points-bar">
+      <span class="cs-points-label">Creation Points</span>
+      <span id="points-used">0 / 50</span>
+      <span id="points-remaining">50 left</span>
+    </div>
+
+    <!-- ===== Identity ===== -->
+    <section class="cs-identity">
+      <div class="cs-section-title">Identity</div>
+
+      <div class="cs-identity-grid">
+        <div class="cs-field">
+          <label for="cs-char-name">Character Name</label>
+          <input id="cs-char-name" class="cs-text-input"
+            type="text" placeholder="Name"
+            data-type="identity" data-key="charName" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-player-name">Player</label>
+          <input id="cs-player-name" class="cs-text-input"
+            type="text" placeholder="Player"
+            data-type="identity" data-key="playerName" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-age">Age</label>
+          <input id="cs-age" class="cs-text-input"
+            type="text" placeholder="—"
+            data-type="identity" data-key="age" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-race">Race</label>
+          <input id="cs-race" class="cs-text-input"
+            type="text" placeholder="Race"
+            data-type="identity" data-key="race" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-level">Level</label>
+          <input id="cs-level" class="cs-text-input"
+            type="number" min="0" value="0"
+            data-type="identity" data-key="level" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-exp">EXP</label>
+          <input id="cs-exp" class="cs-text-input"
+            type="number" min="0" value="0"
+            data-type="identity" data-key="exp" />
+        </div>
+        <div class="cs-field">
+          <label for="cs-exp-next">EXP to Next LV</label>
+          <input id="cs-exp-next" class="cs-text-input"
+            type="number" min="0" value="10"
+            data-type="identity" data-key="expToNext" />
+        </div>
+      </div>
+
+      <!-- Tailed race toggle -->
+      <div class="cs-tailed-row">
+        <label class="cs-tailed-label" for="cs-tailed">
+          <input type="checkbox" id="cs-tailed" data-type="tailed" />
+          Tailed Race
+        </label>
+        <span class="cs-tailed-hint">Adds a Tail armor slot</span>
+      </div>
+
+      <!-- Grandparents -->
+      <div class="cs-gp-grid">
+        <div class="cs-field">
+          <label for="cs-gp-a">Grandparent A</label>
+          <select id="cs-gp-a" class="cs-select"
+            data-type="identity" data-key="gpA">
+            <option value="">— Select Ancestor —</option>
+            <!-- Ancestor options will be added here when the list is ready -->
+            <option value="placeholder">Placeholder Ancestor</option>
+          </select>
+        </div>
+        <div class="cs-field">
+          <label for="cs-gp-b">Grandparent B</label>
+          <select id="cs-gp-b" class="cs-select"
+            data-type="identity" data-key="gpB">
+            <option value="">— Select Ancestor —</option>
+            <option value="placeholder">Placeholder Ancestor</option>
+          </select>
+        </div>
+        <div class="cs-field">
+          <label for="cs-gp-c">Grandparent C</label>
+          <select id="cs-gp-c" class="cs-select"
+            data-type="identity" data-key="gpC">
+            <option value="">— Select Ancestor —</option>
+            <option value="placeholder">Placeholder Ancestor</option>
+          </select>
+        </div>
+        <div class="cs-field">
+          <label for="cs-gp-d">Grandparent D</label>
+          <select id="cs-gp-d" class="cs-select"
+            data-type="identity" data-key="gpD">
+            <option value="">— Select Ancestor —</option>
+            <option value="placeholder">Placeholder Ancestor</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Body (2-col) ===== -->
+    <div class="cs-body">
+
+      <!-- ---- Left Column ---- -->
+      <div class="cs-left">
+
+        <!-- Attributes -->
+        <section class="cs-section">
+          <div class="cs-section-title">
+            Attributes
+            <span class="cs-section-note">— drawn from the shared 50-point pool</span>
+          </div>
+
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Strength</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Strength" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Strength (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Speed</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Speed" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Speed (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Constitution</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Constitution" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Constitution (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Wisdom</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Wisdom" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Wisdom (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Intelligence</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Intelligence" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Intelligence (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Charisma</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Charisma" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Charisma (skill 0)">🎲</button>
+          </div>
+          <div class="cs-attr-row">
+            <span class="cs-attr-name">Willpower</span>
+            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+              data-type="attr" data-key="Willpower" />
+            <button class="cs-dice-btn" data-level="0" title="Roll Willpower (skill 0)">🎲</button>
+          </div>
+        </section>
+
+        <!-- Resources -->
+        <section class="cs-section">
+          <div class="cs-section-title">Resources</div>
+
+          <div class="cs-resource-row">
+            <span class="cs-resource-label hp">HP</span>
+            <div class="cs-resource-track">
+              <input type="number" id="cs-hp-cur" class="cs-num-input"
+                min="0" max="5" value="0"
+                data-type="res-cur" data-key="hpCur" />
+              <span class="cs-resource-sep">/</span>
+              <span class="cs-resource-calc" id="cs-hp-calc">5</span>
+              <span class="cs-resource-sep cs-resource-dot">·</span>
+              <span class="cs-resource-pts-label">pts</span>
+              <input type="number" id="cs-hp-pts" class="cs-num-input"
+                min="0" max="10" value="0"
+                data-type="res-max" data-key="hpMax" />
+            </div>
+          </div>
+          <div class="cs-resource-row">
+            <span class="cs-resource-label mana">Mana</span>
+            <div class="cs-resource-track">
+              <input type="number" id="cs-man-cur" class="cs-num-input"
+                min="0" max="5" value="0"
+                data-type="res-cur" data-key="manCur" />
+              <span class="cs-resource-sep">/</span>
+              <span class="cs-resource-calc" id="cs-man-calc">5</span>
+              <span class="cs-resource-sep cs-resource-dot">·</span>
+              <span class="cs-resource-pts-label">pts</span>
+              <input type="number" id="cs-man-pts" class="cs-num-input"
+                min="0" max="10" value="0"
+                data-type="res-max" data-key="manMax" />
+            </div>
+          </div>
+          <div class="cs-resource-row">
+            <span class="cs-resource-label stam">Stamina</span>
+            <div class="cs-resource-track">
+              <input type="number" id="cs-stam-cur" class="cs-num-input"
+                min="0" max="5" value="0"
+                data-type="res-cur" data-key="stamCur" />
+              <span class="cs-resource-sep">/</span>
+              <span class="cs-resource-calc" id="cs-stam-calc">5</span>
+              <span class="cs-resource-sep cs-resource-dot">·</span>
+              <span class="cs-resource-pts-label">pts</span>
+              <input type="number" id="cs-stam-pts" class="cs-num-input"
+                min="0" max="10" value="0"
+                data-type="res-max" data-key="stamMax" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Combat -->
+        <section class="cs-section">
+          <div class="cs-section-title">Combat</div>
+
+          <!-- AC & Status -->
+          <div class="cs-combat-row">
+            <span class="cs-combat-label">Armor Class</span>
+            <span id="cs-ac-display" class="cs-ac-display">10</span>
+          </div>
+          <div class="cs-combat-row" style="margin-bottom:0.6rem;">
+            <span class="cs-combat-label">Status</span>
+            <span id="cs-status-badge" class="cs-status-badge">—</span>
+          </div>
+
+          <!-- Battle stats -->
+          <div class="cs-section-title" style="margin-top:0.75rem;">Battle</div>
+          <div class="cs-battle-grid">
+            <div class="cs-battle-item">
+              <label for="cs-moves">Moves</label>
+              <input type="number" id="cs-moves" class="cs-num-input wide"
+                min="0" value="1"
+                data-type="combat" data-key="moves" />
+            </div>
+            <div class="cs-battle-item">
+              <label for="cs-attacks">Attacks</label>
+              <input type="number" id="cs-attacks" class="cs-num-input wide"
+                min="0" value="1"
+                data-type="combat" data-key="attacks" />
+            </div>
+            <div class="cs-battle-item">
+              <label for="cs-per-turn">Per Turn</label>
+              <input type="number" id="cs-per-turn" class="cs-num-input wide"
+                min="0" value="1"
+                data-type="combat" data-key="perTurn" />
+            </div>
+            <div class="cs-battle-item">
+              <label for="cs-used-turn">Used</label>
+              <input type="number" id="cs-used-turn" class="cs-num-input wide"
+                min="0" value="0"
+                data-type="combat" data-key="usedTurn" />
+            </div>
+          </div>
+
+          <!-- Injuries -->
+          <div class="cs-section-title" style="margin-top:0.75rem;">Injuries</div>
+          <div class="cs-injury-row">
+            <span class="cs-injury-label common">Common</span>
+            <input type="number" id="cs-inj-common" class="cs-num-input wide"
+              min="0" value="0"
+              data-type="injury" data-key="injCommon" />
+          </div>
+          <div class="cs-injury-row">
+            <span class="cs-injury-label harsh">Harsh</span>
+            <input type="number" id="cs-inj-harsh" class="cs-num-input wide"
+              min="0" value="0"
+              data-type="injury" data-key="injHarsh" />
+          </div>
+          <div class="cs-injury-row">
+            <span class="cs-injury-label critical">Critical</span>
+            <input type="number" id="cs-inj-critical" class="cs-num-input wide"
+              min="0" value="0"
+              data-type="injury" data-key="injCritical" />
+          </div>
+          <div class="cs-injury-row">
+            <span class="cs-injury-label fatal">Fatal</span>
+            <input type="number" id="cs-inj-fatal" class="cs-num-input wide"
+              min="0" value="0"
+              data-type="injury" data-key="injFatal" />
+          </div>
+
+          <!-- Special Feature -->
+          <div class="cs-section-title" style="margin-top:0.75rem;">Special Feature</div>
+          <div class="cs-field">
+            <input id="cs-special" class="cs-text-input"
+              type="text" placeholder="Nothing"
+              data-type="combat" data-key="specialFeature" />
+          </div>
+        </section>
+
+      </div><!-- end .cs-left -->
+
+      <!-- ---- Right Column ---- -->
+      <div class="cs-right">
+
+        <!-- Skills -->
+        <section class="cs-section">
+          <div class="cs-section-title">
+            Skills
+            <span class="cs-section-note">— values draw from the shared 50-point pool</span>
+          </div>
+          <div class="cs-skills-grid">
+            <div id="skills-physical"></div>
+            <div id="skills-social"></div>
+            <div id="skills-mental"></div>
+          </div>
+        </section>
+
+        <!-- Magical Wells -->
+        <section class="cs-section">
+          <div class="cs-section-title">
+            Magical Wells
+            <span class="cs-section-note">— same pool, same dice rules as skills</span>
+          </div>
+          <div id="wells-grid" class="cs-wells-grid"></div>
+        </section>
+
+        <!-- Spells -->
+        <section class="cs-section">
+          <div class="cs-section-title">Spells Equipped <span class="cs-section-note">— 0 / 1 slots</span></div>
+          <div class="cs-spell-slot">
+            <span class="cs-spell-name">Empty — no spell equipped</span>
+          </div>
+        </section>
+
+      </div><!-- end .cs-right -->
+
+    </div><!-- end .cs-body -->
+
+    <!-- ===== Armor ===== -->
+    <section class="cs-section cs-armor-section">
+      <div class="cs-section-title">
+        Armor
+        <span class="cs-section-note">— AC = 10 + Constitution + bonuses · plate ×2 · chainmail/half plate ×1.5</span>
+      </div>
+      <div id="armor-slots" class="cs-armor-grid"></div>
+    </section>
+
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/firebase-init.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/dice.js"></script>
+  <script src="../js/dice-ui.js"></script>
+  <script src="../js/character-sheet.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Abberanth Companion</title>
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="login-body">
+
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-title">Abberanth</span>
+      <span class="logo-subtitle">Companion</span>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-signin">Sign In</button>
+      <button class="login-tab"        id="tab-register">Register</button>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="login-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="your@email.com" autocomplete="email" required />
+      </div>
+      <div class="login-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Password" autocomplete="current-password" required />
+      </div>
+      <div class="login-field" id="confirm-field" style="display:none;">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" placeholder="Confirm password" autocomplete="new-password" />
+      </div>
+
+      <div id="login-error" class="login-error" style="display:none;"></div>
+
+      <button type="submit" id="submit-btn" class="login-submit-btn">Sign In</button>
+    </form>
+  </div>
+
+  <!-- Firebase (no firestore needed on login page) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="../js/firebase-init.js"></script>
+  <script>
+    /* ---- Redirect if already signed in ---- */
+    window._auth.onAuthStateChanged(user => {
+      if (user) window.location.replace('../index.html');
+    });
+
+    /* ---- Mode switching ---- */
+    let mode = 'signin';
+
+    document.getElementById('tab-signin').addEventListener('click',   () => setMode('signin'));
+    document.getElementById('tab-register').addEventListener('click', () => setMode('register'));
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('tab-signin').classList.toggle('active',   m === 'signin');
+      document.getElementById('tab-register').classList.toggle('active', m === 'register');
+      document.getElementById('confirm-field').style.display =
+        m === 'register' ? 'block' : 'none';
+      document.getElementById('submit-btn').textContent =
+        m === 'signin' ? 'Sign In' : 'Create Account';
+      clearError();
+    }
+
+    /* ---- Error display ---- */
+    function showError(msg) {
+      const el = document.getElementById('login-error');
+      el.textContent    = msg;
+      el.style.display  = 'block';
+    }
+    function clearError() {
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    /* ---- Friendly Firebase error messages ---- */
+    function friendlyError(code) {
+      switch (code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':   return 'Invalid email or password.';
+        case 'auth/email-already-in-use': return 'An account with this email already exists.';
+        case 'auth/weak-password':        return 'Password must be at least 6 characters.';
+        case 'auth/invalid-email':        return 'Please enter a valid email address.';
+        case 'auth/too-many-requests':    return 'Too many attempts. Please wait a moment and try again.';
+        default:                          return 'Something went wrong. Please try again.';
+      }
+    }
+
+    /* ---- Form submit ---- */
+    document.getElementById('login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      clearError();
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const submitBtn = document.getElementById('submit-btn');
+
+      if (!email || !password) {
+        showError('Please fill in all fields.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = mode === 'signin' ? 'Signing in…' : 'Creating account…';
+
+      try {
+        if (mode === 'signin') {
+          await window._auth.signInWithEmailAndPassword(email, password);
+        } else {
+          const confirm = document.getElementById('confirm-password').value;
+          if (password !== confirm) {
+            showError('Passwords do not match.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Account';
+            return;
+          }
+          await window._auth.createUserWithEmailAndPassword(email, password);
+        }
+        window.location.replace('../index.html');
+      } catch (err) {
+        showError(friendlyError(err.code));
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

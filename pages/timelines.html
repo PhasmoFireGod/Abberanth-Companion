@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timelines — Abberanth Companion</title>
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <div id="sidebar-logo">
+      <span class="logo-title">Abberanth</span>
+      <span class="logo-subtitle">Companion</span>
+    </div>
+    <nav>
+      <span class="nav-section-label">Home</span>
+      <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
+      <span class="nav-section-label">Lore</span>
+      <a href="timelines.html"><span class="nav-icon">📜</span> Timelines</a>
+      <a href="npcs.html"><span class="nav-icon">🧙</span> NPCs</a>
+      <span class="nav-section-label">Combat</span>
+      <a href="monsters.html"><span class="nav-icon">🐉</span> Monsters</a>
+      <span class="nav-section-label">Characters</span>
+      <a href="characters.html"><span class="nav-icon">⚔️</span> Player Characters</a>
+      <a href="character-sheet.html"><span class="nav-icon">📋</span> Character Sheet</a>
+    </nav>
+    <button id="dice-trigger">🎲 Roll Dice</button>
+    <div id="sidebar-footer">
+      <span id="sidebar-user-email"></span>
+      <button id="logout-btn">Sign Out</button>
+    </div>
+  </aside>
+  <main id="main">
+    <header class="page-header">
+      <h1>📜 Timelines</h1>
+      <p class="page-subtitle">Events across the eras of Abberanth — coming soon.</p>
+    </header>
+    <p class="text-muted" style="font-size:0.9rem;">Timeline entries will appear here.</p>
+  </main>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/firebase-init.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/dice.js"></script>
+  <script src="../js/dice-ui.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>
