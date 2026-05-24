@@ -6,6 +6,7 @@
   <title>NPCs — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/npcs.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -31,13 +32,15 @@
       <button id="logout-btn">Sign Out</button>
     </div>
   </aside>
+
   <main id="main">
     <header class="page-header">
       <h1>🧙 NPCs</h1>
-      <p class="page-subtitle">Non-player characters of Abberanth — coming soon.</p>
+      <p class="page-subtitle">Non-player characters of Abberanth.</p>
     </header>
-    <p class="text-muted" style="font-size:0.9rem;">NPC entries will appear here.</p>
+    <div id="npc-grid" class="npc-grid"></div>
   </main>
+
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -46,6 +49,7 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
+  <script src="../js/npcs.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,398 @@
+/* ============================================================
+   Abberanth Companion — NPCs Page Styles
+   ============================================================ */
+
+/* ---------- NPC Grid ---------- */
+.npc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.npc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: all var(--transition);
+  text-align: center;
+}
+.npc-card:hover {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(110,68,168,0.15);
+}
+
+.npc-token {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-glow);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.npc-token-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.npc-card-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* ---------- DM Add Button ---------- */
+.npc-add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border);
+  background: transparent;
+  transition: all var(--transition);
+  min-height: 120px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.npc-add-card:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+  background: rgba(102,80,216,0.06);
+}
+
+/* ---------- NPC Detail Modal ---------- */
+#npc-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#npc-modal.open { display: flex; }
+
+#npc-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  width: 680px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+}
+
+.npc-modal-top {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.npc-modal-portrait {
+  width: 160px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+
+.npc-modal-portrait-placeholder {
+  width: 160px;
+  height: 200px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  flex-shrink: 0;
+}
+
+.npc-modal-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.npc-modal-name {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+.npc-modal-bio {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  flex: 1;
+}
+
+/* Navigation row */
+.npc-modal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.npc-nav-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.npc-nav-btn:hover:not(:disabled) { border-color: var(--accent-purple); color: var(--accent-gold); }
+.npc-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.npc-nav-counter {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  flex: 1;
+}
+
+.npc-modal-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.npc-modal-close:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+/* ---------- DM Visibility Panel ---------- */
+.npc-visibility-panel {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: rgba(102,80,216,0.04);
+}
+
+.npc-visibility-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.npc-visibility-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.npc-vis-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.25rem 0.7rem 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  user-select: none;
+}
+.npc-vis-toggle.active {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(88,152,232,0.1);
+}
+.npc-vis-toggle input[type="checkbox"] {
+  accent-color: var(--accent-teal);
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+/* DM edit button in nav */
+.npc-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.npc-edit-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+/* ---------- Add / Edit NPC Form Modal ---------- */
+#npc-form-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#npc-form-modal.open { display: flex; }
+
+#npc-form-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 540px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.npc-form-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+  margin-bottom: 0.25rem;
+}
+
+.npc-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.npc-form-field label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.npc-form-input,
+.npc-form-textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.45rem 0.65rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.npc-form-input:focus,
+.npc-form-textarea:focus { outline: none; border-color: var(--accent-purple); }
+
+.npc-form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.55;
+}
+
+.npc-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.npc-form-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.npc-form-save-btn:hover { background: #5060c0; }
+
+.npc-form-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.npc-form-cancel-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+.npc-form-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(192,40,80,0.4);
+  border-radius: var(--radius);
+  color: #c02850;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  margin-right: auto;
+  transition: all var(--transition);
+}
+.npc-form-delete-btn:hover { background: rgba(192,40,80,0.1); border-color: #c02850; }
+
+/* ---------- Empty state ---------- */
+.npc-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
