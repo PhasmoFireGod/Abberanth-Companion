@@ -55,15 +55,15 @@
       if (!ts) return 'Never';
       const diff = Date.now() - (ts.toMillis ? ts.toMillis() : ts);
       const m = Math.floor(diff / 60000);
-      if (m < 1)   return 'Just now';
-      if (m < 60)  return `${m}m ago`;
+      if (m < 1)  return 'Just now';
+      if (m < 60) return `${m}m ago`;
       const h = Math.floor(m / 60);
-      if (h < 24)  return `${h}h ago`;
+      if (h < 24) return `${h}h ago`;
       return `${Math.floor(h / 24)}d ago`;
     }
 
     window.onAuthReady(async (user) => {
-      const listEl    = document.getElementById('player-list');
+      const listEl     = document.getElementById('player-list');
       const subtitleEl = document.getElementById('page-subtitle');
 
       if (window.isDM) {
@@ -71,7 +71,7 @@
         subtitleEl.textContent = '🎭 DM view — all registered players';
 
         try {
-          const snap = await window._db.collection('players').get();
+          const snap    = await window._db.collection('players').get();
           const dmEmails = (SITE_CONFIG.dmEmails || []).map(e => e.toLowerCase());
           const players  = [];
 
@@ -83,17 +83,24 @@
           });
 
           if (players.length === 0) {
-            listEl.innerHTML = '<p class="text-muted" style="font-size:0.9rem;">No players have logged in yet. Share the site with your players and ask them to register.</p>';
+            listEl.innerHTML = '<p class="text-muted" style="font-size:0.9rem;">No players have logged in yet.</p>';
             return;
           }
 
           players.forEach(p => {
+            // Use saved character name if available, fall back to email
+            const displayName = p.charName || '(No character saved)';
+            const subLine     = p.charName
+              ? [p.race, p.level != null ? `Level ${p.level}` : ''].filter(Boolean).join(' · ')
+              : p.email;
+
             const card = document.createElement('a');
             card.className = 'card';
             card.href      = `character-sheet.html?uid=${p.uid}`;
             card.innerHTML = `
-              <div class="card-icon">👤</div>
-              <h3>${p.email}</h3>
+              <div class="card-icon">${p.charName ? '⚔️' : '👤'}</div>
+              <h3>${displayName}</h3>
+              <p style="font-size:0.78rem; color:var(--text-muted);">${subLine}</p>
               <p>Last seen: ${timeAgo(p.lastSeen)}</p>
               <div class="card-meta">
                 <span class="badge badge-purple">Player</span>
@@ -108,14 +115,47 @@
         }
 
       } else {
-        /* ---- Player view: link to their own sheet ---- */
-        subtitleEl.textContent = 'Your character sheet for Abberanth.';
+        /* ---- Player view: load their sheet and show a real card ---- */
+        subtitleEl.textContent = 'Your character for Abberanth.';
+
+        let charName = '';
+        let race     = '';
+        let level    = 0;
+        let hasSaved = false;
+
+        try {
+          const snap = await window._db
+            .collection('users').doc(user.uid)
+            .collection('sheets').doc('main')
+            .get();
+
+          if (snap.exists) {
+            const data = snap.data();
+            charName = data.charName || '';
+            race     = data.race     || '';
+            level    = data.level    || 0;
+            hasSaved = true;
+          }
+        } catch (e) {
+          console.warn('Could not load sheet for card:', e);
+        }
+
+        const displayName = charName || 'Unnamed Character';
+        const subLine     = [race, `Level ${level}`].filter(Boolean).join(' · ');
+        const hint        = hasSaved
+          ? 'Open to roll dice, edit stats, and track combat.'
+          : 'Head to the Character Sheet to build your character, then hit Save.';
+
         listEl.innerHTML = `
           <a class="card" href="character-sheet.html">
-            <div class="card-icon">📋</div>
-            <h3>My Character Sheet</h3>
-            <p>Open and edit your character — stats, skills, armor, and spells.</p>
-            <div class="card-meta"><span class="badge badge-purple">Character</span></div>
+            <div class="card-icon">${hasSaved && charName ? '⚔️' : '📋'}</div>
+            <h3>${displayName}</h3>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.25rem;">${subLine}</p>
+            <p>${hint}</p>
+            <div class="card-meta">
+              <span class="badge badge-purple">Character</span>
+              <span style="margin-left:auto; font-size:0.7rem; color:var(--text-muted);">Open Sheet →</span>
+            </div>
           </a>
         `;
       }

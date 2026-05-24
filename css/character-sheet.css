@@ -40,6 +40,24 @@
   margin-left: auto;
 }
 
+.cs-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cs-save-btn:hover:not(:disabled) { background: #5060c0; }
+.cs-save-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
 /* ---------- Identity ---------- */
 .cs-identity {
   background: var(--bg-card);

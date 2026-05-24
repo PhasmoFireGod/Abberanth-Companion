@@ -439,6 +439,56 @@
     }, 800);
   }
 
+  /** Immediate save triggered by the Save button.
+   *  Also writes a character summary to players/{uid} so the
+   *  characters page can display name, race, and level on the card. */
+  async function saveNow() {
+    const btn = document.getElementById('cs-save-btn');
+    if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+
+    const plain = JSON.parse(JSON.stringify(state));
+    const uid   = _targetUid || (_activeUser ? _activeUser.uid : null);
+
+    try {
+      if (uid && window._db) {
+        // Full sheet save
+        await _ref(uid).set(plain);
+
+        // Summary written to players/{uid} so characters.html can read it
+        const summary = {
+          charName:  state.charName || '',
+          race:      state.race     || '',
+          level:     state.level    || 0,
+          lastSaved: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        await window._db.collection('players').doc(uid).set(summary, { merge: true });
+      } else if (!_targetUid) {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(plain));
+      }
+
+      if (btn) {
+        btn.textContent      = 'Saved ✓';
+        btn.style.background = 'var(--accent-teal)';
+        setTimeout(() => {
+          btn.textContent      = 'Save';
+          btn.style.background = '';
+          btn.disabled         = false;
+        }, 2000);
+      }
+    } catch (e) {
+      console.error('Save failed:', e);
+      if (btn) {
+        btn.textContent      = 'Save Failed';
+        btn.style.background = '#c02850';
+        setTimeout(() => {
+          btn.textContent      = 'Save';
+          btn.style.background = '';
+          btn.disabled         = false;
+        }, 2500);
+      }
+    }
+  }
+
   function deepMerge(target, source) {
     const out = { ...target };
     for (const k of Object.keys(source)) {
@@ -868,6 +918,9 @@
     main.addEventListener('input',  handleChange);
     main.addEventListener('change', handleChange);
     main.addEventListener('click',  handleClick);
+
+    const saveBtn = document.getElementById('cs-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', saveNow);
   }
 
   function handleChange(e) {
