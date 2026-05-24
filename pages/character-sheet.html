@@ -38,7 +38,7 @@
   <!-- ======== Main Content ======== -->
   <main id="main">
 
-    <!-- DM banner — shown when DM is viewing a player's sheet -->
+    <!-- DM banner -->
     <div id="dm-view-banner" class="dm-view-banner" style="display:none;">
       <span>🎭 Viewing <strong id="dm-view-player"></strong>'s sheet — changes save to their account</span>
       <a href="characters.html" class="dm-view-back">← Back to Players</a>
@@ -100,51 +100,25 @@
         </div>
       </div>
 
-      <!-- Tailed race toggle -->
-      <div class="cs-tailed-row">
+      <!-- Race toggles -->
+      <div class="cs-race-toggles">
         <label class="cs-tailed-label" for="cs-tailed">
           <input type="checkbox" id="cs-tailed" data-type="tailed" />
           Tailed Race
         </label>
         <span class="cs-tailed-hint">Adds a Tail armor slot</span>
+
+        <label class="cs-tailed-label" for="cs-winged" style="margin-left:1.25rem;">
+          <input type="checkbox" id="cs-winged" data-type="winged" />
+          Winged Race
+        </label>
+        <span class="cs-tailed-hint">Adds Left &amp; Right Wing armor slots</span>
       </div>
 
-      <!-- Grandparents -->
-      <div class="cs-gp-grid">
-        <div class="cs-field">
-          <label for="cs-gp-a">Grandparent A</label>
-          <select id="cs-gp-a" class="cs-select"
-            data-type="identity" data-key="gpA">
-            <option value="">— Select Ancestor —</option>
-            <!-- Ancestor options will be added here when the list is ready -->
-            <option value="placeholder">Placeholder Ancestor</option>
-          </select>
-        </div>
-        <div class="cs-field">
-          <label for="cs-gp-b">Grandparent B</label>
-          <select id="cs-gp-b" class="cs-select"
-            data-type="identity" data-key="gpB">
-            <option value="">— Select Ancestor —</option>
-            <option value="placeholder">Placeholder Ancestor</option>
-          </select>
-        </div>
-        <div class="cs-field">
-          <label for="cs-gp-c">Grandparent C</label>
-          <select id="cs-gp-c" class="cs-select"
-            data-type="identity" data-key="gpC">
-            <option value="">— Select Ancestor —</option>
-            <option value="placeholder">Placeholder Ancestor</option>
-          </select>
-        </div>
-        <div class="cs-field">
-          <label for="cs-gp-d">Grandparent D</label>
-          <select id="cs-gp-d" class="cs-select"
-            data-type="identity" data-key="gpD">
-            <option value="">— Select Ancestor —</option>
-            <option value="placeholder">Placeholder Ancestor</option>
-          </select>
-        </div>
-      </div>
+      <!-- Grandparent Traits — built dynamically by buildGrandparents() -->
+      <div class="cs-section-title" style="margin-top:1rem;">Grandparent Traits</div>
+      <div id="grandparents-section" class="cs-grandparents-grid"></div>
+
     </section>
 
     <!-- ===== Body (2-col) ===== -->
@@ -157,50 +131,65 @@
         <section class="cs-section">
           <div class="cs-section-title">
             Attributes
-            <span class="cs-section-note">— drawn from the shared 50-point pool</span>
+            <span class="cs-section-note">— pts + racial = total</span>
           </div>
 
+          <!-- Each row: name | input | dice btn | = | total -->
           <div class="cs-attr-row">
             <span class="cs-attr-name">Strength</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Strength" />
             <button class="cs-dice-btn" data-level="0" title="Roll Strength (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Strength">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Speed</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Speed" />
             <button class="cs-dice-btn" data-level="0" title="Roll Speed (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Speed">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Constitution</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Constitution" />
             <button class="cs-dice-btn" data-level="0" title="Roll Constitution (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Constitution">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Wisdom</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Wisdom" />
             <button class="cs-dice-btn" data-level="0" title="Roll Wisdom (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Wisdom">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Intelligence</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Intelligence" />
             <button class="cs-dice-btn" data-level="0" title="Roll Intelligence (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Intelligence">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Charisma</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Charisma" />
             <button class="cs-dice-btn" data-level="0" title="Roll Charisma (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Charisma">0</span>
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Willpower</span>
-            <input type="number" class="cs-num-input" min="0" max="10" value="0"
+            <input type="number" class="cs-num-input" min="0" value="0"
               data-type="attr" data-key="Willpower" />
             <button class="cs-dice-btn" data-level="0" title="Roll Willpower (skill 0)">🎲</button>
+            <span class="cs-attr-eq">=</span>
+            <span class="cs-attr-total" id="cs-attr-total-Willpower">0</span>
           </div>
         </section>
 
@@ -211,9 +200,7 @@
           <div class="cs-resource-row">
             <span class="cs-resource-label hp">HP</span>
             <div class="cs-resource-track">
-              <input type="number" id="cs-hp-cur" class="cs-num-input"
-                min="0" max="5" value="0"
-                data-type="res-cur" data-key="hpCur" />
+              <span id="cs-hp-cur" class="cs-resource-cur">5</span>
               <span class="cs-resource-sep">/</span>
               <span class="cs-resource-calc" id="cs-hp-calc">5</span>
               <span class="cs-resource-sep cs-resource-dot">·</span>
@@ -226,9 +213,7 @@
           <div class="cs-resource-row">
             <span class="cs-resource-label mana">Mana</span>
             <div class="cs-resource-track">
-              <input type="number" id="cs-man-cur" class="cs-num-input"
-                min="0" max="5" value="0"
-                data-type="res-cur" data-key="manCur" />
+              <span id="cs-man-cur" class="cs-resource-cur">5</span>
               <span class="cs-resource-sep">/</span>
               <span class="cs-resource-calc" id="cs-man-calc">5</span>
               <span class="cs-resource-sep cs-resource-dot">·</span>
@@ -241,9 +226,7 @@
           <div class="cs-resource-row">
             <span class="cs-resource-label stam">Stamina</span>
             <div class="cs-resource-track">
-              <input type="number" id="cs-stam-cur" class="cs-num-input"
-                min="0" max="5" value="0"
-                data-type="res-cur" data-key="stamCur" />
+              <span id="cs-stam-cur" class="cs-resource-cur">5</span>
               <span class="cs-resource-sep">/</span>
               <span class="cs-resource-calc" id="cs-stam-calc">5</span>
               <span class="cs-resource-sep cs-resource-dot">·</span>
@@ -259,7 +242,6 @@
         <section class="cs-section">
           <div class="cs-section-title">Combat</div>
 
-          <!-- AC & Status -->
           <div class="cs-combat-row">
             <span class="cs-combat-label">Armor Class</span>
             <span id="cs-ac-display" class="cs-ac-display">10</span>
@@ -269,63 +251,55 @@
             <span id="cs-status-badge" class="cs-status-badge">—</span>
           </div>
 
-          <!-- Battle stats -->
           <div class="cs-section-title" style="margin-top:0.75rem;">Battle</div>
           <div class="cs-battle-grid">
             <div class="cs-battle-item">
               <label for="cs-moves">Moves</label>
               <input type="number" id="cs-moves" class="cs-num-input wide"
-                min="0" value="1"
-                data-type="combat" data-key="moves" />
+                min="0" value="1" data-type="combat" data-key="moves" />
             </div>
             <div class="cs-battle-item">
               <label for="cs-attacks">Attacks</label>
               <input type="number" id="cs-attacks" class="cs-num-input wide"
-                min="0" value="1"
-                data-type="combat" data-key="attacks" />
+                min="0" value="1" data-type="combat" data-key="attacks" />
             </div>
             <div class="cs-battle-item">
               <label for="cs-per-turn">Per Turn</label>
               <input type="number" id="cs-per-turn" class="cs-num-input wide"
-                min="0" value="1"
-                data-type="combat" data-key="perTurn" />
+                min="0" value="1" data-type="combat" data-key="perTurn" />
             </div>
             <div class="cs-battle-item">
               <label for="cs-used-turn">Used</label>
               <input type="number" id="cs-used-turn" class="cs-num-input wide"
-                min="0" value="0"
-                data-type="combat" data-key="usedTurn" />
+                min="0" value="0" data-type="combat" data-key="usedTurn" />
             </div>
           </div>
 
-          <!-- Injuries -->
-          <div class="cs-section-title" style="margin-top:0.75rem;">Injuries</div>
+          <div class="cs-section-title" style="margin-top:0.75rem;">
+            Injuries
+            <span class="cs-section-note">— Common ×1 · Harsh ×2 · Critical ×3 · Fatal ×5 HP</span>
+          </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label common">Common</span>
             <input type="number" id="cs-inj-common" class="cs-num-input wide"
-              min="0" value="0"
-              data-type="injury" data-key="injCommon" />
+              min="0" value="0" data-type="injury" data-key="injCommon" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label harsh">Harsh</span>
             <input type="number" id="cs-inj-harsh" class="cs-num-input wide"
-              min="0" value="0"
-              data-type="injury" data-key="injHarsh" />
+              min="0" value="0" data-type="injury" data-key="injHarsh" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label critical">Critical</span>
             <input type="number" id="cs-inj-critical" class="cs-num-input wide"
-              min="0" value="0"
-              data-type="injury" data-key="injCritical" />
+              min="0" value="0" data-type="injury" data-key="injCritical" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label fatal">Fatal</span>
             <input type="number" id="cs-inj-fatal" class="cs-num-input wide"
-              min="0" value="0"
-              data-type="injury" data-key="injFatal" />
+              min="0" value="0" data-type="injury" data-key="injFatal" />
           </div>
 
-          <!-- Special Feature -->
           <div class="cs-section-title" style="margin-top:0.75rem;">Special Feature</div>
           <div class="cs-field">
             <input id="cs-special" class="cs-text-input"
@@ -339,11 +313,10 @@
       <!-- ---- Right Column ---- -->
       <div class="cs-right">
 
-        <!-- Skills -->
         <section class="cs-section">
           <div class="cs-section-title">
             Skills
-            <span class="cs-section-note">— values draw from the shared 50-point pool</span>
+            <span class="cs-section-note">— values draw from the shared point pool</span>
           </div>
           <div class="cs-skills-grid">
             <div id="skills-physical"></div>
@@ -352,7 +325,6 @@
           </div>
         </section>
 
-        <!-- Magical Wells -->
         <section class="cs-section">
           <div class="cs-section-title">
             Magical Wells
@@ -361,7 +333,6 @@
           <div id="wells-grid" class="cs-wells-grid"></div>
         </section>
 
-        <!-- Spells -->
         <section class="cs-section">
           <div class="cs-section-title">Spells Equipped <span class="cs-section-note">— 0 / 1 slots</span></div>
           <div class="cs-spell-slot">

@@ -6,10 +6,177 @@
 
 (function () {
 
-  const TOTAL_POINTS = 50;
-  const SAVE_KEY     = 'abberanth-char-sheet';
+  const BASE_POINTS = 50;
+  const SAVE_KEY    = 'abberanth-char-sheet';
 
-  /* Named body armor slots — tailOnly slots only show when tailedRace is true */
+  /* ----------------------------------------------------------
+     Grandparent Trait Registry
+     Trait types:
+       stat_bonus   → single free attribute change (value can be negative)
+       multi_stat   → array of { attr, value } changes
+       feature      → named ability with use tracking (restType: 'short'|'long')
+       passive      → flavour/conditional ability, no use tracking
+  ---------------------------------------------------------- */
+  const GRANDPARENT_TRAITS = {
+
+    Arachnis: {
+      label: 'Arachnis (Arachne)',
+      A: {
+        type:  'stat_bonus',
+        attr:  'Speed',
+        value: 1,
+      },
+      B: {
+        type:     'feature',
+        name:     'Patient Hunter',
+        restType: 'short',
+        maxUses:  3,
+        desc:     'This species is known for their patience in hunting and then exploding with speed. Three times per short rest, you may choose to stay still for one turn. After the turn of no motion, your speed increases by 10 for a turn.',
+      },
+      C: {
+        type:  'stat_bonus',
+        attr:  'Intelligence',
+        value: 1,
+      },
+      D: {
+        type:     'feature',
+        name:     'Silk',
+        restType: 'long',
+        maxUses:  3,
+        desc:     'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.',
+      },
+    },
+
+    Arachnei: {
+      label: 'Arachnei (Saltici)',
+      A: {
+        type:  'multi_stat',
+        stats: [
+          { attr: 'Wisdom',       value: -1 },
+          { attr: 'Intelligence', value:  2 },
+        ],
+      },
+      B: {
+        type: 'passive',
+        name: 'Predatory Leap',
+        desc: 'These species are excellent jumpers. When jumping and attacking an enemy, add +1 per meter of jump to the damage.',
+      },
+      C: {
+        type:  'stat_bonus',
+        attr:  'Speed',
+        value: 1,
+      },
+      D: {
+        type:     'feature',
+        name:     'Silk',
+        restType: 'long',
+        maxUses:  3,
+        desc:     'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.',
+      },
+    },
+
+    Baaphakin: {
+      label: 'Baaphakin (Basic)',
+      A: {
+        type:  'stat_bonus',
+        attr:  'Constitution',
+        value: 1,
+      },
+      B: {
+        type: 'passive',
+        name: 'Headbutt',
+        desc: 'When you headbutt a target, add +5 to the rolls and push back the target by as many meters you ran before headbutting.',
+      },
+      C: {
+        type:  'stat_bonus',
+        attr:  'Wisdom',
+        value: 1,
+      },
+      D: {
+        type: 'passive',
+        name: 'Wall Climb',
+        desc: 'You can climb surfaces at full speed that are no more than 90 degrees in angle.',
+      },
+    },
+
+    Corvannis: {
+      label: 'Corvannis (Ravann)',
+      A: {
+        type:  'multi_stat',
+        stats: [
+          { attr: 'Constitution', value: -1 },
+          { attr: 'Intelligence', value:  2 },
+        ],
+      },
+      B: {
+        type:     'feature',
+        name:     'Echo',
+        restType: 'daily',
+        maxUses:  3,
+        desc:     'When you hear a sound or voice, you can repeat it perfectly for one hour, three times per day.',
+      },
+      C: {
+        type:  'stat_bonus',
+        attr:  'Wisdom',
+        value: 1,
+      },
+      D: {
+        type: 'passive',
+        name: 'Flight',
+        desc: 'You can fly at speed.',
+      },
+    },
+
+  };
+
+  /** Unique key for storing feature uses in state */
+  function _featureKey(slot, featureName) {
+    return `${slot}:${featureName}`;
+  }
+
+  /* ----------------------------------------------------------
+     Point & EXP Scaling
+  ---------------------------------------------------------- */
+  function calcTotalPoints(level) {
+    let total = BASE_POINTS;
+    const lvl = Math.max(0, Math.min(100, Math.floor(Number(level)) || 0));
+    for (let i = 1; i <= lvl; i++) {
+      const bracket = Math.floor((i - 1) / 10);
+      total += 10 + (bracket * 5);
+    }
+    return total;
+  }
+
+  function expPerLevel(level) {
+    if (level < 1 || level > 100) return Infinity;
+    const bracket = Math.floor((level - 1) / 10);
+    return 10 + (bracket * 5);
+  }
+
+  function calcLevelFromExp(exp) {
+    let level = 0;
+    let cumulative = 0;
+    while (level < 100) {
+      const needed = expPerLevel(level + 1);
+      if (cumulative + needed > exp) break;
+      cumulative += needed;
+      level++;
+    }
+    return level;
+  }
+
+  function calcExpToNext(exp, level) {
+    if (level >= 100) return 0;
+    let cumulative = 0;
+    for (let i = 1; i <= level + 1; i++) cumulative += expPerLevel(i);
+    return cumulative - exp;
+  }
+
+  /* ----------------------------------------------------------
+     Named body armor slots
+     tailOnly → only visible when tailedRace is true
+     wingOnly → only visible when wingedRace is true
+  ---------------------------------------------------------- */
   const ARMOR_SLOT_DEFS = [
     { key: 'head',       label: 'Head' },
     { key: 'torsoUnder', label: 'Torso (Under)' },
@@ -20,10 +187,11 @@
     { key: 'pantsOver',  label: 'Pants (Over)' },
     { key: 'leftFoot',   label: 'Left Foot' },
     { key: 'rightFoot',  label: 'Right Foot' },
-    { key: 'tail',       label: 'Tail', tailOnly: true },
+    { key: 'tail',       label: 'Tail',         tailOnly: true },
+    { key: 'leftWing',   label: 'Left Wing(s)',  wingOnly: true },
+    { key: 'rightWing',  label: 'Right Wing(s)', wingOnly: true },
   ];
 
-  /* Recognized armor types. Cloth is valid but adds ×0. */
   const ARMOR_TYPES = new Set([
     'cloth',
     'hide', 'leather', 'ring mail', 'studded leather',
@@ -31,7 +199,6 @@
     'chainmail', 'halfplate', 'splint', 'plate',
   ]);
 
-  /* Armor dropdown options grouped by weight */
   const ARMOR_OPTION_GROUPS = [
     { group: 'Clothing', items: ['Cloth'] },
     { group: 'Light',    items: ['Hide', 'Leather', 'Ring Mail', 'Studded Leather'] },
@@ -47,8 +214,35 @@
     return 1;
   }
 
+  /* ----------------------------------------------------------
+     Racial (grandparent) stat bonuses — free, don't cost points
+     Handles stat_bonus and multi_stat types.
+  ---------------------------------------------------------- */
+  function calcRacialBonus(attr) {
+    let bonus = 0;
+    for (const slot of ['A', 'B', 'C', 'D']) {
+      const race  = state.grandparents?.[slot];
+      if (!race) continue;
+      const trait = GRANDPARENT_TRAITS[race]?.[slot];
+      if (!trait) continue;
+
+      if (trait.type === 'stat_bonus' && trait.attr === attr) {
+        bonus += trait.value;
+      } else if (trait.type === 'multi_stat') {
+        for (const s of trait.stats) {
+          if (s.attr === attr) bonus += s.value;
+        }
+      }
+    }
+    return bonus;
+  }
+
+  function calcEffectiveAttr(attr) {
+    return (state.attrs[attr] || 0) + calcRacialBonus(attr);
+  }
+
   function calcAC() {
-    const con      = state.attrs['Constitution'] || 0;
+    const con      = calcEffectiveAttr('Constitution');
     const armorSum = Object.values(state.armor || {}).reduce((sum, slot) => {
       if (!slot.name) return sum;
       return sum + ((slot.value || 0) * getArmorMultiplier(slot.name));
@@ -63,16 +257,15 @@
 
   /* ----------------------------------------------------------
      Status thresholds (HP %)
-     Checked highest-first; first match wins.
   ---------------------------------------------------------- */
   const STATUS_LEVELS = [
-    { min: 100, label: 'Perfect',       color: '#60d8b0' },  /* teal-green — safe */
-    { min: 75,  label: 'Healthy',       color: '#80c8f0' },  /* sky blue */
-    { min: 50,  label: 'Dazed',         color: '#9090f0' },  /* periwinkle */
-    { min: 25,  label: 'Injured',       color: '#c078e0' },  /* violet */
-    { min: 10,  label: 'Badly Injured', color: '#d050b0' },  /* purple-pink */
-    { min: 1,   label: 'Critical',      color: '#e03880' },  /* magenta-red */
-    { min: 0,   label: 'Dying',         color: '#c01850' },  /* deep crimson */
+    { min: 100, label: 'Perfect',       color: '#60d8b0' },
+    { min: 75,  label: 'Healthy',       color: '#80c8f0' },
+    { min: 50,  label: 'Dazed',         color: '#9090f0' },
+    { min: 25,  label: 'Injured',       color: '#c078e0' },
+    { min: 10,  label: 'Badly Injured', color: '#d050b0' },
+    { min: 1,   label: 'Critical',      color: '#e03880' },
+    { min: 0,   label: 'Dying',         color: '#c01850' },
   ];
 
   /* ----------------------------------------------------------
@@ -122,7 +315,6 @@
     WELLS.forEach(w => (wells[w] = 0));
 
     return {
-      // Identity
       charName:   '',
       playerName: '',
       age:        '',
@@ -132,17 +324,19 @@
       expToNext:  10,
       gpA: '', gpB: '', gpC: '', gpD: '',
 
-      // Point-buy
       attrs,
       skills,
       wells,
 
-      // Resources (max = point-buy; cur = play tracking)
-      hpMax:   0, hpCur:   0,
-      manMax:  0, manCur:  0,
-      stamMax: 0, stamCur: 0,
+      grandparents: { A: '', B: '', C: '', D: '' },
+      featureUses:  {},
 
-      // Combat (play tracking — not point-buy)
+      hpMax:   0,
+      manMax:  0,
+      stamMax: 0,
+      manaSpent: 0,
+      stamSpent: 0,
+
       ac:         10,
       status:     'Perfect',
       moves:       1,
@@ -155,12 +349,11 @@
       injFatal:    0,
       specialFeature: '',
 
-      // Spells
       spells: [''],
 
-      // Named armor slots
       armor: Object.fromEntries(ARMOR_SLOT_DEFS.map(s => [s.key, { name: '', value: 0 }])),
       tailedRace: false,
+      wingedRace: false,
     };
   }
 
@@ -169,9 +362,9 @@
   ---------------------------------------------------------- */
   let state        = makeDefault();
   let saveTimer    = null;
-  let _activeUser  = null;   // logged-in user
-  let _targetUid   = null;   // who we're editing (differs from _activeUser when DM views a player)
-  let _targetEmail = null;   // for the DM banner
+  let _activeUser  = null;
+  let _targetUid   = null;
+  let _targetEmail = null;
 
   /* ----------------------------------------------------------
      Persistence — Firestore primary, localStorage fallback
@@ -183,13 +376,11 @@
   async function loadState(user) {
     _activeUser = user;
 
-    // DM: check if a player UID is in the URL
     if (window.isDM && user) {
-      const params  = new URLSearchParams(window.location.search);
-      const urlUid  = params.get('uid');
+      const params = new URLSearchParams(window.location.search);
+      const urlUid = params.get('uid');
       if (urlUid && urlUid !== user.uid) {
         _targetUid = urlUid;
-        // Fetch player email for the banner
         try {
           const pDoc = await window._db.collection('players').doc(urlUid).get();
           if (pDoc.exists) _targetEmail = pDoc.data().email;
@@ -211,7 +402,6 @@
       }
     }
 
-    // Fallback to localStorage (own data only, never a player's)
     if (!_targetUid) {
       try {
         const raw = localStorage.getItem(SAVE_KEY);
@@ -222,17 +412,17 @@
 
   function showDMBanner() {
     if (!_targetUid) return;
-    const banner  = document.getElementById('dm-view-banner');
-    const nameEl  = document.getElementById('dm-view-player');
-    if (banner)  banner.style.display = 'flex';
-    if (nameEl)  nameEl.textContent   = _targetEmail || _targetUid;
+    const banner = document.getElementById('dm-view-banner');
+    const nameEl = document.getElementById('dm-view-player');
+    if (banner) banner.style.display = 'flex';
+    if (nameEl) nameEl.textContent   = _targetEmail || _targetUid;
   }
 
   function schedSave() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
-      const plain  = JSON.parse(JSON.stringify(state));
-      const uid    = _targetUid || (_activeUser ? _activeUser.uid : null);
+      const plain = JSON.parse(JSON.stringify(state));
+      const uid   = _targetUid || (_activeUser ? _activeUser.uid : null);
 
       if (uid && window._db) {
         try {
@@ -243,14 +433,12 @@
         }
       }
 
-      // Only cache own data locally
       if (!_targetUid) {
         localStorage.setItem(SAVE_KEY, JSON.stringify(plain));
       }
     }, 800);
   }
 
-  /** Deep-merge source into target (target is the base with all keys) */
   function deepMerge(target, source) {
     const out = { ...target };
     for (const k of Object.keys(source)) {
@@ -269,21 +457,49 @@
   }
 
   /* ----------------------------------------------------------
-     Resource Max Formula:  5 + (pts × 5)
+     Resource Max Formula:  5 + (pts x 5)
   ---------------------------------------------------------- */
   function calcResourceMax(pts) {
     return 5 + ((pts || 0) * 5);
   }
 
-  /** Refresh the calculated max display and update the current input's max attr */
   function updateResourceCalc(key, pts) {
     const calcMax = calcResourceMax(pts);
-    const calcIds = { hpMax: 'cs-hp-calc',   manMax: 'cs-man-calc',  stamMax: 'cs-stam-calc' };
-    const curIds  = { hpMax: 'cs-hp-cur',    manMax: 'cs-man-cur',   stamMax: 'cs-stam-cur'  };
-    const calcEl = document.getElementById(calcIds[key]);
-    const curEl  = document.getElementById(curIds[key]);
+    const calcIds = { hpMax: 'cs-hp-calc', manMax: 'cs-man-calc', stamMax: 'cs-stam-calc' };
+    const calcEl  = document.getElementById(calcIds[key]);
     if (calcEl) calcEl.textContent = calcMax;
-    if (curEl)  curEl.max = calcMax;
+  }
+
+  /* ----------------------------------------------------------
+     Injury damage
+     Common = 1 hp | Harsh = 2 hp | Critical = 3 hp | Fatal = 5 hp
+  ---------------------------------------------------------- */
+  function calcInjuryDamage() {
+    return (
+      (state.injCommon   || 0) * 1 +
+      (state.injHarsh    || 0) * 2 +
+      (state.injCritical || 0) * 3 +
+      (state.injFatal    || 0) * 5
+    );
+  }
+
+  /* ----------------------------------------------------------
+     Derived current values — never stored, always computed
+  ---------------------------------------------------------- */
+  function calcHpCur()   { return Math.max(0, calcResourceMax(state.hpMax)   - calcInjuryDamage()); }
+  function calcManCur()  { return Math.max(0, calcResourceMax(state.manMax)  - (state.manaSpent || 0)); }
+  function calcStamCur() { return Math.max(0, calcResourceMax(state.stamMax) - (state.stamSpent || 0)); }
+
+  function updateResourceDisplays() {
+    const hpEl   = document.getElementById('cs-hp-cur');
+    const manEl  = document.getElementById('cs-man-cur');
+    const stamEl = document.getElementById('cs-stam-cur');
+
+    if (hpEl)   hpEl.textContent   = calcHpCur();
+    if (manEl)  manEl.textContent  = calcManCur();
+    if (stamEl) stamEl.textContent = calcStamCur();
+
+    updateStatusBadge();
   }
 
   /* ----------------------------------------------------------
@@ -301,15 +517,15 @@
   function updateStatusBadge() {
     const badge = document.getElementById('cs-status-badge');
     if (!badge) return;
-    const { label, color } = calcStatus(state.hpCur, calcResourceMax(state.hpMax));
+    const { label, color } = calcStatus(calcHpCur(), calcResourceMax(state.hpMax));
     badge.textContent       = label;
     badge.style.color       = color;
     badge.style.borderColor = color;
-    badge.style.background  = color + '1a'; // 10% opacity tint
+    badge.style.background  = color + '1a';
   }
 
   /* ----------------------------------------------------------
-     Points Calculation
+     Points Calculation — racial bonuses are FREE, not counted
   ---------------------------------------------------------- */
   function calcUsed() {
     let n = 0;
@@ -322,26 +538,169 @@
   }
 
   function refreshPoints() {
-    const used = calcUsed();
-    const rem  = TOTAL_POINTS - used;
-    const over = used > TOTAL_POINTS;
+    const used  = calcUsed();
+    const total = calcTotalPoints(state.level);
+    const rem   = total - used;
+    const over  = used > total;
 
     const usedEl = document.getElementById('points-used');
     const remEl  = document.getElementById('points-remaining');
 
     if (usedEl) {
-      usedEl.textContent = `${used} / ${TOTAL_POINTS}`;
+      usedEl.textContent = `${used} / ${total}`;
       usedEl.classList.toggle('over-budget', over);
     }
     if (remEl) {
-      remEl.textContent  = over ? `⚠ ${-rem} over budget` : `${rem} left`;
-      remEl.style.color  = over ? '#e05050' : 'var(--text-muted)';
+      remEl.textContent = over ? `⚠ ${-rem} over budget` : `${rem} left`;
+      remEl.style.color = over ? '#e05050' : 'var(--text-muted)';
     }
   }
 
   /* ----------------------------------------------------------
      Build Dynamic Sections
   ---------------------------------------------------------- */
+  function buildGrandparents() {
+    const container = document.getElementById('grandparents-section');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const raceKeys    = Object.keys(GRANDPARENT_TRAITS);
+    const raceOptions = ['', ...raceKeys];
+
+    for (const slot of ['A', 'B', 'C', 'D']) {
+      const selectedRace = state.grandparents?.[slot] || '';
+      const trait        = selectedRace ? GRANDPARENT_TRAITS[selectedRace]?.[slot] : null;
+
+      const block = document.createElement('div');
+      block.className    = 'cs-grandparent-block';
+      block.dataset.slot = slot;
+
+      // Header: slot label + race dropdown
+      const header = document.createElement('div');
+      header.className = 'cs-grandparent-header';
+      header.innerHTML = `
+        <span class="cs-grandparent-label">Grandparent ${slot}</span>
+        <select class="cs-select cs-grandparent-select"
+          data-type="grandparent" data-slot="${slot}">
+          ${raceOptions.map(r =>
+            `<option value="${r}" ${r === selectedRace ? 'selected' : ''}>
+              ${r ? GRANDPARENT_TRAITS[r].label : '— none —'}
+            </option>`
+          ).join('')}
+        </select>
+      `;
+      block.appendChild(header);
+
+      // Trait display
+      if (trait) {
+        const traitEl = document.createElement('div');
+
+        if (trait.type === 'stat_bonus') {
+          traitEl.className = 'cs-grandparent-trait cs-trait-bonus';
+          traitEl.innerHTML = _renderStatChip(trait.attr, trait.value)
+            + `<span class="cs-trait-bonus-note">(racial — free)</span>`;
+
+        } else if (trait.type === 'multi_stat') {
+          traitEl.className = 'cs-grandparent-trait cs-trait-bonus';
+          traitEl.innerHTML = trait.stats
+            .map(s => _renderStatChip(s.attr, s.value))
+            .join('<span class="cs-trait-bonus-sep"> · </span>')
+            + `<span class="cs-trait-bonus-note">(racial — free)</span>`;
+
+        } else if (trait.type === 'passive') {
+          traitEl.className = 'cs-grandparent-trait cs-trait-passive';
+          traitEl.innerHTML = `
+            <div class="cs-feature-name">
+              ${trait.name}
+              <span class="cs-feature-rest cs-feature-rest--passive">Passive</span>
+            </div>
+            <div class="cs-feature-desc">${trait.desc}</div>
+          `;
+
+        } else if (trait.type === 'feature') {
+          const usesKey   = _featureKey(slot, trait.name);
+          const maxUses   = trait.maxUses;
+          const remaining = state.featureUses?.[usesKey] ?? maxUses;
+
+          const pips = Array.from({ length: maxUses }, (_, i) =>
+            `<span class="cs-use-pip ${i < remaining ? 'cs-use-pip--filled' : 'cs-use-pip--spent'}"></span>`
+          ).join('');
+
+          traitEl.className = 'cs-grandparent-trait cs-trait-feature';
+          traitEl.innerHTML = `
+            <div class="cs-feature-name">
+              ${trait.name}
+              <span class="cs-feature-rest cs-feature-rest--${trait.restType}">${trait.restType} rest</span>
+            </div>
+            <div class="cs-feature-desc">${trait.desc}</div>
+            <div class="cs-feature-uses">
+              <span class="cs-use-pips">${pips}</span>
+              <button class="cs-use-btn"
+                data-type="use-feature"
+                data-slot="${slot}"
+                data-feature="${trait.name}"
+                data-uses-key="${usesKey}"
+                ${remaining <= 0 ? 'disabled' : ''}>
+                Use
+              </button>
+            </div>
+          `;
+        }
+
+        block.appendChild(traitEl);
+      }
+
+      container.appendChild(block);
+    }
+
+    updateRacialBonusDisplays();
+    updateAttrTotals();
+  }
+
+  /** Render a single coloured stat chip: "+2 Intelligence" or "−1 Wisdom" */
+  function _renderStatChip(attr, value) {
+    const sign  = value >= 0 ? '+' : '−';
+    const abs   = Math.abs(value);
+    const cls   = value >= 0 ? 'cs-trait-bonus-text' : 'cs-trait-bonus-text cs-trait-bonus-text--penalty';
+    return `<span class="${cls}">${sign}${abs} ${attr}</span>`;
+  }
+
+  /**
+   * Refresh the "= N" total column next to every attribute input.
+   * Colour: teal for bonus, red for penalty, muted for no racial modifier.
+   */
+  function updateAttrTotals() {
+    for (const attr of ATTRIBUTES) {
+      const el = document.getElementById(`cs-attr-total-${attr}`);
+      if (!el) continue;
+      const base   = state.attrs[attr] || 0;
+      const bonus  = calcRacialBonus(attr);
+      const total  = base + bonus;
+      el.textContent = total;
+      el.classList.remove('cs-attr-total--bonus', 'cs-attr-total--penalty');
+      if (bonus > 0) el.classList.add('cs-attr-total--bonus');
+      if (bonus < 0) el.classList.add('cs-attr-total--penalty');
+    }
+  }
+
+  function updateRacialBonusDisplays() {
+    for (const attr of ATTRIBUTES) {
+      const bonus = calcRacialBonus(attr);
+      const id    = `cs-racial-${attr.toLowerCase()}`;
+      const el    = document.getElementById(id);
+      if (!el) continue;
+      if (bonus === 0) {
+        el.style.display = 'none';
+        el.textContent   = '';
+      } else {
+        el.textContent   = bonus > 0 ? `+${bonus} racial` : `${bonus} racial`;
+        el.style.display = 'inline';
+        // Penalty turns the badge red
+        el.classList.toggle('cs-racial-bonus--penalty', bonus < 0);
+      }
+    }
+  }
+
   function buildSkills() {
     const cats = [
       { id: 'skills-physical', cat: 'Physical', cls: 'physical' },
@@ -366,7 +725,7 @@
         row.innerHTML = `
           <span class="cs-skill-name" title="${skill}">${skill}</span>
           <input type="number" class="cs-num-input"
-            min="0" max="10" value="${val}"
+            min="0" value="${val}"
             data-type="skill" data-cat="${cat}" data-skill="${skill}" />
           <button class="cs-dice-btn" data-level="${val}"
             title="Roll ${skill} (skill ${val})">🎲</button>
@@ -392,7 +751,10 @@
       `),
     ].join('');
 
-    const visibleSlots = ARMOR_SLOT_DEFS.filter(s => !s.tailOnly || state.tailedRace);
+    const visibleSlots = ARMOR_SLOT_DEFS.filter(s =>
+      (!s.tailOnly || state.tailedRace) &&
+      (!s.wingOnly || state.wingedRace)
+    );
 
     for (const slotDef of visibleSlots) {
       const slot = state.armor[slotDef.key] || { name: '', value: 0 };
@@ -400,20 +762,20 @@
       const row = document.createElement('div');
       row.className = 'cs-armor-slot';
       if (slotDef.tailOnly) row.classList.add('cs-armor-slot--tail');
+      if (slotDef.wingOnly) row.classList.add('cs-armor-slot--wing');
       row.dataset.slotKey = slotDef.key;
 
       row.innerHTML = `
         <span class="cs-armor-slot-label">${slotDef.label}</span>
-        <select class="cs-select cs-armor-name" data-type="armor" data-slot="${slotDef.key}" data-field="name">
+        <select class="cs-select cs-armor-name"
+          data-type="armor" data-slot="${slotDef.key}" data-field="name">
           ${optsHtml}
         </select>
         <input type="number" class="cs-num-input cs-armor-value" min="0" value="${slot.value || 0}"
           data-type="armor" data-slot="${slotDef.key}" data-field="value" />
       `;
 
-      // Restore saved selection
       row.querySelector('select').value = slot.name || '';
-
       container.appendChild(row);
     }
   }
@@ -431,7 +793,7 @@
         <div class="cs-well-label">${well}</div>
         <div class="cs-well-controls">
           <input type="number" class="cs-num-input"
-            min="0" max="10" value="${val}"
+            min="0" value="${val}"
             data-type="well" data-well="${well}" />
           <button class="cs-dice-btn" data-level="${val}"
             title="Roll ${well} well (skill ${val})">🎲</button>
@@ -450,7 +812,6 @@
       if (el) el.value = val ?? '';
     }
 
-    // Identity
     set('cs-char-name',   state.charName);
     set('cs-player-name', state.playerName);
     set('cs-age',         state.age);
@@ -463,7 +824,6 @@
     set('cs-gp-c',        state.gpC);
     set('cs-gp-d',        state.gpD);
 
-    // Attributes — also sync dice button
     for (const attr of ATTRIBUTES) {
       const inp = document.querySelector(`[data-type="attr"][data-key="${attr}"]`);
       if (!inp) continue;
@@ -472,34 +832,31 @@
       if (btn?.classList.contains('cs-dice-btn')) btn.dataset.level = inp.value;
     }
 
-    // Resources — pts inputs
     set('cs-hp-pts',   state.hpMax);
     set('cs-man-pts',  state.manMax);
     set('cs-stam-pts', state.stamMax);
-    // Calculated maxes + current inputs
     updateResourceCalc('hpMax',   state.hpMax);
     updateResourceCalc('manMax',  state.manMax);
     updateResourceCalc('stamMax', state.stamMax);
-    set('cs-hp-cur',   state.hpCur);
-    set('cs-man-cur',  state.manCur);
-    set('cs-stam-cur', state.stamCur);
+    updateResourceDisplays();
 
-    // Tailed race checkbox
     const tailedEl = document.getElementById('cs-tailed');
     if (tailedEl) tailedEl.checked = !!state.tailedRace;
 
-    // Combat
-    set('cs-moves',       state.moves);
-    set('cs-attacks',     state.attacks);
-    set('cs-used-turn',   state.usedTurn);
-    set('cs-per-turn',    state.perTurn);
+    const wingedEl = document.getElementById('cs-winged');
+    if (wingedEl) wingedEl.checked = !!state.wingedRace;
+
+    set('cs-moves',        state.moves);
+    set('cs-attacks',      state.attacks);
+    set('cs-used-turn',    state.usedTurn);
+    set('cs-per-turn',     state.perTurn);
     set('cs-inj-common',   state.injCommon);
     set('cs-inj-harsh',    state.injHarsh);
     set('cs-inj-critical', state.injCritical);
     set('cs-inj-fatal',    state.injFatal);
-    set('cs-special',     state.specialFeature);
+    set('cs-special',      state.specialFeature);
 
-    updateStatusBadge();
+    updateAttrTotals();
   }
 
   /* ----------------------------------------------------------
@@ -522,7 +879,6 @@
     let   numVal = parseInt(rawVal, 10);
     if (isNaN(numVal)) numVal = 0;
 
-    // Clamp number inputs to their declared min/max
     if (el.type === 'number') {
       const lo = el.min !== '' ? parseInt(el.min, 10) : 0;
       const hi = el.max !== '' ? parseInt(el.max, 10) : Infinity;
@@ -531,10 +887,10 @@
     }
 
     switch (type) {
-      /* ---- Point-buy ---- */
       case 'attr':
         state.attrs[el.dataset.key] = numVal;
         syncDiceBtn(el, numVal);
+        updateAttrTotals();
         if (el.dataset.key === 'Constitution') updateACDisplay();
         break;
 
@@ -552,11 +908,7 @@
       case 'res-max':
         state[el.dataset.key] = numVal;
         updateResourceCalc(el.dataset.key, numVal);
-        break;
-
-      /* ---- Play tracking (not point-buy) ---- */
-      case 'res-cur':
-        state[el.dataset.key] = numVal;
+        updateResourceDisplays();
         break;
 
       case 'combat':
@@ -574,25 +926,60 @@
 
       case 'tailed':
         state.tailedRace = el.checked;
-        buildArmorSlots();   // rebuild to show/hide tail slot
+        buildArmorSlots();
+        updateACDisplay();
+        break;
+
+      case 'winged':
+        state.wingedRace = el.checked;
+        buildArmorSlots();
         updateACDisplay();
         break;
 
       case 'injury':
         state[el.dataset.key] = numVal;
+        updateResourceDisplays();
         break;
+
+      case 'grandparent': {
+        const slot = el.dataset.slot;
+        if (!state.grandparents) state.grandparents = {};
+        state.grandparents[slot] = el.value;
+        // Seed feature uses to max when a race is first selected
+        const trait = el.value ? GRANDPARENT_TRAITS[el.value]?.[slot] : null;
+        if (trait?.type === 'feature') {
+          const key = _featureKey(slot, trait.name);
+          if (state.featureUses[key] === undefined) {
+            state.featureUses[key] = trait.maxUses;
+          }
+        }
+        buildGrandparents();
+        updateACDisplay();
+        break;
+      }
 
       case 'identity':
         state[el.dataset.key] = rawVal;
+        if (el.dataset.key === 'exp') {
+          const expNum    = Math.max(0, parseInt(rawVal, 10) || 0);
+          state.exp       = expNum;
+          const newLevel  = calcLevelFromExp(expNum);
+          state.level     = newLevel;
+          state.expToNext = calcExpToNext(expNum, newLevel);
+
+          const levelEl   = document.getElementById('cs-level');
+          const expNextEl = document.getElementById('cs-exp-next');
+          if (levelEl)   levelEl.value   = newLevel;
+          if (expNextEl) expNextEl.value = state.expToNext;
+        }
         break;
     }
 
     schedSave();
     refreshPoints();
-    updateStatusBadge();
+    updateResourceDisplays();
   }
 
-  /** Update the adjacent dice button's data-level when an input changes */
   function syncDiceBtn(input, level) {
     const btn = input.nextElementSibling;
     if (btn?.classList.contains('cs-dice-btn')) {
@@ -602,11 +989,94 @@
   }
 
   function handleClick(e) {
-    const btn = e.target.closest('.cs-dice-btn');
-    if (!btn) return;
-    const level = parseInt(btn.dataset.level, 10) || 0;
-    window.DiceUI?.openWithSkill(level);
+    const useBtn = e.target.closest('[data-type="use-feature"]');
+    if (useBtn) {
+      const usesKey = useBtn.dataset.usesKey;
+      const cur     = state.featureUses?.[usesKey] ?? 0;
+      if (cur > 0) {
+        if (!state.featureUses) state.featureUses = {};
+        state.featureUses[usesKey] = cur - 1;
+        buildGrandparents();
+        schedSave();
+      }
+      return;
+    }
+
+    const diceBtn = e.target.closest('.cs-dice-btn');
+    if (diceBtn) {
+      const level = parseInt(diceBtn.dataset.level, 10) || 0;
+      window.DiceUI?.openWithSkill(level);
+    }
   }
+
+  /* ----------------------------------------------------------
+     Public API
+     CharSheet.spendMana(cost)
+     CharSheet.spendStam(cost)
+     CharSheet.restoreAll()
+     CharSheet.restoreMana()
+     CharSheet.restoreStam()
+     CharSheet.shortRest()   — resets short-rest feature uses
+     CharSheet.longRest()    — resets all feature uses + mana + stam
+  ---------------------------------------------------------- */
+  window.CharSheet = {
+    spendMana(cost) {
+      const max = calcResourceMax(state.manMax);
+      state.manaSpent = Math.min(max, (state.manaSpent || 0) + cost);
+      updateResourceDisplays();
+      schedSave();
+    },
+    spendStam(cost) {
+      const max = calcResourceMax(state.stamMax);
+      state.stamSpent = Math.min(max, (state.stamSpent || 0) + cost);
+      updateResourceDisplays();
+      schedSave();
+    },
+    restoreAll() {
+      state.manaSpent = 0;
+      state.stamSpent = 0;
+      updateResourceDisplays();
+      schedSave();
+    },
+    restoreMana() {
+      state.manaSpent = 0;
+      updateResourceDisplays();
+      schedSave();
+    },
+    restoreStam() {
+      state.stamSpent = 0;
+      updateResourceDisplays();
+      schedSave();
+    },
+    shortRest() {
+      for (const slot of ['A', 'B', 'C', 'D']) {
+        const race  = state.grandparents?.[slot];
+        if (!race) continue;
+        const trait = GRANDPARENT_TRAITS[race]?.[slot];
+        if (trait?.type === 'feature' && trait.restType === 'short') {
+          state.featureUses[_featureKey(slot, trait.name)] = trait.maxUses;
+        }
+      }
+      buildGrandparents();
+      schedSave();
+    },
+    longRest() {
+      for (const slot of ['A', 'B', 'C', 'D']) {
+        const race  = state.grandparents?.[slot];
+        if (!race) continue;
+        const trait = GRANDPARENT_TRAITS[race]?.[slot];
+        // long rest resets both 'long' and 'daily' features
+        if (trait?.type === 'feature' && (trait.restType === 'long' || trait.restType === 'daily')) {
+          state.featureUses[_featureKey(slot, trait.name)] = trait.maxUses;
+        }
+      }
+      state.manaSpent = 0;
+      state.stamSpent = 0;
+      buildGrandparents();
+      updateResourceDisplays();
+      schedSave();
+    },
+  };
 
   /* ----------------------------------------------------------
      Init — waits for Firebase auth before loading data
@@ -618,6 +1088,7 @@
       buildSkills();
       buildWells();
       buildArmorSlots();
+      buildGrandparents();
       renderFields();
       bindEvents();
       refreshPoints();

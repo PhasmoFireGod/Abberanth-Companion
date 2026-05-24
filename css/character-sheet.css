@@ -56,12 +56,6 @@
   margin-bottom: 0.875rem;
 }
 
-.cs-gp-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-}
-
 .cs-field {
   display: flex;
   flex-direction: column;
@@ -160,6 +154,225 @@
   color: #fff;
 }
 
+/* ---------- Race Toggles ---------- */
+.cs-race-toggles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0;
+  margin-bottom: 0.75rem;
+}
+
+.cs-tailed-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cs-tailed-label input[type="checkbox"] {
+  accent-color: var(--accent-purple);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.cs-tailed-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-right: 0.75rem;
+}
+
+/* ---------- Racial Bonus Label ---------- */
+.cs-racial-bonus {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent-teal);
+  background: rgba(88,152,232,0.12);
+  border: 1px solid rgba(88,152,232,0.3);
+  border-radius: 99px;
+  padding: 0.08rem 0.45rem;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* ---------- Grandparent Traits ---------- */
+.cs-grandparents-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.cs-grandparent-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.7rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color var(--transition);
+}
+.cs-grandparent-block:has(select:focus) { border-color: var(--accent-purple); }
+
+.cs-grandparent-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.cs-grandparent-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cs-grandparent-select {
+  font-size: 0.76rem;
+  padding: 0.3rem 0.45rem;
+}
+
+/* Stat bonus trait */
+.cs-trait-bonus {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(88,152,232,0.08);
+  border: 1px solid rgba(88,152,232,0.25);
+  border-radius: var(--radius);
+}
+
+.cs-trait-bonus-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+  font-family: var(--font-heading);
+}
+
+.cs-trait-bonus-note {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+/* Feature trait */
+.cs-trait-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(102,80,216,0.08);
+  border: 1px solid rgba(102,80,216,0.25);
+  border-radius: var(--radius);
+}
+
+.cs-feature-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* Rest type pill */
+.cs-feature-rest {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 99px;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid;
+}
+.cs-feature-rest--short {
+  color: var(--accent-teal);
+  border-color: rgba(88,152,232,0.4);
+  background: rgba(88,152,232,0.1);
+}
+.cs-feature-rest--long {
+  color: var(--accent-gold);
+  border-color: rgba(139,164,248,0.4);
+  background: rgba(139,164,248,0.1);
+}
+
+.cs-feature-rest--daily {
+  color: #c8a0f8;
+  border-color: rgba(200,160,248,0.4);
+  background: rgba(200,160,248,0.1);
+}
+
+.cs-feature-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Uses row */
+.cs-feature-uses {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+.cs-use-pips {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.cs-use-pip {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--border-glow);
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+.cs-use-pip--filled {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 5px rgba(102,80,216,0.5);
+}
+.cs-use-pip--spent {
+  background: transparent;
+  border-color: var(--border);
+}
+
+.cs-use-btn {
+  margin-left: auto;
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.cs-use-btn:hover:not(:disabled) { background: #5060c0; }
+.cs-use-btn:disabled {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 /* ---------- Main Body Grid ---------- */
 .cs-body {
   display: grid;
@@ -199,6 +412,26 @@
   color: var(--text-primary);
 }
 
+/* Effective total column */
+.cs-attr-eq {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cs-attr-total {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 1.6rem;
+  text-align: right;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+.cs-attr-total--bonus  { color: var(--accent-teal); }
+.cs-attr-total--penalty { color: #e07070; }
+
 /* ---------- Resource Rows ---------- */
 .cs-resource-row {
   display: flex;
@@ -216,9 +449,9 @@
   width: 52px;
   flex-shrink: 0;
 }
-.cs-resource-label.hp   { color: #d888cc; }   /* rose-purple */
-.cs-resource-label.mana { color: #80b0f8; }   /* cornflower blue */
-.cs-resource-label.stam { color: #70d8f0; }   /* cyan-blue */
+.cs-resource-label.hp   { color: #d888cc; }
+.cs-resource-label.mana { color: #80b0f8; }
+.cs-resource-label.stam { color: #70d8f0; }
 
 .cs-resource-track {
   display: flex;
@@ -229,6 +462,16 @@
 
 .cs-resource-sep { color: var(--text-muted); font-size: 0.8rem; }
 .cs-resource-dot { margin: 0 0.15rem; }
+
+/* Read-only derived current value */
+.cs-resource-cur {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 24px;
+  text-align: center;
+}
 
 /* Calculated max value display */
 .cs-resource-calc {
@@ -301,10 +544,10 @@
   font-size: 0.8rem;
   font-weight: 600;
 }
-.cs-injury-label.common   { color: #9098e8; }   /* soft periwinkle */
-.cs-injury-label.harsh    { color: #c078e0; }   /* violet */
-.cs-injury-label.critical { color: #d050a8; }   /* purple-pink */
-.cs-injury-label.fatal    { color: #c02880; }   /* deep magenta */
+.cs-injury-label.common   { color: #9098e8; }
+.cs-injury-label.harsh    { color: #c078e0; }
+.cs-injury-label.critical { color: #d050a8; }
+.cs-injury-label.fatal    { color: #c02880; }
 
 /* ---------- Skills Section ---------- */
 .cs-skills-grid {
@@ -399,36 +642,6 @@
   text-align: center;
 }
 
-/* ---------- Tailed Race Toggle ---------- */
-.cs-tailed-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.cs-tailed-label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--text-primary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.cs-tailed-label input[type="checkbox"] {
-  accent-color: var(--accent-purple);
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-}
-
-.cs-tailed-hint {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-}
-
 /* ---------- Armor Section ---------- */
 .cs-armor-section {
   margin-top: 1.25rem;
@@ -447,12 +660,35 @@
   padding: 0.1rem 0;
 }
 
-/* Highlight tail slot subtly */
+/* Tail slot — full width with gold label */
 .cs-armor-slot--tail {
   border-top: 1px dashed var(--border);
   margin-top: 0.25rem;
   padding-top: 0.4rem;
-  grid-column: 1 / -1;   /* tail spans full width */
+  grid-column: 1 / -1;
+}
+.cs-armor-slot--tail .cs-armor-slot-label {
+  color: var(--accent-gold);
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+/* Wing slots — span full width, teal label */
+.cs-armor-slot--wing {
+  border-top: 1px dashed var(--border);
+  margin-top: 0.15rem;
+  padding-top: 0.35rem;
+  grid-column: span 1;
+}
+.cs-armor-slot--wing .cs-armor-slot-label {
+  color: var(--accent-teal);
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+/* First wing slot gets the top border, second shares the row */
+.cs-armor-slot--wing:first-of-type {
+  grid-column: 1;
 }
 
 .cs-armor-slot-label {
@@ -462,12 +698,6 @@
   width: 112px;
   flex-shrink: 0;
   white-space: nowrap;
-}
-
-.cs-armor-slot--tail .cs-armor-slot-label {
-  color: var(--accent-gold);
-  width: auto;
-  margin-right: 0.5rem;
 }
 
 .cs-armor-name {
@@ -518,6 +748,9 @@
 .cs-spell-slot.filled .cs-spell-name { color: var(--text-primary); font-style: normal; }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .cs-grandparents-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 1000px) {
   .cs-body { grid-template-columns: 1fr; }
   .cs-identity-grid { grid-template-columns: repeat(3, 1fr); }
@@ -527,4 +760,39 @@
   .cs-identity-grid { grid-template-columns: repeat(2, 1fr); }
   .cs-skills-grid { grid-template-columns: 1fr; }
   .cs-wells-grid { grid-template-columns: repeat(3, 1fr); }
+  .cs-grandparents-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Grandparent: penalty stat chip ---------- */
+.cs-trait-bonus-text--penalty {
+  color: #e07070;   /* soft red for negative bonuses */
+}
+
+.cs-trait-bonus-sep {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Grandparent: passive trait ---------- */
+.cs-trait-passive {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(88,152,232,0.06);
+  border: 1px solid rgba(88,152,232,0.2);
+  border-radius: var(--radius);
+}
+
+.cs-feature-rest--passive {
+  color: var(--text-muted);
+  border-color: rgba(88,88,120,0.4);
+  background: rgba(88,88,120,0.1);
+}
+
+/* ---------- Racial bonus: penalty variant ---------- */
+.cs-racial-bonus--penalty {
+  color: #e07070;
+  background: rgba(224,112,112,0.12);
+  border-color: rgba(224,112,112,0.3);
 }

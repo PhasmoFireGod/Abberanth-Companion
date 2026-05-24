@@ -20,7 +20,7 @@
     <!-- Skill slider -->
     <div class="dp-skill-row">
       <span class="dp-skill-label">Skill</span>
-      <input type="range" id="skill-slider" min="0" max="10" value="0" step="1" />
+      <input type="range" id="skill-slider" min="0" max="70" value="0" step="1" />
       <span id="skill-value" class="dp-skill-badge">0</span>
     </div>
 
@@ -120,13 +120,27 @@
     const s     = getSkill();
     const stats = Dice.getPoolStats(s);
 
-    document.getElementById('skill-value').textContent  = s;
-    document.getElementById('pi-pool').textContent      = `${stats.poolSize}d10`;
-    document.getElementById('pi-keep').textContent      = `Keep ${stats.keepCount}`;
-    document.getElementById('pi-bonus').textContent     = stats.bonus > 0 ? `+${stats.bonus} bonus` : 'No bonus';
-    document.getElementById('pi-explode').textContent   = stats.canExplode ? '10s explode 💥' : 'No explosions';
+    document.getElementById('skill-value').textContent = s;
 
+    // Pool chip — note when pool is capped
+    const poolLabel = stats.poolSize === 10 && s > 10
+      ? `10d10 (capped)`
+      : `${stats.poolSize}d10`;
+    document.getElementById('pi-pool').textContent = poolLabel;
+
+    // Keep chip
+    const keepLabel = stats.keepCount === stats.poolSize
+      ? `Keep all ${stats.keepCount}`
+      : `Keep ${stats.keepCount} of ${stats.poolSize}`;
+    document.getElementById('pi-keep').textContent = keepLabel;
+
+    // Bonus chip
+    document.getElementById('pi-bonus').textContent =
+      stats.bonus > 0 ? `+${stats.bonus} flat bonus` : 'No bonus';
+
+    // Explode chip
     const explodeChip = document.getElementById('pi-explode');
+    explodeChip.textContent = stats.canExplode ? '10s explode 💥' : 'No explosions';
     explodeChip.classList.toggle('dp-chip-explode--on', stats.canExplode);
   }
 
@@ -134,7 +148,7 @@
      Roll
   ---------------------------------------------------------- */
   function doRoll() {
-    const skill          = getSkill();
+    const skill           = getSkill();
     const { dice, stats } = Dice.rollPool(skill);
 
     currentDice  = dice;
@@ -142,9 +156,9 @@
     keptIndices  = new Set();
 
     renderGrid();
-    applyAutoSelect('high');   // default to keep-high; also calls renderTotal
+    applyAutoSelect('high');   // default keep-high; also calls renderTotal
 
-    // Record history right after the auto-select
+    // Record history after auto-select
     const total = Dice.calcTotal(currentDice, keptIndices, currentStats.bonus);
     pushHistory(skill, total);
 
@@ -164,9 +178,8 @@
       card.dataset.idx = i;
       card.addEventListener('click', () => toggleKeep(i));
 
-      // Build chain HTML
+      // Chain display: exploding 10s shown in orange, final roll in normal colour
       const chainHtml = die.chain.map((n, ci) => {
-        // A 10 that IS the last element was the stopping roll — don't mark it as exploding
         const isExplodingTen = (n === 10 && ci < die.chain.length - 1);
         return `<span class="${isExplodingTen ? 'chain-ten' : 'chain-n'}">${n}</span>`;
       }).join('<span class="chain-sep">+</span>');
@@ -174,7 +187,9 @@
       card.innerHTML = `
         <div class="dp-die-total">${die.total}</div>
         <div class="dp-die-chain">${chainHtml}</div>
-        ${die.exploded ? '<div class="dp-die-boom">💥</div>' : '<div class="dp-die-boom dp-die-boom--hidden"></div>'}
+        ${die.exploded
+          ? '<div class="dp-die-boom">💥</div>'
+          : '<div class="dp-die-boom dp-die-boom--hidden"></div>'}
         <div class="dp-die-tick">✓ kept</div>
       `;
 
@@ -194,7 +209,7 @@
     } else if (keptIndices.size < currentStats.keepCount) {
       keptIndices.add(idx);
     }
-    // At max-kept: clicking an unkept die does nothing (player must deselect one first)
+    // At max-kept, clicking an unkept die does nothing until one is deselected
     refreshKept();
     renderTotal();
     updateKeepHint();
@@ -216,7 +231,7 @@
 
   function updateKeepHint() {
     if (!currentStats) return;
-    const rem = currentStats.keepCount - keptIndices.size;
+    const rem  = currentStats.keepCount - keptIndices.size;
     const hint = document.getElementById('keep-hint');
     if (rem === 0) {
       hint.textContent = 'All kept';
@@ -242,7 +257,7 @@
       breakdown = 'Select dice to keep…';
     } else {
       breakdown = parts.join(' + ');
-      if (bonus > 0) breakdown += ` + ${bonus} (skill bonus)`;
+      if (bonus > 0) breakdown += ` + ${bonus} (flat bonus)`;
       breakdown += ' =';
     }
 
@@ -268,15 +283,20 @@
   document.addEventListener('DOMContentLoaded', init);
 
   /* ----------------------------------------------------------
-     Public API — used by character-sheet.js
+     Public API — used by character-sheet.js dice buttons
   ---------------------------------------------------------- */
   window.DiceUI = {
     open: openModal,
-    /** Open the roller pre-set to a specific skill level (0–10) */
+    /**
+     * Open the roller pre-set to a specific skill level.
+     * No upper cap — skills can exceed 10 with wells, buffs, etc.
+     */
     openWithSkill(level) {
       const slider = document.getElementById('skill-slider');
       if (!slider) return;
-      slider.value = Math.max(0, Math.min(10, Math.floor(Number(level) || 0)));
+      // Clamp to slider range but don't cap at 10 anymore
+      const max = parseInt(slider.max, 10);
+      slider.value = Math.max(0, Math.min(max, Math.floor(Number(level) || 0)));
       refreshPoolInfo();
       openModal();
     },
