@@ -6,6 +6,80 @@
   <title>Player Characters — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ---- Character card actions ---- */
+    .char-card-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .char-card-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .char-action-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.3rem 0.4rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .char-action-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+    .char-action-btn.dead-btn:hover  { border-color: #c078e0; color: #c078e0; }
+    .char-action-btn.delete-btn:hover { border-color: #c02850; color: #c02850; }
+    .char-action-btn.revive-btn:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+
+    /* Dead character card styling */
+    .card.is-dead {
+      opacity: 0.6;
+      border-color: #c02850;
+      filter: saturate(0.4);
+    }
+    .card.is-dead:hover {
+      opacity: 0.85;
+      filter: saturate(0.6);
+    }
+
+    .char-dead-banner {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #c02850;
+      margin-bottom: 0.2rem;
+    }
+
+    /* DM player section header */
+    .dm-player-header {
+      grid-column: 1 / -1;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.75rem 0 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.25rem;
+    }
+
+    /* New character card */
+    .new-char-card {
+      border-style: dashed;
+      opacity: 0.7;
+      transition: all var(--transition);
+    }
+    .new-char-card:hover { opacity: 1; border-color: var(--accent-purple); }
+  </style>
 </head>
 <body>
   <aside id="sidebar">
@@ -23,7 +97,7 @@
       <a href="monsters.html"><span class="nav-icon">🐉</span> Monsters</a>
       <span class="nav-section-label">Characters</span>
       <a href="characters.html"><span class="nav-icon">⚔️</span> Player Characters</a>
-      <a href="character-sheet.html"><span class="nav-icon">📋</span> Character Sheet</a>
+      <a href="character-sheet.html?new=1"><span class="nav-icon">📋</span> New Character</a>
     </nav>
     <button id="dice-trigger">🎲 Roll Dice</button>
     <div id="sidebar-footer">
@@ -37,7 +111,6 @@
       <h1 id="page-title">⚔️ Player Characters</h1>
       <p class="page-subtitle" id="page-subtitle">Loading…</p>
     </header>
-
     <div id="player-list" class="card-grid"></div>
   </main>
 
@@ -62,24 +135,122 @@
       return `${Math.floor(h / 24)}d ago`;
     }
 
-    window.onAuthReady(async (user) => {
+    function sheetsCol(uid) {
+      return window._db.collection('users').doc(uid).collection('sheets');
+    }
+
+    /* ----------------------------------------------------------
+       Mark a character as dead or alive
+    ---------------------------------------------------------- */
+    async function setDead(uid, charId, isDead, wrapEl) {
+      try {
+        await sheetsCol(uid).doc(charId).update({ dead: isDead });
+        // Re-render the whole list to reflect the change
+        renderList();
+      } catch (e) {
+        alert('Could not update character: ' + e.message);
+      }
+    }
+
+    /* ----------------------------------------------------------
+       Delete a character permanently
+    ---------------------------------------------------------- */
+    async function deleteChar(uid, charId, name) {
+      if (!confirm(`Permanently delete "${name || 'this character'}"? This cannot be undone.`)) return;
+      try {
+        await sheetsCol(uid).doc(charId).delete();
+        renderList();
+      } catch (e) {
+        alert('Could not delete character: ' + e.message);
+      }
+    }
+
+    /* ----------------------------------------------------------
+       Build a character card + action buttons
+    ---------------------------------------------------------- */
+    function makeCharCard(uid, charId, data, sheetHref) {
+      const isDead      = !!data.dead;
+      const charName    = data.charName || 'Unnamed Character';
+      const subLine     = [data.race, data.level != null ? `Level ${data.level}` : ''].filter(Boolean).join(' · ');
+      const savedLine   = data.savedAt ? `Saved ${timeAgo(data.savedAt)}` : 'Not yet saved';
+
+      // Outer wrapper (not a link so buttons inside work)
+      const wrap = document.createElement('div');
+      wrap.className = 'char-card-wrap';
+
+      // The card itself is a link
+      const card = document.createElement('a');
+      card.className = 'card' + (isDead ? ' is-dead' : '');
+      card.href      = sheetHref;
+      card.innerHTML = `
+        ${isDead ? '<div class="char-dead-banner">💀 Deceased</div>' : ''}
+        <div class="card-icon">${isDead ? '💀' : (data.charName ? '⚔️' : '📋')}</div>
+        <h3>${charName}</h3>
+        ${subLine ? `<p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.2rem;">${subLine}</p>` : ''}
+        <p style="font-size:0.75rem;color:var(--text-muted);">${savedLine}</p>
+        <div class="card-meta">
+          <span class="badge ${isDead ? 'badge-red' : 'badge-purple'}">${isDead ? 'Deceased' : 'Character'}</span>
+          <span style="margin-left:auto;font-size:0.7rem;color:var(--text-muted);">Open Sheet →</span>
+        </div>
+      `;
+      wrap.appendChild(card);
+
+      // Action buttons below the card
+      const actions = document.createElement('div');
+      actions.className = 'char-card-actions';
+
+      if (isDead) {
+        const reviveBtn = document.createElement('button');
+        reviveBtn.className   = 'char-action-btn revive-btn';
+        reviveBtn.textContent = '✦ Mark Alive';
+        reviveBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setDead(uid, charId, false, wrap);
+        });
+        actions.appendChild(reviveBtn);
+      } else {
+        const deadBtn = document.createElement('button');
+        deadBtn.className   = 'char-action-btn dead-btn';
+        deadBtn.textContent = '☠ Mark Dead';
+        deadBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setDead(uid, charId, true, wrap);
+        });
+        actions.appendChild(deadBtn);
+      }
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className   = 'char-action-btn delete-btn';
+      deleteBtn.textContent = '🗑 Delete';
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteChar(uid, charId, data.charName);
+      });
+      actions.appendChild(deleteBtn);
+
+      wrap.appendChild(actions);
+      return wrap;
+    }
+
+    /* ----------------------------------------------------------
+       Main render function
+    ---------------------------------------------------------- */
+    async function renderList() {
       const listEl     = document.getElementById('player-list');
       const subtitleEl = document.getElementById('page-subtitle');
+      listEl.innerHTML = '';
 
       if (window.isDM) {
-        /* ---- DM view: show all players ---- */
+        /* ---- DM view: all players and all their characters ---- */
         subtitleEl.textContent = '🎭 DM view — all registered players';
 
         try {
-          const snap    = await window._db.collection('players').get();
+          const snap     = await window._db.collection('players').get();
           const dmEmails = (SITE_CONFIG.dmEmails || []).map(e => e.toLowerCase());
           const players  = [];
-
           snap.forEach(doc => {
             const d = doc.data();
-            if (!dmEmails.includes((d.email || '').toLowerCase())) {
-              players.push(d);
-            }
+            if (!dmEmails.includes((d.email || '').toLowerCase())) players.push({ id: doc.id, ...d });
           });
 
           if (players.length === 0) {
@@ -87,78 +258,114 @@
             return;
           }
 
-          players.forEach(p => {
-            // Use saved character name if available, fall back to email
-            const displayName = p.charName || '(No character saved)';
-            const subLine     = p.charName
-              ? [p.race, p.level != null ? `Level ${p.level}` : ''].filter(Boolean).join(' · ')
-              : p.email;
+          for (const p of players) {
+            // Section header per player
+            const header = document.createElement('div');
+            header.className   = 'dm-player-header';
+            header.textContent = `👤 ${p.email}`;
+            listEl.appendChild(header);
 
-            const card = document.createElement('a');
-            card.className = 'card';
-            card.href      = `character-sheet.html?uid=${p.uid}`;
-            card.innerHTML = `
-              <div class="card-icon">${p.charName ? '⚔️' : '👤'}</div>
-              <h3>${displayName}</h3>
-              <p style="font-size:0.78rem; color:var(--text-muted);">${subLine}</p>
-              <p>Last seen: ${timeAgo(p.lastSeen)}</p>
-              <div class="card-meta">
-                <span class="badge badge-purple">Player</span>
-                <span style="margin-left:auto; font-size:0.7rem; color:var(--text-muted);">Open Sheet →</span>
-              </div>
-            `;
-            listEl.appendChild(card);
-          });
+            try {
+              const charSnap = await sheetsCol(p.uid || p.id)
+                .orderBy('savedAt', 'desc')
+                .get();
+
+              if (charSnap.empty) {
+                const none = document.createElement('p');
+                none.className   = 'text-muted';
+                none.style.cssText = 'font-size:0.8rem;grid-column:1/-1;margin-bottom:0.5rem;';
+                none.textContent = 'No characters saved yet.';
+                listEl.appendChild(none);
+              } else {
+                charSnap.forEach(doc => {
+                  const sheetHref = `character-sheet.html?uid=${p.uid || p.id}&char=${doc.id}`;
+                  listEl.appendChild(makeCharCard(p.uid || p.id, doc.id, doc.data(), sheetHref));
+                });
+              }
+            } catch (e) {
+              // orderBy may need an index — fall back to unordered
+              try {
+                const charSnap2 = await sheetsCol(p.uid || p.id).get();
+                charSnap2.forEach(doc => {
+                  const sheetHref = `character-sheet.html?uid=${p.uid || p.id}&char=${doc.id}`;
+                  listEl.appendChild(makeCharCard(p.uid || p.id, doc.id, doc.data(), sheetHref));
+                });
+              } catch (e2) {
+                const errEl = document.createElement('p');
+                errEl.className   = 'text-muted';
+                errEl.textContent = 'Could not load characters.';
+                listEl.appendChild(errEl);
+              }
+            }
+          }
 
         } catch (e) {
           listEl.innerHTML = `<p class="text-muted">Could not load players: ${e.message}</p>`;
         }
 
       } else {
-        /* ---- Player view: load their sheet and show a real card ---- */
-        subtitleEl.textContent = 'Your character for Abberanth.';
-
-        let charName = '';
-        let race     = '';
-        let level    = 0;
-        let hasSaved = false;
+        /* ---- Player view: their own characters ---- */
+        subtitleEl.textContent = 'Your characters for Abberanth.';
 
         try {
-          const snap = await window._db
-            .collection('users').doc(user.uid)
-            .collection('sheets').doc('main')
+          const charSnap = await sheetsCol(window._auth.currentUser.uid)
+            .orderBy('savedAt', 'desc')
             .get();
 
-          if (snap.exists) {
-            const data = snap.data();
-            charName = data.charName || '';
-            race     = data.race     || '';
-            level    = data.level    || 0;
-            hasSaved = true;
+          if (charSnap.empty) {
+            // No characters yet — show a create card
+            const a = document.createElement('a');
+            a.className = 'card new-char-card';
+            a.href      = 'character-sheet.html?new=1';
+            a.innerHTML = `
+              <div class="card-icon">➕</div>
+              <h3>Create Your Character</h3>
+              <p>Build your first character for Abberanth.</p>
+              <div class="card-meta"><span class="badge badge-gold">Create</span></div>
+            `;
+            listEl.appendChild(a);
+            return;
           }
+
+          const uid = window._auth.currentUser.uid;
+          charSnap.forEach(doc => {
+            listEl.appendChild(makeCharCard(uid, doc.id, doc.data(), `character-sheet.html?char=${doc.id}`));
+          });
+
+          // New character card at the end
+          const newWrap = document.createElement('div');
+          newWrap.className = 'char-card-wrap';
+          const newCard = document.createElement('a');
+          newCard.className = 'card new-char-card';
+          newCard.href      = 'character-sheet.html?new=1';
+          newCard.innerHTML = `
+            <div class="card-icon">➕</div>
+            <h3>New Character</h3>
+            <p>Start building another character.</p>
+            <div class="card-meta"><span class="badge badge-gold">Create</span></div>
+          `;
+          newWrap.appendChild(newCard);
+          listEl.appendChild(newWrap);
+
         } catch (e) {
-          console.warn('Could not load sheet for card:', e);
+          // Fall back gracefully if index doesn't exist yet
+          try {
+            const uid       = window._auth.currentUser.uid;
+            const charSnap2 = await sheetsCol(uid).get();
+            charSnap2.forEach(doc => {
+              listEl.appendChild(makeCharCard(uid, doc.id, doc.data(), `character-sheet.html?char=${doc.id}`));
+            });
+          } catch (e2) {
+            listEl.innerHTML = `<p class="text-muted">Could not load characters: ${e2.message}</p>`;
+          }
         }
-
-        const displayName = charName || 'Unnamed Character';
-        const subLine     = [race, `Level ${level}`].filter(Boolean).join(' · ');
-        const hint        = hasSaved
-          ? 'Open to roll dice, edit stats, and track combat.'
-          : 'Head to the Character Sheet to build your character, then hit Save.';
-
-        listEl.innerHTML = `
-          <a class="card" href="character-sheet.html">
-            <div class="card-icon">${hasSaved && charName ? '⚔️' : '📋'}</div>
-            <h3>${displayName}</h3>
-            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.25rem;">${subLine}</p>
-            <p>${hint}</p>
-            <div class="card-meta">
-              <span class="badge badge-purple">Character</span>
-              <span style="margin-left:auto; font-size:0.7rem; color:var(--text-muted);">Open Sheet →</span>
-            </div>
-          </a>
-        `;
       }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      window.onAuthReady(async (user) => {
+        await renderList();
+      });
     });
   </script>
 </body>
