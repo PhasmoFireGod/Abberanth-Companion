@@ -117,9 +117,9 @@
     },
   ];
 
-  /** Spell slots = floor(manMax / 4), minimum 0 */
+  /** Spell slots = floor(manMax / 4) + 1 */
   function calcSpellSlots() {
-    return Math.max(0, Math.floor((state.manMax || 0) / 4));
+    return Math.floor((state.manMax || 0) / 4) + 1;
   }
 
   /** Return spells the player currently qualifies to use */
