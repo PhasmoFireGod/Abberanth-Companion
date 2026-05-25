@@ -84,19 +84,19 @@
         <div class="cs-field">
           <label for="cs-level">Level</label>
           <input id="cs-level" class="cs-text-input"
-            type="number" min="0" value="0"
+            type="number" value="0"
             data-type="identity" data-key="level" />
         </div>
         <div class="cs-field">
           <label for="cs-exp">EXP</label>
           <input id="cs-exp" class="cs-text-input"
-            type="number" min="0" value="0"
+            type="number" value="0"
             data-type="identity" data-key="exp" />
         </div>
         <div class="cs-field">
           <label for="cs-exp-next">EXP to Next LV</label>
           <input id="cs-exp-next" class="cs-text-input"
-            type="number" min="0" value="10"
+            type="number" value="10"
             data-type="identity" data-key="expToNext" />
         </div>
       </div>
@@ -178,7 +178,7 @@
           <!-- Each row: name | input | dice btn | = | total -->
           <div class="cs-attr-row">
             <span class="cs-attr-name">Strength</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Strength" />
             <button class="cs-dice-btn" data-level="0" title="Roll Strength (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -186,7 +186,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Speed</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Speed" />
             <button class="cs-dice-btn" data-level="0" title="Roll Speed (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -194,7 +194,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Constitution</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Constitution" />
             <button class="cs-dice-btn" data-level="0" title="Roll Constitution (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -202,7 +202,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Wisdom</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Wisdom" />
             <button class="cs-dice-btn" data-level="0" title="Roll Wisdom (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -210,7 +210,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Intelligence</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Intelligence" />
             <button class="cs-dice-btn" data-level="0" title="Roll Intelligence (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -218,7 +218,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Charisma</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Charisma" />
             <button class="cs-dice-btn" data-level="0" title="Roll Charisma (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -226,7 +226,7 @@
           </div>
           <div class="cs-attr-row">
             <span class="cs-attr-name">Willpower</span>
-            <input type="number" class="cs-num-input" min="0" value="0"
+            <input type="number" class="cs-num-input" value="0"
               data-type="attr" data-key="Willpower" />
             <button class="cs-dice-btn" data-level="0" title="Roll Willpower (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
@@ -247,7 +247,7 @@
               <span class="cs-resource-sep cs-resource-dot">·</span>
               <span class="cs-resource-pts-label">pts</span>
               <input type="number" id="cs-hp-pts" class="cs-num-input"
-                min="0" max="10" value="0"
+                max="100" value="0"
                 data-type="res-max" data-key="hpMax" />
             </div>
           </div>
@@ -260,7 +260,7 @@
               <span class="cs-resource-sep cs-resource-dot">·</span>
               <span class="cs-resource-pts-label">pts</span>
               <input type="number" id="cs-man-pts" class="cs-num-input"
-                min="0" max="10" value="0"
+                max="100" value="0"
                 data-type="res-max" data-key="manMax" />
             </div>
           </div>
@@ -273,7 +273,7 @@
               <span class="cs-resource-sep cs-resource-dot">·</span>
               <span class="cs-resource-pts-label">pts</span>
               <input type="number" id="cs-stam-pts" class="cs-num-input"
-                min="0" max="10" value="0"
+                max="100" value="0"
                 data-type="res-max" data-key="stamMax" />
             </div>
           </div>
@@ -292,27 +292,18 @@
             <span id="cs-status-badge" class="cs-status-badge">—</span>
           </div>
 
-          <div class="cs-section-title" style="margin-top:0.75rem;">Battle</div>
+          <div class="cs-section-title" style="margin-top:0.75rem;">
+            Battle
+            <span class="cs-section-note">— Speed ÷ 4 · Strength ÷ 4</span>
+          </div>
           <div class="cs-battle-grid">
             <div class="cs-battle-item">
-              <label for="cs-moves">Moves</label>
-              <input type="number" id="cs-moves" class="cs-num-input wide"
-                min="0" value="1" data-type="combat" data-key="moves" />
+              <label>Moves</label>
+              <span id="cs-moves" class="cs-battle-derived">0</span>
             </div>
             <div class="cs-battle-item">
-              <label for="cs-attacks">Attacks</label>
-              <input type="number" id="cs-attacks" class="cs-num-input wide"
-                min="0" value="1" data-type="combat" data-key="attacks" />
-            </div>
-            <div class="cs-battle-item">
-              <label for="cs-per-turn">Per Turn</label>
-              <input type="number" id="cs-per-turn" class="cs-num-input wide"
-                min="0" value="1" data-type="combat" data-key="perTurn" />
-            </div>
-            <div class="cs-battle-item">
-              <label for="cs-used-turn">Used</label>
-              <input type="number" id="cs-used-turn" class="cs-num-input wide"
-                min="0" value="0" data-type="combat" data-key="usedTurn" />
+              <label>Attacks</label>
+              <span id="cs-attacks" class="cs-battle-derived">0</span>
             </div>
           </div>
 
@@ -323,22 +314,22 @@
           <div class="cs-injury-row">
             <span class="cs-injury-label common">Common</span>
             <input type="number" id="cs-inj-common" class="cs-num-input wide"
-              min="0" value="0" data-type="injury" data-key="injCommon" />
+              value="0" data-type="injury" data-key="injCommon" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label harsh">Harsh</span>
             <input type="number" id="cs-inj-harsh" class="cs-num-input wide"
-              min="0" value="0" data-type="injury" data-key="injHarsh" />
+              value="0" data-type="injury" data-key="injHarsh" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label critical">Critical</span>
             <input type="number" id="cs-inj-critical" class="cs-num-input wide"
-              min="0" value="0" data-type="injury" data-key="injCritical" />
+              value="0" data-type="injury" data-key="injCritical" />
           </div>
           <div class="cs-injury-row">
             <span class="cs-injury-label fatal">Fatal</span>
             <input type="number" id="cs-inj-fatal" class="cs-num-input wide"
-              min="0" value="0" data-type="injury" data-key="injFatal" />
+              value="0" data-type="injury" data-key="injFatal" />
           </div>
 
           <div class="cs-section-title" style="margin-top:0.75rem;">Special Feature</div>
@@ -429,7 +420,7 @@
         </div>
         <div class="cs-cast-cost-block">
           <span class="cs-cast-cost-label">Extra mana</span>
-          <input type="number" id="cs-cast-extra" class="cs-cast-extra-input" min="0" value="0" />
+          <input type="number" id="cs-cast-extra" class="cs-cast-extra-input" value="0" />
         </div>
         <div class="cs-cast-cost-block">
           <span class="cs-cast-cost-label">Total cost</span>

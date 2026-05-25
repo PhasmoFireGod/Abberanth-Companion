@@ -1377,3 +1377,14 @@
   border: 1px solid var(--border);
   color: var(--text-muted);
 }
+
+/* ---------- Derived Battle Stats ---------- */
+.cs-battle-derived {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  line-height: 1;
+  display: block;
+  margin-top: 0.1rem;
+}

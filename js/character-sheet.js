@@ -243,6 +243,18 @@
     if (el) el.textContent = calcAC();
   }
 
+  function updateBattleStats() {
+    const moves   = Math.floor(calcEffectiveAttr('Speed')    / 4);
+    const attacks = Math.floor(calcEffectiveAttr('Strength') / 4);
+    const movesEl   = document.getElementById('cs-moves');
+    const attacksEl = document.getElementById('cs-attacks');
+    if (movesEl)   movesEl.textContent   = moves;
+    if (attacksEl) attacksEl.textContent = attacks;
+    // Keep state in sync for saves
+    state.moves   = moves;
+    state.attacks = attacks;
+  }
+
   /* ----------------------------------------------------------
      Status thresholds
   ---------------------------------------------------------- */
@@ -725,7 +737,7 @@
         row.className = 'cs-skill-row';
         row.innerHTML = `
           <span class="cs-skill-name" title="${skill}">${skill}</span>
-          <input type="number" class="cs-num-input" min="0" value="${val}"
+          <input type="number" class="cs-num-input" value="${val}"
             data-type="skill" data-cat="${cat}" data-skill="${skill}" />
           ${isPhysical ? `
             <label class="cs-effort-label" title="Effort: adds +⌈STR/2⌉ to roll, costs 1 stamina">
@@ -1059,7 +1071,7 @@
       row.innerHTML = `
         <span class="cs-armor-slot-label">${slotDef.label}</span>
         <select class="cs-select cs-armor-name" data-type="armor" data-slot="${slotDef.key}" data-field="name">${optsHtml}</select>
-        <input type="number" class="cs-num-input cs-armor-value" min="0" value="${slot.value || 0}"
+        <input type="number" class="cs-num-input cs-armor-value" value="${slot.value || 0}"
           data-type="armor" data-slot="${slotDef.key}" data-field="value" />
       `;
       row.querySelector('select').value = slot.name || '';
@@ -1078,7 +1090,7 @@
       item.innerHTML = `
         <div class="cs-well-label">${well}</div>
         <div class="cs-well-controls">
-          <input type="number" class="cs-num-input" min="0" value="${val}"
+          <input type="number" class="cs-num-input" value="${val}"
             data-type="well" data-well="${well}" />
           <button class="cs-dice-btn" data-level="${val}" title="Roll ${well} well (skill ${val})">🎲</button>
         </div>
@@ -1115,8 +1127,8 @@
     const tailedEl = document.getElementById('cs-tailed'); if (tailedEl) tailedEl.checked = !!state.tailedRace;
     const wingedEl = document.getElementById('cs-winged'); if (wingedEl) wingedEl.checked = !!state.wingedRace;
 
-    set('cs-moves',        state.moves);    set('cs-attacks',      state.attacks);
-    set('cs-used-turn',    state.usedTurn); set('cs-per-turn',     state.perTurn);
+    updateBattleStats();
+
     set('cs-inj-common',   state.injCommon); set('cs-inj-harsh',   state.injHarsh);
     set('cs-inj-critical', state.injCritical); set('cs-inj-fatal', state.injFatal);
     set('cs-special',      state.specialFeature);
@@ -1173,7 +1185,7 @@
     let   numVal = parseInt(rawVal, 10);
     if (isNaN(numVal)) numVal = 0;
     if (el.type === 'number') {
-      const lo = el.min !== '' ? parseInt(el.min, 10) : 0;
+      const lo = el.min !== '' ? parseInt(el.min, 10) : -Infinity;
       const hi = el.max !== '' ? parseInt(el.max, 10) : Infinity;
       numVal = Math.max(lo, Math.min(hi, numVal));
       el.value = numVal;
@@ -1184,6 +1196,7 @@
         state.attrs[el.dataset.key] = numVal;
         syncDiceBtn(el, numVal); updateAttrTotals();
         if (el.dataset.key === 'Constitution') updateACDisplay();
+        if (el.dataset.key === 'Speed' || el.dataset.key === 'Strength') updateBattleStats();
         break;
       case 'skill':
         if (!state.skills[el.dataset.cat]) state.skills[el.dataset.cat] = {};
@@ -1213,7 +1226,7 @@
           const key = _featureKey(el.dataset.slot, trait.name);
           if (state.featureUses[key] === undefined) state.featureUses[key] = trait.maxUses;
         }
-        buildGrandparents(); updateACDisplay(); break;
+        buildGrandparents(); updateACDisplay(); updateBattleStats(); break;
       }
       case 'identity':
         state[el.dataset.key] = rawVal;
@@ -1392,7 +1405,7 @@
       await loadState(user);
       showDMBanner();
       buildSkills(); buildWells(); buildArmorSlots(); buildGrandparents(); buildSpells(); buildInventory();
-      renderFields(); bindEvents(); refreshPoints(); updateACDisplay();
+      renderFields(); bindEvents(); refreshPoints(); updateACDisplay(); updateBattleStats();
 
       // Spell picker close
       document.getElementById('spell-picker-close')?.addEventListener('click', closeSpellPicker);
