@@ -148,6 +148,13 @@
                 <span class="cs-rest-option-desc">Restore stamina to full</span>
               </span>
             </label>
+            <label class="cs-rest-option cs-rest-option--long-only" data-res="will" style="display:none;">
+              <input type="checkbox" value="will" />
+              <span class="cs-rest-option-label">
+                <span class="cs-rest-option-name will">🔮 Willpower</span>
+                <span class="cs-rest-option-desc">Restore all spent Willpower</span>
+              </span>
+            </label>
           </div>
           <div class="cs-rest-panel-actions">
             <button class="cs-rest-cancel-btn" id="cs-rest-cancel">Cancel</button>
@@ -231,6 +238,10 @@
             <button class="cs-dice-btn" data-level="0" title="Roll Willpower (skill 0)">🎲</button>
             <span class="cs-attr-eq">=</span>
             <span class="cs-attr-total" id="cs-attr-total-Willpower">0</span>
+            <span class="cs-will-sep">·</span>
+            <button class="cs-will-btn cs-will-spend-btn" id="cs-will-spend" title="Spend 1 Willpower">−</button>
+            <span class="cs-will-cur" id="cs-will-cur">0</span>
+            <span class="cs-will-label">left</span>
           </div>
         </section>
 

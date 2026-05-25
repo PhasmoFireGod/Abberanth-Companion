@@ -51,6 +51,67 @@
       D: { type: 'passive', name: 'Flight', desc: 'You can fly at speed.' },
     },
 
+    Felinataur: {
+      label: 'Felinataur (Maine Coon)',
+      A: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
+      B: { type: 'passive', name: 'One with the Forest',
+           desc: 'You thrive in the forest. You roll, keep, or add 5 to rolls made in the forest. Nature rolls are auto-won — no roll needed.' },
+      C: { type: 'stat_bonus', attr: 'Speed', value: 1 },
+      D: { type: 'passive', name: 'Claws',
+           desc: 'You have claws and can use them as a Melee attack in addition to Brawl.' },
+    },
+
+    Gearkind: {
+      label: 'Gearkind',
+      A: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+      B: { type: 'passive', name: 'Sensory Deprivation',
+           desc: 'You do not physically feel pain. You do not gain penalties when injured.' },
+      C: { type: 'stat_bonus', attr: 'Strength', value: 1 },
+      D: { type: 'feature', name: 'Adaptability', restType: 'long', maxUses: 3,
+           desc: 'Reroll any skill check. Can be used up to 3 times per long rest.' },
+    },
+
+    Human: {
+      label: 'Human',
+      A: { type: 'multi_stat', stats: [{ attr: 'Strength', value: -1 }, { attr: 'Willpower', value: 2 }] },
+      B: { type: 'feature', name: 'Resolve', restType: 'combat', maxUses: 1,
+           desc: 'Reroll a failed Willpower check once per combat.' },
+      C: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+      D: { type: 'feature', name: 'Adaptability', restType: 'long', maxUses: 3,
+           desc: 'Reroll any skill check. Can be used up to 3 times per long rest.' },
+    },
+
+    Mimic: {
+      label: 'Mimic',
+      A: { type: 'stat_bonus', attr: 'Speed', value: 1 },
+      B: { type: 'feature', name: 'Abberkin', restType: 'short', maxUses: 1,
+           desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.' },
+      C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+      D: { type: 'dual_feature', name: 'Shift',
+           maxUsesLong: 3, maxUsesShort: 3,
+           desc: 'You can transform into something or someone perfectly (3 times per long rest) or perform an imperfect shift with tells (3 times per short rest). Staying in a shift longer than 24 hours may cause you to develop a shell.' },
+    },
+
+    Not: {
+      label: 'Not',
+      A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+      B: { type: 'feature', name: 'Abberkin', restType: 'short', maxUses: 1,
+           desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.' },
+      C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+      D: { type: 'feature', name: 'A Little Off', restType: 'daily', maxUses: 3,
+           desc: 'You are a shapeshifter but your form, finalized or otherwise, always has tells — a second mouth, an extra eye — always hidden somewhere. You can shift what bits you can shift 3 times per day.' },
+    },
+
+    Unicorn: {
+      label: 'Unicorn',
+      A: { type: 'multi_stat', stats: [{ attr: 'Speed', value: 2 }, { attr: 'Wisdom', value: -1 }] },
+      B: { type: 'passive', name: 'Stab',
+           desc: 'You have a natural stabbing implement rolled with your Weapon (One-Handed) skill with advantage (+1 rolled die).' },
+      C: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
+      D: { type: 'feature', name: 'Vibe Check', restType: 'daily', maxUses: 3,
+           desc: 'Boost your Insight check by +5. Usable 3 times per day.' },
+    },
+
   };
 
   /* ----------------------------------------------------------
@@ -295,7 +356,7 @@
       grandparents: { A: '', B: '', C: '', D: '' },
       featureUses: {},
       hpMax: 0, manMax: 0, stamMax: 0,
-      manaSpent: 0, stamSpent: 0,
+      manaSpent: 0, stamSpent: 0, willSpent: 0,
       ac: 10, status: 'Perfect',
       moves: 1, attacks: 1, usedTurn: 0, perTurn: 1,
       injCommon: 0, injHarsh: 0, injCritical: 0, injFatal: 0,
@@ -552,6 +613,7 @@
   function calcHpCur()              { return Math.max(0, calcResourceMax(state.hpMax) - calcInjuryDamage()); }
   function calcManCur()             { return Math.max(0, calcResourceMax(state.manMax) - (state.manaSpent||0)); }
   function calcStamCur()            { return Math.max(0, calcResourceMax(state.stamMax) - (state.stamSpent||0)); }
+  function calcWillCur()            { return (state.attrs?.Willpower || 0) + calcRacialBonus('Willpower') - (state.willSpent||0); }
 
   function updateResourceCalc(key, pts) {
     const calcIds = { hpMax: 'cs-hp-calc', manMax: 'cs-man-calc', stamMax: 'cs-stam-calc' };
@@ -563,9 +625,11 @@
     const hpEl   = document.getElementById('cs-hp-cur');
     const manEl  = document.getElementById('cs-man-cur');
     const stamEl = document.getElementById('cs-stam-cur');
+    const willEl = document.getElementById('cs-will-cur');
     if (hpEl)   hpEl.textContent   = calcHpCur();
     if (manEl)  manEl.textContent  = calcManCur();
     if (stamEl) stamEl.textContent = calcStamCur();
+    if (willEl) willEl.textContent = calcWillCur();
     updateStatusBadge();
   }
 
@@ -694,6 +758,36 @@
             <div class="cs-feature-uses">
               <span class="cs-use-pips">${pips}</span>
               <button class="cs-use-btn" data-type="use-feature" data-slot="${slot}" data-feature="${trait.name}" data-uses-key="${usesKey}" ${remaining <= 0 ? 'disabled' : ''}>Use</button>
+            </div>
+          `;
+
+        } else if (trait.type === 'dual_feature') {
+          // Two independent use pools — one long rest, one short rest
+          const keyA = _featureKey(slot, trait.name + ':long');
+          const keyB = _featureKey(slot, trait.name + ':short');
+          const remA = state.featureUses?.[keyA] ?? trait.maxUsesLong;
+          const remB = state.featureUses?.[keyB] ?? trait.maxUsesShort;
+
+          const pipsA = Array.from({ length: trait.maxUsesLong }, (_, i) =>
+            `<span class="cs-use-pip ${i < remA ? 'cs-use-pip--filled' : 'cs-use-pip--spent'}"></span>`
+          ).join('');
+          const pipsB = Array.from({ length: trait.maxUsesShort }, (_, i) =>
+            `<span class="cs-use-pip cs-use-pip--short ${i < remB ? 'cs-use-pip--filled' : 'cs-use-pip--spent'}"></span>`
+          ).join('');
+
+          traitEl.className = 'cs-grandparent-trait cs-trait-feature';
+          traitEl.innerHTML = `
+            <div class="cs-feature-name">${trait.name}</div>
+            <div class="cs-feature-desc">${trait.desc}</div>
+            <div class="cs-feature-uses" style="margin-bottom:0.3rem;">
+              <span class="cs-feature-rest cs-feature-rest--long" style="margin-right:0.4rem;">long rest</span>
+              <span class="cs-use-pips">${pipsA}</span>
+              <button class="cs-use-btn" data-type="use-feature" data-slot="${slot}" data-feature="${trait.name}:long" data-uses-key="${keyA}" ${remA <= 0 ? 'disabled' : ''}>Use</button>
+            </div>
+            <div class="cs-feature-uses">
+              <span class="cs-feature-rest cs-feature-rest--short" style="margin-right:0.4rem;">short rest</span>
+              <span class="cs-use-pips">${pipsB}</span>
+              <button class="cs-use-btn" data-type="use-feature" data-slot="${slot}" data-feature="${trait.name}:short" data-uses-key="${keyB}" ${remB <= 0 ? 'disabled' : ''}>Use</button>
             </div>
           `;
         }
@@ -1151,6 +1245,15 @@
 
     document.getElementById('cs-inv-add-btn')?.addEventListener('click', addInventoryItem);
 
+    // Willpower spend button
+    document.getElementById('cs-will-spend')?.addEventListener('click', () => {
+      const cur = calcWillCur();
+      if (cur <= 0) return;
+      state.willSpent = (state.willSpent || 0) + 1;
+      updateResourceDisplays();
+      schedSave();
+    });
+
     // Cast modal
     document.getElementById('cs-cast-cancel')?.addEventListener('click',  closeCastModal);
     document.getElementById('cs-cast-confirm')?.addEventListener('click', confirmCast);
@@ -1197,6 +1300,7 @@
         syncDiceBtn(el, numVal); updateAttrTotals();
         if (el.dataset.key === 'Constitution') updateACDisplay();
         if (el.dataset.key === 'Speed' || el.dataset.key === 'Strength') updateBattleStats();
+        if (el.dataset.key === 'Willpower') updateResourceDisplays();
         break;
       case 'skill':
         if (!state.skills[el.dataset.cat]) state.skills[el.dataset.cat] = {};
@@ -1225,6 +1329,12 @@
         if (trait?.type === 'feature') {
           const key = _featureKey(el.dataset.slot, trait.name);
           if (state.featureUses[key] === undefined) state.featureUses[key] = trait.maxUses;
+        }
+        if (trait?.type === 'dual_feature') {
+          const keyA = _featureKey(el.dataset.slot, trait.name + ':long');
+          const keyB = _featureKey(el.dataset.slot, trait.name + ':short');
+          if (state.featureUses[keyA] === undefined) state.featureUses[keyA] = trait.maxUsesLong;
+          if (state.featureUses[keyB] === undefined) state.featureUses[keyB] = trait.maxUsesShort;
         }
         buildGrandparents(); updateACDisplay(); updateBattleStats(); break;
       }
@@ -1305,12 +1415,16 @@
     const title   = document.getElementById('cs-rest-panel-title');
     const hint    = document.getElementById('cs-rest-panel-hint');
     const confirm = document.getElementById('cs-rest-confirm');
+    const willOpt = document.querySelector('.cs-rest-option--long-only');
 
     title.textContent   = type === 'short' ? '🌙 Short Rest' : '☀️ Long Rest';
     hint.innerHTML      = type === 'short'
       ? 'Choose <strong>1</strong> resource to restore:'
       : 'Choose up to <strong>2</strong> resources to restore:';
     confirm.textContent = type === 'short' ? 'Take Short Rest' : 'Take Long Rest';
+
+    // Show Willpower only on long rest
+    if (willOpt) willOpt.style.display = type === 'long' ? 'flex' : 'none';
 
     // Clear previous selections
     document.querySelectorAll('#cs-rest-options input').forEach(cb => cb.checked = false);
@@ -1351,6 +1465,7 @@
     }
     if (checked.includes('mana'))  state.manaSpent = 0;
     if (checked.includes('stam'))  state.stamSpent = 0;
+    if (checked.includes('will'))  state.willSpent = 0;
 
     // Reset grandparent features based on rest type
     if (_restType === 'short') {
@@ -1370,28 +1485,36 @@
   window.CharSheet = {
     spendMana(cost)  { CharSheet_spendMana(cost); },
     spendStam(cost)  { state.stamSpent = Math.min(calcResourceMax(state.stamMax), (state.stamSpent||0)+cost); updateResourceDisplays(); schedSave(); },
-    restoreAll()     { state.manaSpent = 0; state.stamSpent = 0; updateResourceDisplays(); schedSave(); },
+    spendWill(cost)  {
+      const max = (state.attrs?.Willpower || 0) + calcRacialBonus('Willpower');
+      state.willSpent = Math.min(max, (state.willSpent||0)+cost);
+      updateResourceDisplays(); schedSave();
+    },
+    restoreAll()     { state.manaSpent = 0; state.stamSpent = 0; state.willSpent = 0; updateResourceDisplays(); schedSave(); },
     restoreMana()    { state.manaSpent = 0; updateResourceDisplays(); schedSave(); },
     restoreStam()    { state.stamSpent = 0; updateResourceDisplays(); schedSave(); },
+    restoreWill()    { state.willSpent = 0; updateResourceDisplays(); schedSave(); },
     shortRest() {
-      // Resets short-rest grandparent features only
-      // Resource restoration is handled by the rest modal
       for (const slot of ['A','B','C','D']) {
         const race = state.grandparents?.[slot]; if (!race) continue;
         const trait = GRANDPARENT_TRAITS[race]?.[slot];
-        if (trait?.type === 'feature' && trait.restType === 'short')
+        if (trait?.type === 'feature' && (trait.restType === 'short' || trait.restType === 'combat'))
           state.featureUses[_featureKey(slot, trait.name)] = trait.maxUses;
+        if (trait?.type === 'dual_feature')
+          state.featureUses[_featureKey(slot, trait.name + ':short')] = trait.maxUsesShort;
       }
       buildGrandparents(); schedSave();
     },
     longRest() {
-      // Resets all grandparent features only
-      // Resource restoration is handled by the rest modal
       for (const slot of ['A','B','C','D']) {
         const race = state.grandparents?.[slot]; if (!race) continue;
         const trait = GRANDPARENT_TRAITS[race]?.[slot];
         if (trait?.type === 'feature' && (trait.restType === 'long' || trait.restType === 'daily'))
           state.featureUses[_featureKey(slot, trait.name)] = trait.maxUses;
+        if (trait?.type === 'dual_feature') {
+          state.featureUses[_featureKey(slot, trait.name + ':long')]  = trait.maxUsesLong;
+          state.featureUses[_featureKey(slot, trait.name + ':short')] = trait.maxUsesShort;
+        }
       }
       buildGrandparents(); schedSave();
     },

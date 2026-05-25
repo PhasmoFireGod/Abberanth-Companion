@@ -1388,3 +1388,56 @@
   display: block;
   margin-top: 0.1rem;
 }
+
+/* ---------- Willpower Spend Row ---------- */
+.cs-will-sep {
+  font-size: 0.7rem;
+  color: var(--border-glow);
+  margin: 0 0.15rem;
+  flex-shrink: 0;
+}
+
+.cs-will-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.cs-will-spend-btn:hover { border-color: #c078e0; color: #c078e0; }
+
+.cs-will-cur {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #c078e0;
+  min-width: 1.2rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cs-will-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Willpower option in rest modal */
+.cs-rest-option-name.will { color: #c078e0; }
+
+/* Per-combat rest type pill */
+.cs-feature-rest--combat {
+  color: #f0a050;
+  border-color: rgba(240,160,80,0.4);
+  background: rgba(240,160,80,0.1);
+}
