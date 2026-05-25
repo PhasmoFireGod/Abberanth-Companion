@@ -5,8 +5,8 @@
 /* ---------- NPC Grid ---------- */
 .npc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.5rem;
   margin-top: 1rem;
 }
 
@@ -14,9 +14,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   cursor: pointer;
-  padding: 0.75rem 0.5rem;
+  padding: 1.1rem 0.75rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: var(--bg-card);
@@ -31,8 +31,8 @@
 }
 
 .npc-token {
-  width: 72px;
-  height: 72px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--border-glow);
@@ -41,20 +41,20 @@
 }
 
 .npc-token-placeholder {
-  width: 72px;
-  height: 72px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   background: var(--bg-surface);
   border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 3.2rem;
   flex-shrink: 0;
 }
 
 .npc-card-name {
-  font-size: 0.78rem;
+  font-size: 0.96rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;
@@ -69,14 +69,14 @@
   justify-content: center;
   gap: 0.4rem;
   cursor: pointer;
-  padding: 0.75rem 0.5rem;
+  padding: 1.1rem 0.75rem;
   border-radius: var(--radius-lg);
   border: 2px dashed var(--border);
   background: transparent;
   transition: all var(--transition);
-  min-height: 120px;
+  min-height: 180px;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
 }
 .npc-add-card:hover {
   border-color: var(--accent-purple);
@@ -396,3 +396,194 @@
   font-size: 0.9rem;
   padding: 2rem 0;
 }
+
+/* ---------- Upload row in form ---------- */
+.npc-upload-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.npc-upload-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  padding: 0.38rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.npc-upload-btn:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+}
+
+.npc-upload-preview { min-height: 0; }
+
+/* ---------- DM Sheet panel ---------- */
+.npc-sheet-panel {
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: rgba(8,12,28,0.5);
+}
+
+.npc-sheet-title {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--accent-gold);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.npc-sheet-save-status {
+  font-size: 0.72rem;
+  font-family: var(--font-body);
+}
+
+/* Combat stats row */
+.npc-sheet-combat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.npc-sheet-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.npc-sheet-stat label,
+.npc-sheet-section-label,
+.npc-sheet-skill-cat {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.npc-sheet-section-label {
+  margin: 0.6rem 0 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.npc-sheet-skill-cat {
+  color: var(--accent-purple);
+  margin: 0.5rem 0 0.2rem;
+}
+
+.npc-sheet-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  padding: 0.22rem 0;
+  width: 52px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.npc-sheet-input::-webkit-outer-spin-button,
+.npc-sheet-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.npc-sheet-input:focus { outline: none; border-color: var(--accent-purple); }
+
+/* Attrs grid */
+.npc-sheet-attrs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.3rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.npc-sheet-attr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.18rem 0;
+  border-bottom: 1px solid rgba(42,53,104,0.5);
+}
+
+.npc-sheet-attr-name {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Skills wrapper */
+.npc-sheet-skills-wrap {
+  margin-top: 0.25rem;
+}
+.npc-sheet-skills-wrap summary::-webkit-details-marker { display: none; }
+
+.npc-sheet-skills {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0 1.5rem;
+}
+.npc-sheet-skill-cat {
+  grid-column: 1 / -1;
+}
+
+/* Notes */
+.npc-sheet-notes {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 0.5rem 0.65rem;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+  margin-top: 0.35rem;
+  transition: border-color var(--transition);
+}
+.npc-sheet-notes:focus { outline: none; border-color: var(--accent-purple); }
+
+/* Save button */
+.npc-sheet-save-btn {
+  margin-top: 0.75rem;
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.npc-sheet-save-btn:hover:not(:disabled) { background: #5060c0; }
+.npc-sheet-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* DM Sheet button in nav */
+.npc-sheet-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.npc-sheet-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }

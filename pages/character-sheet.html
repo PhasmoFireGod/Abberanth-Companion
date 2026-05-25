@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <!-- Race toggles -->
+      <!-- Race toggles + rest buttons -->
       <div class="cs-race-toggles">
         <label class="cs-tailed-label" for="cs-tailed">
           <input type="checkbox" id="cs-tailed" data-type="tailed" />
@@ -114,6 +114,46 @@
           Winged Race
         </label>
         <span class="cs-tailed-hint">Adds Left &amp; Right Wing armor slots</span>
+
+        <div class="cs-rest-btns">
+          <button class="cs-rest-btn cs-rest-btn--short" id="cs-short-rest-btn">🌙 Short Rest</button>
+          <button class="cs-rest-btn cs-rest-btn--long"  id="cs-long-rest-btn">☀️ Long Rest</button>
+        </div>
+      </div>
+
+      <!-- Rest picker modal -->
+      <div id="cs-rest-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:600;align-items:center;justify-content:center;padding:1rem;">
+        <div class="cs-rest-panel">
+          <div class="cs-rest-panel-title" id="cs-rest-panel-title">Short Rest</div>
+          <p class="cs-rest-panel-hint" id="cs-rest-panel-hint">Choose <strong>1</strong> resource to restore:</p>
+          <div class="cs-rest-options" id="cs-rest-options">
+            <label class="cs-rest-option" data-res="hp">
+              <input type="checkbox" value="hp" />
+              <span class="cs-rest-option-label">
+                <span class="cs-rest-option-name hp">❤️ HP</span>
+                <span class="cs-rest-option-desc">Clear all injuries</span>
+              </span>
+            </label>
+            <label class="cs-rest-option" data-res="mana">
+              <input type="checkbox" value="mana" />
+              <span class="cs-rest-option-label">
+                <span class="cs-rest-option-name mana">💧 Mana</span>
+                <span class="cs-rest-option-desc">Restore mana to full</span>
+              </span>
+            </label>
+            <label class="cs-rest-option" data-res="stam">
+              <input type="checkbox" value="stam" />
+              <span class="cs-rest-option-label">
+                <span class="cs-rest-option-name stam">⚡ Stamina</span>
+                <span class="cs-rest-option-desc">Restore stamina to full</span>
+              </span>
+            </label>
+          </div>
+          <div class="cs-rest-panel-actions">
+            <button class="cs-rest-cancel-btn" id="cs-rest-cancel">Cancel</button>
+            <button class="cs-rest-confirm-btn" id="cs-rest-confirm">Rest</button>
+          </div>
+        </div>
       </div>
 
       <!-- Grandparent Traits — built dynamically by buildGrandparents() -->
@@ -334,11 +374,15 @@
           <div id="wells-grid" class="cs-wells-grid"></div>
         </section>
 
-        <section class="cs-section">
-          <div class="cs-section-title">Spells Equipped <span class="cs-section-note">— 0 / 1 slots</span></div>
-          <div class="cs-spell-slot">
-            <span class="cs-spell-name">Empty — no spell equipped</span>
+        <section class="cs-section" id="cs-spells-section">
+          <div class="cs-section-title">
+            Spells Equipped
+            <span class="cs-section-note" id="cs-spell-slot-note">— 0 / 1 slots</span>
           </div>
+          <!-- Equipped spell slots — built by buildSpells() -->
+          <div id="cs-equipped-spells"></div>
+          <!-- Spell picker modal trigger -->
+          <button class="cs-spell-add-btn" id="cs-spell-add-btn" style="display:none;">＋ Equip Spell</button>
         </section>
 
       </div><!-- end .cs-right -->
@@ -354,7 +398,26 @@
       <div id="armor-slots" class="cs-armor-grid"></div>
     </section>
 
+    <!-- ===== Inventory ===== -->
+    <section class="cs-section cs-inventory-section">
+      <div class="cs-section-title">
+        Inventory
+        <span class="cs-section-note">— name · quantity · notes</span>
+      </div>
+      <div id="cs-inventory-list"></div>
+      <button class="cs-inv-add-btn" id="cs-inv-add-btn">＋ Add Item</button>
+    </section>
+
   </main>
+
+  <!-- ===== Spell Picker Modal ===== -->
+  <div id="spell-picker-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:600;align-items:center;justify-content:center;padding:1rem;">
+    <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:var(--radius-lg);width:520px;max-width:calc(100vw - 2rem);max-height:85vh;overflow-y:auto;padding:1.5rem;box-shadow:0 16px 60px rgba(0,0,0,0.7);">
+      <div style="font-family:var(--font-heading);font-size:1.1rem;color:var(--accent-gold);margin-bottom:1rem;">✨ Choose a Spell</div>
+      <div id="spell-picker-list"></div>
+      <button id="spell-picker-close" style="margin-top:1rem;width:100%;background:transparent;border:1px solid var(--border);border-radius:var(--radius);color:var(--text-muted);font-family:var(--font-body);font-size:0.8rem;padding:0.5rem;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>

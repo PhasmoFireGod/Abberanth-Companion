@@ -71,6 +71,7 @@
   let currentDice  = [];
   let currentStats = null;
   let keptIndices  = new Set();
+  let _effortBonus = 0;
   const history    = [];
   const MAX_HIST   = 6;
 
@@ -107,7 +108,7 @@
      Modal open / close
   ---------------------------------------------------------- */
   function openModal()  { document.getElementById('dice-modal').classList.add('open'); }
-  function closeModal() { document.getElementById('dice-modal').classList.remove('open'); }
+  function closeModal() { document.getElementById('dice-modal').classList.remove('open'); _effortBonus = 0; }
 
   /* ----------------------------------------------------------
      Pool info chips
@@ -134,9 +135,12 @@
       : `Keep ${stats.keepCount} of ${stats.poolSize}`;
     document.getElementById('pi-keep').textContent = keepLabel;
 
-    // Bonus chip
+    // Bonus chip — skill bonus + effort bonus
+    const totalBonus = stats.bonus + _effortBonus;
     document.getElementById('pi-bonus').textContent =
-      stats.bonus > 0 ? `+${stats.bonus} flat bonus` : 'No bonus';
+      totalBonus > 0
+        ? `+${stats.bonus > 0 ? stats.bonus + ' skill' : ''}${stats.bonus > 0 && _effortBonus > 0 ? ' + ' : ''}${_effortBonus > 0 ? _effortBonus + ' effort' : ''}`
+        : 'No bonus';
 
     // Explode chip
     const explodeChip = document.getElementById('pi-explode');
@@ -156,10 +160,10 @@
     keptIndices  = new Set();
 
     renderGrid();
-    applyAutoSelect('high');   // default keep-high; also calls renderTotal
+    applyAutoSelect('high');
 
-    // Record history after auto-select
-    const total = Dice.calcTotal(currentDice, keptIndices, currentStats.bonus);
+    // Include effort bonus in history total
+    const total = Dice.calcTotal(currentDice, keptIndices, currentStats.bonus + _effortBonus);
     pushHistory(skill, total);
 
     document.getElementById('dice-results-area').classList.remove('hidden');
@@ -249,15 +253,17 @@
     const kept  = [...keptIndices];
     const parts = kept.map(i => currentDice[i].total);
     const sum   = parts.reduce((a, b) => a + b, 0);
-    const bonus = currentStats.bonus;
-    const total = sum + bonus;
+    const bonus      = currentStats.bonus;
+    const totalBonus = bonus + _effortBonus;
+    const total      = sum + totalBonus;
 
     let breakdown = '';
     if (kept.length === 0) {
       breakdown = 'Select dice to keep…';
     } else {
       breakdown = parts.join(' + ');
-      if (bonus > 0) breakdown += ` + ${bonus} (flat bonus)`;
+      if (bonus > 0)      breakdown += ` + ${bonus} (skill bonus)`;
+      if (_effortBonus > 0) breakdown += ` + ${_effortBonus} (effort)`;
       breakdown += ' =';
     }
 
@@ -269,10 +275,10 @@
      History
   ---------------------------------------------------------- */
   function pushHistory(skill, total) {
-    const entry = `Skill ${skill} → <strong>${total}</strong>`;
+    const effortNote = _effortBonus > 0 ? ` +${_effortBonus} effort` : '';
+    const entry      = `Skill ${skill}${effortNote} → <strong>${total}</strong>`;
     history.unshift(entry);
     if (history.length > MAX_HIST) history.pop();
-
     document.getElementById('roll-history').innerHTML =
       history.map(h => `<li class="dp-hist-entry">${h}</li>`).join('');
   }
@@ -289,14 +295,17 @@
     open: openModal,
     /**
      * Open the roller pre-set to a specific skill level.
-     * No upper cap — skills can exceed 10 with wells, buffs, etc.
+     * @param {number} level      - skill level
+     * @param {number} effortBonus - optional flat effort bonus (ceil STR/2)
      */
-    openWithSkill(level) {
+    openWithSkill(level, effortBonus) {
       const slider = document.getElementById('skill-slider');
       if (!slider) return;
-      // Clamp to slider range but don't cap at 10 anymore
       const max = parseInt(slider.max, 10);
       slider.value = Math.max(0, Math.min(max, Math.floor(Number(level) || 0)));
+
+      // Store effort bonus for this roll
+      _effortBonus = Math.floor(Number(effortBonus) || 0);
       refreshPoolInfo();
       openModal();
     },
