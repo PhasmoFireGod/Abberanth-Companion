@@ -60,39 +60,60 @@
   ---------------------------------------------------------- */
   const SPELLS = [
     {
-      id:   'mend',
-      name: 'Mend',
-      cost: 1,
-      well: null,
-      desc: 'Fix an item or small structure within a 5×5 meter cube. Examples: a small chunk of wall, a pocket watch.',
+      id:      'mend',
+      name:    'Mend',
+      cost:    1,
+      well:    null,
+      desc:    'Fix an item or small structure within a 5×5 meter cube. Examples: a small chunk of wall, a pocket watch.',
+      scaling: null,
     },
     {
-      id:   'candle',
-      name: 'Candle',
-      cost: 1,
-      well: null,
-      desc: 'Spark or snuff a candle-sized flame.',
+      id:      'candle',
+      name:    'Candle',
+      cost:    1,
+      well:    null,
+      desc:    'Spark or snuff a candle-sized flame.',
+      scaling: null,
     },
     {
-      id:   'breeze',
-      name: 'Breeze',
-      cost: 1,
-      well: null,
-      desc: 'Cool a 10×10 meter area with a gentle wind.',
+      id:      'breeze',
+      name:    'Breeze',
+      cost:    1,
+      well:    null,
+      desc:    'Cool a 10×10 meter area with a gentle wind.',
+      scaling: null,
     },
     {
-      id:   'aide',
-      name: 'Aide',
-      cost: 1,
-      well: null,
-      desc: 'Grant temporary 1d10 HP on a target. No dice explosion. Cannot regrow limbs, remove scars, or stop bleeding.',
+      id:      'aide',
+      name:    'Aide',
+      cost:    1,
+      well:    null,
+      desc:    'Grant temporary 1d10 HP on a target. No dice explosion. Cannot regrow limbs, remove scars, or stop bleeding.',
+      scaling: null,
     },
     {
-      id:   'puddle',
-      name: 'Puddle',
-      cost: 1,
-      well: null,
-      desc: 'Create a 12×12×1 cm puddle of clean water.',
+      id:      'puddle',
+      name:    'Puddle',
+      cost:    1,
+      well:    null,
+      desc:    'Create a 12×12×1 cm puddle of clean water.',
+      scaling: null,
+    },
+    {
+      id:      'magic-missile',
+      name:    'Magic Missile',
+      cost:    5,
+      well:    { name: 'Arcane', minLevel: 1 },
+      desc:    'Create a singular missile of arcane nature. Each additional mana spent adds 1 bolt. Each bolt deals 1d10 damage.',
+      scaling: '+1 mana → +1 bolt (each bolt deals 1d10 damage)',
+    },
+    {
+      id:      'prestidigitation',
+      name:    'Prestidigitation',
+      cost:    5,
+      well:    { name: 'Arcane', minLevel: 1 },
+      desc:    'Choose one effect (base duration 60 minutes). Adding 1 mana extends duration by 10 minutes or adds another effect.\n\nEffects:\n• Ignite or snuff all candles, torches, or campfires in a 50×50 meter radius.\n• Create a small sensory effect that deals no damage.\n• Clean or soil an object within a 1×1 meter cube (add +1 meter per extra mana).\n• Chill, warm, or flavor something within a 1×1 meter cube (add +1 meter per extra mana).\n• Add colour, make a mark, or place a symbol on a structure.',
+      scaling: '+1 mana → +10 minutes duration, or add another effect',
     },
   ];
 
@@ -773,7 +794,7 @@
               <span class="cs-spell-tag">${costLabel}</span>
               <span class="cs-spell-tag cs-spell-tag--well">${wellLabel}</span>
             </div>
-            <div class="cs-spell-desc">${spell.desc}</div>
+            <div class="cs-spell-desc">${spell.desc.replace(/\n/g, '<br>')}</div>
           </div>
           <div class="cs-spell-actions">
             <button class="cs-spell-use-btn" data-spell-id="${spell.id}" data-slot="${i}">Cast</button>
@@ -799,13 +820,63 @@
     if (addBtn) addBtn.style.display = 'none';
   }
 
+  let _castingSpell = null;
+
   function castSpell(spell) {
-    const cur = calcManCur();
-    if (cur < spell.cost) {
-      alert(`Not enough mana! Need ${spell.cost}, have ${cur}.`);
-      return;
+    _castingSpell = spell;
+    const modal      = document.getElementById('cs-cast-modal');
+    const nameEl     = document.getElementById('cs-cast-name');
+    const descEl     = document.getElementById('cs-cast-desc');
+    const scalingRow = document.getElementById('cs-cast-scaling-row');
+    const scalingEl  = document.getElementById('cs-cast-scaling');
+    const baseCostEl = document.getElementById('cs-cast-base-cost');
+    const extraEl    = document.getElementById('cs-cast-extra');
+    const totalEl    = document.getElementById('cs-cast-total');
+    const manaEl     = document.getElementById('cs-cast-mana-cur');
+    const confirmBtn = document.getElementById('cs-cast-confirm');
+
+    nameEl.textContent    = spell.name;
+    descEl.innerHTML      = spell.desc.replace(/\n/g, '<br>');
+    baseCostEl.textContent = spell.cost;
+    extraEl.value         = 0;
+    manaEl.textContent    = calcManCur();
+
+    if (spell.scaling) {
+      scalingRow.style.display = 'flex';
+      scalingEl.textContent    = spell.scaling;
+    } else {
+      scalingRow.style.display = 'none';
     }
-    CharSheet_spendMana(spell.cost);
+
+    _updateCastTotal();
+    modal.style.display = 'flex';
+  }
+
+  function _updateCastTotal() {
+    if (!_castingSpell) return;
+    const extra    = Math.max(0, parseInt(document.getElementById('cs-cast-extra').value, 10) || 0);
+    const total    = _castingSpell.cost + extra;
+    const manaCur  = calcManCur();
+    const totalEl  = document.getElementById('cs-cast-total');
+    const confirmBtn = document.getElementById('cs-cast-confirm');
+
+    totalEl.textContent  = total;
+    totalEl.style.color  = total > manaCur ? '#c02850' : 'var(--accent-gold)';
+    confirmBtn.disabled  = total > manaCur;
+    confirmBtn.title     = total > manaCur ? 'Not enough mana' : '';
+  }
+
+  function closeCastModal() {
+    document.getElementById('cs-cast-modal').style.display = 'none';
+    _castingSpell = null;
+  }
+
+  function confirmCast() {
+    if (!_castingSpell) return;
+    const extra = Math.max(0, parseInt(document.getElementById('cs-cast-extra').value, 10) || 0);
+    const total = _castingSpell.cost + extra;
+    CharSheet_spendMana(total);
+    closeCastModal();
   }
 
   function unequipSpell(slotIdx) {
@@ -849,7 +920,7 @@
             <span style="font-size:0.62rem;background:rgba(88,152,232,0.12);border:1px solid rgba(88,152,232,0.3);border-radius:99px;padding:0.1rem 0.45rem;color:var(--accent-teal);">${wellLabel}</span>
             ${alreadyEquipped ? '<span style="font-size:0.62rem;color:var(--text-muted);margin-left:auto;">Already equipped</span>' : ''}
           </div>
-          <div style="font-size:0.75rem;color:var(--text-muted);line-height:1.4;">${spell.desc}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);line-height:1.4;">${spell.desc.replace(/\n/g, '<br>')}</div>
         `;
 
         if (!alreadyEquipped) {
@@ -1067,6 +1138,14 @@
     if (saveBtn) saveBtn.addEventListener('click', saveNow);
 
     document.getElementById('cs-inv-add-btn')?.addEventListener('click', addInventoryItem);
+
+    // Cast modal
+    document.getElementById('cs-cast-cancel')?.addEventListener('click',  closeCastModal);
+    document.getElementById('cs-cast-confirm')?.addEventListener('click', confirmCast);
+    document.getElementById('cs-cast-extra')?.addEventListener('input',   _updateCastTotal);
+    document.getElementById('cs-cast-modal')?.addEventListener('click', e => {
+      if (e.target === document.getElementById('cs-cast-modal')) closeCastModal();
+    });
 
     // Rest buttons
     document.getElementById('cs-short-rest-btn')?.addEventListener('click', () => openRestModal('short'));

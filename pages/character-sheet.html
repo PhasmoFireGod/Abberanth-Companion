@@ -410,6 +410,45 @@
 
   </main>
 
+  <!-- ===== Cast Spell Modal ===== -->
+  <div id="cs-cast-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:610;align-items:center;justify-content:center;padding:1rem;">
+    <div class="cs-cast-panel">
+      <div class="cs-cast-title" id="cs-cast-name">Spell Name</div>
+      <div class="cs-cast-desc" id="cs-cast-desc"></div>
+
+      <div class="cs-cast-scaling-row" id="cs-cast-scaling-row" style="display:none;">
+        <span class="cs-cast-scaling-label">Scaling</span>
+        <span class="cs-cast-scaling-text" id="cs-cast-scaling"></span>
+      </div>
+
+      <div class="cs-cast-cost-row">
+        <div class="cs-cast-cost-block">
+          <span class="cs-cast-cost-label">Base cost</span>
+          <span class="cs-cast-cost-val" id="cs-cast-base-cost">1</span>
+          <span class="cs-cast-cost-unit">mana</span>
+        </div>
+        <div class="cs-cast-cost-block">
+          <span class="cs-cast-cost-label">Extra mana</span>
+          <input type="number" id="cs-cast-extra" class="cs-cast-extra-input" min="0" value="0" />
+        </div>
+        <div class="cs-cast-cost-block">
+          <span class="cs-cast-cost-label">Total cost</span>
+          <span class="cs-cast-cost-val cs-cast-total-val" id="cs-cast-total">1</span>
+          <span class="cs-cast-cost-unit">mana</span>
+        </div>
+        <div class="cs-cast-cost-block">
+          <span class="cs-cast-cost-label">Mana available</span>
+          <span class="cs-cast-cost-val" id="cs-cast-mana-cur" style="color:var(--accent-teal);">0</span>
+        </div>
+      </div>
+
+      <div class="cs-cast-actions">
+        <button class="cs-cast-cancel-btn" id="cs-cast-cancel">Cancel</button>
+        <button class="cs-cast-confirm-btn" id="cs-cast-confirm">Cast</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Spell Picker Modal ===== -->
   <div id="spell-picker-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:600;align-items:center;justify-content:center;padding:1rem;">
     <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:var(--radius-lg);width:520px;max-width:calc(100vw - 2rem);max-height:85vh;overflow-y:auto;padding:1.5rem;box-shadow:0 16px 60px rgba(0,0,0,0.7);">
