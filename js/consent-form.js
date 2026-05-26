@@ -128,15 +128,23 @@
     const sectionsHtml = SCHEMA.map(section => `
       <div class="cf-section">
         <div class="cf-section-title">${esc(section.title)}</div>
-        ${section.items.map((item, idx) => {
-          const label  = typeof item === 'string' ? item : item.label;
-          const isSub  = typeof item === 'object' && item.sub;
-          const indent = typeof item === 'object' && item.indent;
-          if (isSub) return `<div class="cf-sub-label">${esc(label)}</div>`;
-          const key = `${section.id}.${label.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase()}`;
-          const val = responses[key] || '';
-          return buildRow(key, label, val, indent, viewOnly);
-        }).join('')}
+        ${(() => {
+          let subGroup = '';   // tracks current sub-category (e.g. 'romance', 'sex')
+          return section.items.map(item => {
+            const label  = typeof item === 'string' ? item : item.label;
+            const isSub  = typeof item === 'object' && item.sub;
+            const indent = typeof item === 'object' && item.indent;
+            if (isSub) {
+              subGroup = label.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
+              return `<div class="cf-sub-label">${esc(label)}</div>`;
+            }
+            // Include the sub-group in the key so duplicated labels stay unique
+            const prefix = subGroup ? `${subGroup}.` : '';
+            const key = `${section.id}.${prefix}${label.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase()}`;
+            const val = responses[key] || '';
+            return buildRow(key, label, val, indent, viewOnly);
+          }).join('');
+        })()}
         ${buildCustomRows(section.id, section.customCount, customData, viewOnly)}
       </div>
     `).join('');
