@@ -729,6 +729,77 @@
   flex-shrink: 0;
 }
 
+/* ---------- Arcane Vampirism Condition ---------- */
+.cs-av-toggle-row {
+  padding: 0.45rem 0 0.1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.4rem;
+}
+
+.cs-av-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition);
+}
+.cs-av-toggle-label:hover { color: var(--text-primary); }
+.cs-av-toggle-label input[type="checkbox"] {
+  accent-color: #9060d8;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* Active AV row */
+.cs-av-active-row {
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(144,96,216,0.1);
+  border: 1px solid rgba(144,96,216,0.35);
+  border-radius: var(--radius);
+  margin-top: 0.4rem;
+}
+
+.cs-av-active-label {
+  font-size: 0.72rem;
+  color: #c090f8;
+  font-weight: 600;
+  flex: 1;
+}
+
+.cs-av-hit-btn {
+  background: rgba(144,96,216,0.2);
+  border: 1px solid rgba(144,96,216,0.5);
+  border-radius: var(--radius);
+  color: #c090f8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cs-av-hit-btn:hover {
+  background: rgba(144,96,216,0.35);
+  border-color: #c090f8;
+  color: #fff;
+}
+
+/* HP and Mana labels pulse purple when AV is active */
+.cs-resource-label.av-active {
+  color: #c090f8 !important;
+}
+.cs-resource-label.av-active::after {
+  content: ' 🧿';
+  font-size: 0.75em;
+}
+
 /* ---------- Status Badge ---------- */
 .cs-status-badge {
   display: inline-block;

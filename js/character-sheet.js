@@ -312,6 +312,7 @@
       moves: 1, attacks: 1, usedTurn: 0, perTurn: 1,
       injCommon: 0, injHarsh: 0, injCritical: 0, injFatal: 0,
       specialFeature: '',
+      arcaneVampirism: false,
       spells: [],
       effortSkills: {},   // { 'Acrobatics': true, ... }
       inventory: [],      // [{ id, name, qty, notes }, ...]
@@ -561,12 +562,35 @@
   ---------------------------------------------------------- */
   function calcResourceMax(pts)     { return 5 + ((pts || 0) * 5); }
   function calcInjuryDamage()       { return (state.injCommon||0)*1 + (state.injHarsh||0)*2 + (state.injCritical||0)*3 + (state.injFatal||0)*4; }
-  function calcHpCur()              { return Math.max(0, calcResourceMax(state.hpMax) - calcInjuryDamage()); }
-  function calcManCur()             { return Math.max(0, calcResourceMax(state.manMax) - (state.manaSpent||0)); }
+
+  /* Arcane Vampirism: HP pts + Mana pts merge into one combined Mana pool */
+  function calcArcaneManaMax()      { return calcResourceMax((state.hpMax||0) + (state.manMax||0)); }
+
+  function calcHpCur() {
+    if (state.arcaneVampirism) {
+      /* Combined pool — injuries AND mana spend drain the same pool */
+      return Math.max(0, calcArcaneManaMax() - calcInjuryDamage() - (state.manaSpent||0));
+    }
+    return Math.max(0, calcResourceMax(state.hpMax) - calcInjuryDamage());
+  }
+
+  function calcManCur() {
+    if (state.arcaneVampirism) return calcHpCur();   /* same pool as HP */
+    return Math.max(0, calcResourceMax(state.manMax) - (state.manaSpent||0));
+  }
   function calcStamCur()            { return Math.max(0, calcResourceMax(state.stamMax) - (state.stamSpent||0)); }
   function calcWillCur()            { return (state.attrs?.Willpower || 0) + calcRacialBonus('Willpower') - (state.willSpent||0); }
 
   function updateResourceCalc(key, pts) {
+    if (state.arcaneVampirism && (key === 'hpMax' || key === 'manMax')) {
+      /* Both HP and Mana show the combined Arcane pool max */
+      const combined = calcArcaneManaMax();
+      const hpEl  = document.getElementById('cs-hp-calc');
+      const manEl = document.getElementById('cs-man-calc');
+      if (hpEl)  hpEl.textContent  = combined;
+      if (manEl) manEl.textContent = combined;
+      return;
+    }
     const calcIds = { hpMax: 'cs-hp-calc', manMax: 'cs-man-calc', stamMax: 'cs-stam-calc' };
     const el = document.getElementById(calcIds[key]);
     if (el) el.textContent = calcResourceMax(pts);
@@ -581,6 +605,23 @@
     if (manEl)  manEl.textContent  = calcManCur();
     if (stamEl) stamEl.textContent = calcStamCur();
     if (willEl) willEl.textContent = calcWillCur();
+
+    /* Sync Arcane Vampirism combined pool max displays */
+    if (state.arcaneVampirism) {
+      updateResourceCalc('hpMax',  state.hpMax);
+      updateResourceCalc('manMax', state.manMax);
+    }
+
+    /* Show / hide AV indicator + hit button */
+    const avRow = document.getElementById('av-active-row');
+    if (avRow) avRow.style.display = state.arcaneVampirism ? 'flex' : 'none';
+
+    /* Visual tint on HP/Mana labels when AV is active */
+    const hpLabel  = document.getElementById('cs-hp-label');
+    const manLabel = document.getElementById('cs-man-label');
+    if (hpLabel)  hpLabel.classList.toggle('av-active', !!state.arcaneVampirism);
+    if (manLabel) manLabel.classList.toggle('av-active', !!state.arcaneVampirism);
+
     updateStatusBadge();
   }
 
@@ -593,7 +634,8 @@
   function updateStatusBadge() {
     const badge = document.getElementById('cs-status-badge');
     if (!badge) return;
-    const { label, color } = calcStatus(calcHpCur(), calcResourceMax(state.hpMax));
+    const hpMax = state.arcaneVampirism ? calcArcaneManaMax() : calcResourceMax(state.hpMax);
+    const { label, color } = calcStatus(calcHpCur(), hpMax);
     badge.textContent       = label;
     badge.style.color       = color;
     badge.style.borderColor = color;
@@ -1171,6 +1213,7 @@
 
     const tailedEl = document.getElementById('cs-tailed'); if (tailedEl) tailedEl.checked = !!state.tailedRace;
     const wingedEl = document.getElementById('cs-winged'); if (wingedEl) wingedEl.checked = !!state.wingedRace;
+    const avEl     = document.getElementById('cs-arcane-vamp'); if (avEl) avEl.checked = !!state.arcaneVampirism;
 
     updateBattleStats();
 
@@ -1271,6 +1314,15 @@
       }
       case 'tailed': state.tailedRace = el.checked; buildArmorSlots(); updateACDisplay(); break;
       case 'winged': state.wingedRace = el.checked; buildArmorSlots(); updateACDisplay(); break;
+      case 'condition':
+        state[el.dataset.key] = el.checked;
+        if (el.dataset.key === 'arcaneVampirism') {
+          /* Refresh both calc displays immediately */
+          updateResourceCalc('hpMax',  state.hpMax);
+          updateResourceCalc('manMax', state.manMax);
+          updateResourceDisplays();
+        }
+        break;
       case 'injury':
         state[el.dataset.key] = numVal; updateResourceDisplays(); break;
       case 'grandparent': {
@@ -1443,6 +1495,7 @@
     },
     restoreAll()     { state.manaSpent = 0; state.stamSpent = 0; state.willSpent = 0; updateResourceDisplays(); schedSave(); },
     restoreMana()    { state.manaSpent = 0; updateResourceDisplays(); schedSave(); },
+    gainMana(n = 1)  { state.manaSpent = Math.max(0, (state.manaSpent||0) - n); updateResourceDisplays(); schedSave(); },
     restoreStam()    { state.stamSpent = 0; updateResourceDisplays(); schedSave(); },
     restoreWill()    { state.willSpent = 0; updateResourceDisplays(); schedSave(); },
     shortRest() {

@@ -254,7 +254,7 @@
           <div class="cs-section-title">Resources</div>
 
           <div class="cs-resource-row">
-            <span class="cs-resource-label hp">HP</span>
+            <span class="cs-resource-label hp" id="cs-hp-label">HP</span>
             <div class="cs-resource-track">
               <span id="cs-hp-cur" class="cs-resource-cur">5</span>
               <span class="cs-resource-sep">/</span>
@@ -267,7 +267,7 @@
             </div>
           </div>
           <div class="cs-resource-row">
-            <span class="cs-resource-label mana">Mana</span>
+            <span class="cs-resource-label mana" id="cs-man-label">Mana</span>
             <div class="cs-resource-track">
               <span id="cs-man-cur" class="cs-resource-cur">5</span>
               <span class="cs-resource-sep">/</span>
@@ -291,6 +291,21 @@
                 max="100" value="0"
                 data-type="res-max" data-key="stamMax" />
             </div>
+          </div>
+
+          <!-- Arcane Vampirism condition -->
+          <div class="cs-av-toggle-row">
+            <label class="cs-av-toggle-label" for="cs-arcane-vamp">
+              <input type="checkbox" id="cs-arcane-vamp"
+                data-type="condition" data-key="arcaneVampirism" />
+              🧿 Arcane Vampirism
+            </label>
+          </div>
+          <!-- Active indicator + hit button (hidden unless AV is on) -->
+          <div id="av-active-row" class="cs-av-active-row" style="display:none;">
+            <span class="cs-av-active-label">HP ≡ Mana · Counts as Elemental</span>
+            <button class="cs-av-hit-btn" id="av-hit-btn"
+              onclick="window.CharSheet?.gainMana(1)">+1 Mana on Hit</button>
           </div>
         </section>
 
