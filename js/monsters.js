@@ -11,8 +11,10 @@
   const ATTRIBUTES = ['Strength','Speed','Constitution','Wisdom','Intelligence','Charisma','Willpower'];
   const SHORT = { Strength:'STR', Speed:'SPD', Constitution:'CON', Wisdom:'WIS', Intelligence:'INT', Charisma:'CHA', Willpower:'WIL' };
 
-  let _user       = null;
-  let _all        = [];
+  let _user              = null;
+  let _all               = [];
+  let _timelines         = [];
+  let _currentTimelineId = null;
   let _visible    = [];
   let _players    = [];
   let _modalIdx   = 0;
@@ -58,10 +60,12 @@
 
     const uid = _user?.uid;
     _visible = window.isDM
-      ? [..._all]
+      ? (_currentTimelineId ? _all.filter(m => m.timelineId === _currentTimelineId) : [..._all])
       : _all.filter(m => {
           const v = m.visibility || {};
-          return v.all === true || (uid && v[uid] === true);
+          const visibleToPlayer = v.all === true || (uid && v[uid] === true);
+          const inTimeline = !_currentTimelineId || m.timelineId === _currentTimelineId;
+          return visibleToPlayer && inTimeline;
         });
   }
 
@@ -243,6 +247,13 @@
             <button class="mon-form-add-row-btn" id="mf-add-ability">+ Add Ability</button>
           </div>
           <div id="mf-abilities"></div>
+
+          <div class="mon-form-field">
+            <label>Campaign</label>
+            <select class="mon-form-input" id="mf-timeline">
+              <option value="">— No campaign —</option>
+            </select>
+          </div>
 
           <div class="mon-form-actions">
             <button class="mon-form-delete-btn" id="mf-delete" style="display:none;">Delete</button>
@@ -544,6 +555,17 @@
     (mon?.abilities || []).forEach(ab => addAbilityRow(ab));
 
     document.getElementById('mf-delete').style.display = mon ? 'block' : 'none';
+
+    // Populate timeline dropdown
+    const tlSel = document.getElementById('mf-timeline');
+    if (tlSel) {
+      tlSel.innerHTML = '<option value="">— No campaign —</option>' +
+        _timelines.map(t =>
+          `<option value="${t.id}" ${(mon?.timelineId === t.id) ? 'selected' : ''}>${t.name}</option>`
+        ).join('');
+      if (!mon && _currentTimelineId) tlSel.value = _currentTimelineId;
+    }
+
     document.getElementById('mon-form-modal').classList.add('open');
     closeModal();
   }
@@ -570,6 +592,7 @@
       type:        str('mf-type'),
       threat:      num('mf-threat'),
       order:       num('mf-order'),
+      timelineId:  document.getElementById('mf-timeline')?.value || null,
       token:       str('mf-token'),
       image:       str('mf-image'),
       hp:          num('mf-hp'),
@@ -630,13 +653,53 @@
   }
 
   /* ----------------------------------------------------------
+     Timelines
+  ---------------------------------------------------------- */
+  async function loadTimelines() {
+    try {
+      let snap;
+      try { snap = await window._db.collection('timelines').orderBy('createdAt').get(); }
+      catch (_) { snap = await window._db.collection('timelines').get(); }
+      let all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _timelines = window.isDM
+        ? all
+        : all.filter(t => (t.members || []).includes(_user?.uid));
+    } catch (_) { _timelines = []; }
+  }
+
+  function renderTimelineFilter() {
+    const bar = document.getElementById('monster-timeline-filter');
+    if (!bar) return;
+    const pills = [{ id: null, name: 'All', color: null }, ..._timelines].map(tl => {
+      const active = _currentTimelineId === tl.id;
+      const dot    = tl.color ? `<span class="tl-filter-dot" style="background:${tl.color};"></span>` : '';
+      const style  = (active && tl.color) ? `background:${tl.color};` : '';
+      return `<button class="tl-filter-pill${active ? ' active' : ''}"
+        data-tlid="${tl.id || ''}" style="${style}">${dot}${esc(tl.name)}</button>`;
+    }).join('');
+    bar.innerHTML = `<span class="tl-filter-label">Campaign:</span>${pills}`;
+    bar.querySelectorAll('.tl-filter-pill').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        _currentTimelineId = btn.dataset.tlid || null;
+        renderTimelineFilter();
+        await loadMonsters();
+        renderGrid();
+      });
+    });
+  }
+
+  /* ----------------------------------------------------------
      Boot
   ---------------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
     window.onAuthReady(async user => {
       _user = user;
+      const urlTl = new URLSearchParams(location.search).get('tl');
+      if (urlTl) _currentTimelineId = urlTl;
       if (window.isDM) await loadPlayers();
+      await loadTimelines();
       await loadMonsters();
+      renderTimelineFilter();
       renderGrid();
       buildModals();
     });

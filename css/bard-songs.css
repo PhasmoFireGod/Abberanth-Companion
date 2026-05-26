@@ -1,0 +1,416 @@
+/* ============================================================
+   Bard Songs Page
+   ============================================================ */
+
+/* ---------- Grid ---------- */
+.bs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.bs-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  padding: 1rem 0.75rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  text-align: center;
+  transition: all var(--transition);
+}
+.bs-card:hover {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(102,80,216,0.15);
+}
+
+.bs-cover {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+.bs-cover-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  flex-shrink: 0;
+}
+
+.bs-card-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  word-break: break-word;
+}
+.bs-card-artist {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: -0.2rem;
+}
+
+/* DM add card */
+.bs-add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 1rem 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border);
+  background: transparent;
+  min-height: 190px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  transition: all var(--transition);
+}
+.bs-add-card:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+  background: rgba(102,80,216,0.06);
+}
+
+.bs-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+/* ---------- Song Modal ---------- */
+#bs-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#bs-modal.open { display: flex; }
+
+#bs-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  width: 560px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+}
+
+.bs-modal-top {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.bs-modal-cover {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+.bs-modal-cover-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  flex-shrink: 0;
+}
+
+.bs-modal-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.bs-modal-name {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.02em;
+}
+.bs-modal-artist {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.bs-modal-desc {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin-top: 0.25rem;
+}
+
+/* Audio player */
+.bs-player-wrap {
+  padding: 0.75rem 1.5rem 0;
+}
+.bs-audio {
+  width: 100%;
+  border-radius: var(--radius);
+  accent-color: var(--accent-purple);
+  height: 36px;
+}
+/* Chrome/Edge dark-ish audio player */
+.bs-audio::-webkit-media-controls-panel {
+  background: var(--bg-surface);
+}
+
+.bs-no-audio {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Nav row */
+.bs-modal-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.bs-nav-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.bs-nav-btn:hover:not(:disabled) { border-color: var(--accent-purple); color: var(--accent-gold); }
+.bs-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.bs-nav-counter { font-size: 0.75rem; color: var(--text-muted); text-align: center; flex: 1; }
+.bs-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.bs-edit-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+.bs-modal-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.bs-modal-close:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+/* Visibility / heard-by panel */
+.bs-vis-panel {
+  padding: 0.9rem 1.5rem 1.1rem;
+  border-top: 1px solid var(--border);
+  background: rgba(102,80,216,0.04);
+}
+.bs-vis-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.bs-vis-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.bs-vis-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.22rem 0.65rem 0.22rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  user-select: none;
+}
+.bs-vis-toggle.active {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(88,152,232,0.1);
+}
+.bs-vis-toggle input[type="checkbox"] {
+  accent-color: var(--accent-teal);
+  width: 12px; height: 12px; cursor: pointer;
+}
+
+/* ---------- Form Modal ---------- */
+#bs-form-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#bs-form-modal.open { display: flex; }
+
+#bs-form-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 520px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.bs-form-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--accent-gold);
+}
+.bs-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.bs-form-field label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.bs-form-hint {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.bs-form-input, .bs-form-textarea, .bs-form-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.42rem 0.65rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.bs-form-input:focus, .bs-form-textarea:focus, .bs-form-select:focus {
+  outline: none; border-color: var(--accent-purple);
+}
+.bs-form-textarea { resize: vertical; min-height: 75px; line-height: 1.55; }
+
+.bs-upload-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.bs-upload-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.bs-upload-btn:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+.bs-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+.bs-form-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.bs-form-save-btn:hover:not(:disabled) { background: #5060c0; }
+.bs-form-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.bs-form-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.bs-form-cancel-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.bs-form-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(192,40,80,0.4);
+  border-radius: var(--radius);
+  color: #c02850;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  margin-right: auto;
+  transition: all var(--transition);
+}
+.bs-form-delete-btn:hover { background: rgba(192,40,80,0.1); border-color: #c02850; }

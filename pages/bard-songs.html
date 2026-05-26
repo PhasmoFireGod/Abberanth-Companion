@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NPCs — Abberanth Companion</title>
+  <title>Bard Songs — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/timelines.css" />
-  <link rel="stylesheet" href="../css/npcs.css" />
+  <link rel="stylesheet" href="../css/bard-songs.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -41,14 +41,14 @@
 
   <main id="main">
     <header class="page-header">
-      <h1>🧙 NPCs</h1>
-      <p class="page-subtitle">Non-player characters of Abberanth.</p>
+      <h1>🎶 Bard Songs</h1>
+      <p class="page-subtitle" id="bs-subtitle">Music heard on your adventures.</p>
     </header>
-    <div class="tl-filter-bar" id="npc-timeline-filter"></div>
-    <div id="npc-grid" class="npc-grid"></div>
+
+    <div class="tl-filter-bar" id="bs-timeline-filter"></div>
+    <div id="bs-grid" class="bs-grid"></div>
   </main>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -58,7 +58,15 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
-  <script src="../js/npcs.js"></script>
+  <script src="../js/bard-songs.js"></script>
   <script src="../js/main.js"></script>
+  <script>
+    window.onAuthReady(() => {
+      const el = document.getElementById('bs-subtitle');
+      if (el) el.textContent = window.isDM
+        ? 'Upload songs, assign to campaigns, control who has heard them.'
+        : 'Songs your character has heard on their adventures.';
+    });
+  </script>
 </body>
 </html>

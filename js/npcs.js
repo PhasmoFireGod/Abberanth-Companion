@@ -4,21 +4,63 @@
 
 (function () {
 
-  let _user        = null;
-  let _allNpcs     = [];
-  let _visibleNpcs = [];
-  let _modalIndex  = 0;
-  let _players     = [];
-  let _editingId   = null;
+  let _user              = null;
+  let _allNpcs           = [];
+  let _visibleNpcs       = [];
+  let _modalIndex        = 0;
+  let _players           = [];
+  let _editingId         = null;
+  let _timelines         = [];
+  let _currentTimelineId = null;
 
   /* ----------------------------------------------------------
      Boot
   ---------------------------------------------------------- */
+  /* ----------------------------------------------------------
+     Timelines
+  ---------------------------------------------------------- */
+  async function loadTimelines() {
+    try {
+      let snap;
+      try { snap = await window._db.collection('timelines').orderBy('createdAt').get(); }
+      catch (_) { snap = await window._db.collection('timelines').get(); }
+      let all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _timelines = window.isDM
+        ? all
+        : all.filter(t => (t.members || []).includes(_user?.uid));
+    } catch (_) { _timelines = []; }
+  }
+
+  function renderTimelineFilter() {
+    const bar = document.getElementById('npc-timeline-filter');
+    if (!bar) return;
+    const pills = [{ id: null, name: 'All', color: null }, ..._timelines].map(tl => {
+      const active = _currentTimelineId === tl.id;
+      const dot    = tl.color ? `<span class="tl-filter-dot" style="background:${tl.color};"></span>` : '';
+      const style  = (active && tl.color) ? `background:${tl.color};` : '';
+      return `<button class="tl-filter-pill${active ? ' active' : ''}"
+        data-tlid="${tl.id || ''}" style="${style}">${dot}${esc(tl.name)}</button>`;
+    }).join('');
+    bar.innerHTML = `<span class="tl-filter-label">Campaign:</span>${pills}`;
+    bar.querySelectorAll('.tl-filter-pill').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        _currentTimelineId = btn.dataset.tlid || null;
+        renderTimelineFilter();
+        await loadNpcs();
+        renderGrid();
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     window.onAuthReady(async (user) => {
       _user = user;
+      const urlTl = new URLSearchParams(location.search).get('tl');
+      if (urlTl) _currentTimelineId = urlTl;
       if (window.isDM) await loadPlayers();
+      await loadTimelines();
       await loadNpcs();
+      renderTimelineFilter();
       renderGrid();
       buildModals();
     });
@@ -65,12 +107,16 @@
     }
 
     if (window.isDM) {
-      _visibleNpcs = [..._allNpcs];
+      _visibleNpcs = _currentTimelineId
+        ? _allNpcs.filter(n => n.timelineId === _currentTimelineId)
+        : [..._allNpcs];
     } else {
       const uid = _user?.uid || null;
       _visibleNpcs = _allNpcs.filter(n => {
         const v = n.visibility || {};
-        return v.all === true || (uid && v[uid] === true);
+        const visibleToPlayer = v.all === true || (uid && v[uid] === true);
+        const inTimeline = !_currentTimelineId || n.timelineId === _currentTimelineId;
+        return visibleToPlayer && inTimeline;
       });
     }
   }
@@ -178,6 +224,12 @@
             <div class="npc-form-field">
               <label>Display Order</label>
               <input class="npc-form-input" id="nf-order" type="number" min="0" value="0" style="width:80px;" />
+            </div>
+            <div class="npc-form-field">
+              <label>Campaign</label>
+              <select class="npc-form-input" id="nf-timeline">
+                <option value="">— No campaign —</option>
+              </select>
             </div>
 
             <div class="npc-form-actions">
@@ -351,6 +403,16 @@
     document.getElementById('nf-order').value = npc?.order ?? _allNpcs.length;
     document.getElementById('nf-delete').style.display = npc ? 'block' : 'none';
 
+    // Populate timeline dropdown
+    const tlSel = document.getElementById('nf-timeline');
+    if (tlSel) {
+      tlSel.innerHTML = '<option value="">— No campaign —</option>' +
+        _timelines.map(t =>
+          `<option value="${t.id}" ${(npc?.timelineId === t.id) ? 'selected' : ''}>${t.name}</option>`
+        ).join('');
+      if (!npc && _currentTimelineId) tlSel.value = _currentTimelineId;
+    }
+
     // Show existing image previews
     const tp = document.getElementById('nf-token-preview');
     const ip = document.getElementById('nf-image-preview');
@@ -376,6 +438,7 @@
       image:      document.getElementById('nf-image').value.trim(),
       bio:        document.getElementById('nf-bio').value.trim(),
       order:      parseInt(document.getElementById('nf-order').value, 10) || 0,
+      timelineId: document.getElementById('nf-timeline')?.value || null,
     };
 
     if (!data.name) {
