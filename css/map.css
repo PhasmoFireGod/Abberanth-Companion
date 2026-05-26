@@ -1,0 +1,351 @@
+/* ============================================================
+   Map Page Styles
+   ============================================================ */
+
+/* Reduce main padding so map fills more screen */
+.map-page #main {
+  padding-bottom: 0.5rem;
+}
+
+/* ---------- Map Header ---------- */
+#map-header {
+  margin-bottom: 0.75rem;
+}
+
+.map-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+}
+.map-crumb-link {
+  color: var(--accent-gold);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.map-crumb-link:hover { color: var(--text-primary); }
+.map-crumb-sep   { color: var(--text-muted); }
+.map-crumb-current { color: var(--text-primary); font-weight: 600; }
+
+.map-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.map-title-row h1 {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+  flex: 1;
+}
+
+/* ---------- DM Toolbar ---------- */
+#map-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.map-tool-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  padding: 0.38rem 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.map-tool-btn:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-gold);
+}
+.map-tool-btn--draw {
+  border-color: var(--accent-purple);
+  background: rgba(102,80,216,0.12);
+  color: var(--accent-gold);
+}
+.map-tool-btn--cancel {
+  border-color: rgba(192,40,80,0.4);
+  color: #c02850;
+}
+.map-tool-btn--cancel:hover {
+  background: rgba(192,40,80,0.1);
+  border-color: #c02850;
+  color: #e04070;
+}
+
+/* ---------- Map Container ---------- */
+#map-container {
+  height: calc(100vh - 230px);
+  min-height: 400px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--bg-deep);
+  position: relative;
+}
+
+#map-container.map-drawing-mode {
+  cursor: crosshair;
+}
+#map-container.map-drawing-mode .leaflet-interactive {
+  cursor: crosshair !important;
+}
+
+/* ---------- Empty State ---------- */
+#map-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 230px);
+  min-height: 400px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.map-empty-content {
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Drawing hint ---------- */
+.map-draw-hint {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 99px;
+  padding: 0.45rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--accent-gold);
+  z-index: 600;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* ---------- Leaflet overrides ---------- */
+.leaflet-container {
+  background: var(--bg-deep) !important;
+  font-family: var(--font-body) !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-card-hover) !important;
+  color: var(--accent-gold) !important;
+}
+
+.map-tooltip {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8rem !important;
+  padding: 0.3rem 0.65rem !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+}
+.map-tooltip::before { display: none !important; }
+
+/* ---------- Map Dialogs ---------- */
+.map-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.map-dialog {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.map-dialog--wide { width: 560px; }
+
+.map-dialog-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+}
+
+.map-dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.map-dialog-field > label:first-child {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.map-dialog-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.map-dialog-input,
+.map-dialog-select,
+.map-dialog-textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.42rem 0.65rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.map-dialog-input:focus,
+.map-dialog-select:focus,
+.map-dialog-textarea:focus { outline: none; border-color: var(--accent-purple); }
+.map-dialog-textarea { resize: vertical; min-height: 70px; line-height: 1.55; }
+
+.map-dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+
+.map-dialog-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.map-dialog-save-btn:hover:not(:disabled) { background: #5060c0; }
+.map-dialog-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.map-dialog-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.map-dialog-cancel-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+.map-dialog-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(192,40,80,0.4);
+  border-radius: var(--radius);
+  color: #c02850;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  margin-right: auto;
+  transition: all var(--transition);
+}
+.map-dialog-delete-btn:hover { background: rgba(192,40,80,0.1); border-color: #c02850; }
+
+/* ---------- Colour picker ---------- */
+.map-color-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.map-color-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.map-color-btn:hover,
+.map-color-btn.active { border-color: #fff; transform: scale(1.15); }
+
+/* ---------- Visibility toggles ---------- */
+.map-vis-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.map-vis-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.22rem 0.65rem 0.22rem 0.4rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  user-select: none;
+}
+.map-vis-toggle.active {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(88,152,232,0.1);
+}
+.map-vis-toggle input[type="checkbox"] {
+  accent-color: var(--accent-teal);
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+}
+
+/* ---------- Upload row ---------- */
+.map-upload-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.map-upload-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.map-upload-btn:hover { border-color: var(--accent-purple); color: var(--accent-purple); }

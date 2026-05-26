@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Maps — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/map.css" />
 </head>
-<body>
+<body class="map-page">
+
   <aside id="sidebar">
     <div id="sidebar-logo">
       <span class="logo-title">Abberanth</span>
@@ -35,21 +39,34 @@
       <button id="logout-btn">Sign Out</button>
     </div>
   </aside>
+
   <main id="main">
-    <header class="page-header">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Events across the eras of Abberanth — coming soon.</p>
-    </header>
-    <p class="text-muted" style="font-size:0.9rem;">Timeline entries will appear here.</p>
+    <div id="map-header">
+      <div class="map-breadcrumb" id="map-breadcrumb"></div>
+      <div class="map-title-row">
+        <h1 id="map-name" style="font-family:var(--font-heading);font-size:1.4rem;color:var(--accent-gold);">Loading…</h1>
+        <div id="map-toolbar" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div id="map-container"></div>
+    <div id="map-empty"  style="display:none;"></div>
   </main>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- App -->
   <script src="../js/config.js"></script>
   <script src="../js/firebase-init.js"></script>
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
+  <script src="../js/map.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

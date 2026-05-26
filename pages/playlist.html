@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Session Playlist — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/playlist.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -35,13 +36,52 @@
       <button id="logout-btn">Sign Out</button>
     </div>
   </aside>
+
   <main id="main">
-    <header class="page-header">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Events across the eras of Abberanth — coming soon.</p>
+    <header class="page-header" style="margin-bottom:0;">
+      <h1>🎵 Session Playlist</h1>
+      <p class="page-subtitle">Listen back to recorded sessions.</p>
     </header>
-    <p class="text-muted" style="font-size:0.9rem;">Timeline entries will appear here.</p>
+
+    <!-- Header bar with Add button -->
+    <div class="playlist-header-bar">
+      <button class="playlist-add-btn" id="playlist-add-btn">+ Add Session</button>
+    </div>
+
+    <!-- Add form (hidden by default) -->
+    <div id="playlist-form-wrap" class="playlist-form-wrap" style="display:none;">
+      <div class="playlist-form-title">Add Session Recording</div>
+      <div class="playlist-form-grid">
+        <div class="playlist-form-field">
+          <label for="pf-title">Session Title</label>
+          <input type="text" id="pf-title" placeholder="Session 10 — The Dragon's Lair" />
+        </div>
+        <div class="playlist-form-field">
+          <label for="pf-date">Session Date</label>
+          <input type="date" id="pf-date" />
+        </div>
+        <div class="playlist-form-field full-width">
+          <label for="pf-url">Recording URL <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(YouTube, Google Drive, SoundCloud, etc.)</span></label>
+          <input type="url" id="pf-url" placeholder="https://www.youtube.com/watch?v=…" />
+        </div>
+        <div class="playlist-form-field full-width">
+          <label for="pf-desc">Description <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea id="pf-desc" placeholder="What happened this session…"></textarea>
+        </div>
+      </div>
+      <div class="playlist-form-actions">
+        <button class="playlist-form-cancel" id="pf-cancel">Cancel</button>
+        <button class="playlist-form-save" id="pf-save">Add Session</button>
+      </div>
+    </div>
+
+    <!-- Session list -->
+    <div id="playlist-list" class="playlist-list">
+      <p class="playlist-empty">Loading…</p>
+    </div>
+
   </main>
+
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -50,6 +90,7 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
+  <script src="../js/playlist.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

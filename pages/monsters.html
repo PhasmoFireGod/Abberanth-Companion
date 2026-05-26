@@ -6,6 +6,7 @@
   <title>Monsters — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/monsters.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -17,6 +18,7 @@
       <span class="nav-section-label">Home</span>
       <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
       <span class="nav-section-label">Lore</span>
+      <a href="map.html"><span class="nav-icon">🗺️</span> Maps</a>
       <a href="timelines.html"><span class="nav-icon">📜</span> Timelines</a>
       <a href="npcs.html"><span class="nav-icon">🧙</span> NPCs</a>
       <span class="nav-section-label">Combat</span>
@@ -24,6 +26,9 @@
       <span class="nav-section-label">Characters</span>
       <a href="characters.html"><span class="nav-icon">⚔️</span> Player Characters</a>
       <a href="character-sheet.html"><span class="nav-icon">📋</span> Character Sheet</a>
+      <span class="nav-section-label">Party</span>
+      <a href="journal.html"><span class="nav-icon">📔</span> Journal</a>
+      <a href="playlist.html"><span class="nav-icon">🎵</span> Sessions</a>
     </nav>
     <button id="dice-trigger">🎲 Roll Dice</button>
     <div id="sidebar-footer">
@@ -31,21 +36,35 @@
       <button id="logout-btn">Sign Out</button>
     </div>
   </aside>
+
   <main id="main">
     <header class="page-header">
       <h1>🐉 Monsters</h1>
-      <p class="page-subtitle">The bestiary of Abberanth — coming soon.</p>
+      <p class="page-subtitle" id="mon-subtitle">Loading…</p>
     </header>
-    <p class="text-muted" style="font-size:0.9rem;">Monster entries will appear here.</p>
+
+    <div id="monster-grid" class="mon-grid"></div>
   </main>
+
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/firebase-init.js"></script>
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
+  <script src="../js/monsters.js"></script>
   <script src="../js/main.js"></script>
+  <script>
+    // Update subtitle once auth resolves
+    window.onAuthReady(user => {
+      const el = document.getElementById('mon-subtitle');
+      if (el) el.textContent = window.isDM
+        ? 'The full bestiary — add, edit, and control what players can see.'
+        : 'Creatures of Abberanth revealed by your GM.';
+    });
+  </script>
 </body>
 </html>

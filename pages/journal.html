@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Journal — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/journal.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -35,13 +36,62 @@
       <button id="logout-btn">Sign Out</button>
     </div>
   </aside>
+
   <main id="main">
-    <header class="page-header">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Events across the eras of Abberanth — coming soon.</p>
+    <header class="page-header" style="margin-bottom:1rem;">
+      <h1>📔 Journal</h1>
     </header>
-    <p class="text-muted" style="font-size:0.9rem;">Timeline entries will appear here.</p>
+
+    <!-- Tabs -->
+    <div class="journal-tabs">
+      <button class="journal-tab active" id="tab-personal">📔 My Journal</button>
+      <button class="journal-tab"        id="tab-group">👥 Group Journal</button>
+    </div>
+
+    <!-- Two-panel layout -->
+    <div class="journal-layout">
+
+      <!-- Entry list -->
+      <div class="journal-list-panel">
+        <div class="journal-list-header">
+          <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Entries</span>
+          <button class="journal-new-btn" id="journal-new-btn">+ New</button>
+        </div>
+        <div class="journal-list" id="journal-list"></div>
+      </div>
+
+      <!-- Editor -->
+      <div class="journal-editor-panel">
+        <!-- Shown when an entry is selected -->
+        <div id="journal-editor-wrap" style="display:none;flex-direction:column;height:100%;">
+          <div class="journal-editor-header">
+            <input
+              type="text"
+              id="journal-title"
+              class="journal-title-input"
+              placeholder="Entry title…"
+            />
+          </div>
+          <div id="journal-author-tag" class="journal-author-tag" style="display:none;"></div>
+          <textarea
+            id="journal-content"
+            class="journal-content-input"
+            placeholder="Write your entry here…"
+          ></textarea>
+          <div class="journal-editor-footer">
+            <button class="journal-delete-btn" id="journal-delete-btn">Delete</button>
+            <span class="journal-save-status" id="journal-save-status"></span>
+          </div>
+        </div>
+        <!-- Shown when no entry is selected -->
+        <div id="journal-no-entry" class="journal-no-entry">
+          Select an entry or click <strong style="color:var(--accent-gold);">+ New</strong> to start writing.
+        </div>
+      </div>
+
+    </div>
   </main>
+
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -50,6 +100,7 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
+  <script src="../js/journal.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

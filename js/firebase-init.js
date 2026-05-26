@@ -17,11 +17,10 @@ firebase.initializeApp(firebaseConfig);
 
 window._auth = firebase.auth();
 
-// Firestore only available if its CDN script was loaded
-try {
-  window._db = firebase.firestore();
-} catch (e) {
-  window._db = null;
-}
+// Firestore — only if CDN script was loaded
+try { window._db      = firebase.firestore(); } catch (e) { window._db      = null; }
+
+// Storage — only if CDN script was loaded
+try { window._storage = firebase.storage();   } catch (e) { window._storage = null; }
 
 window.firebaseReady = true;

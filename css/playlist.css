@@ -1,0 +1,231 @@
+/* ============================================================
+   Playlist Page Styles
+   ============================================================ */
+
+/* ---- Header bar ---- */
+.playlist-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.playlist-add-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+  margin-left: auto;
+}
+.playlist-add-btn:hover { background: #5060c0; }
+
+/* ---- Add session form ---- */
+.playlist-form-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.playlist-form-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+  letter-spacing: 0.03em;
+}
+
+.playlist-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.playlist-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.playlist-form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.playlist-form-field label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.playlist-form-field input,
+.playlist-form-field textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.playlist-form-field input:focus,
+.playlist-form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-purple);
+}
+.playlist-form-field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.playlist-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.playlist-form-save {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.playlist-form-save:hover { background: #5060c0; }
+
+.playlist-form-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.playlist-form-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+/* ---- Session list ---- */
+.playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.playlist-session {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.playlist-session:hover { border-color: var(--border-glow); }
+
+.playlist-session-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+.playlist-session-info { flex: 1; min-width: 0; }
+
+.playlist-session-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.2rem;
+}
+
+.playlist-session-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.playlist-session-desc {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  padding: 0 1.25rem 0.75rem;
+  white-space: pre-wrap;
+}
+
+/* YouTube embed */
+.playlist-yt-wrap {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  margin: 0 1.25rem 1rem;
+  border-radius: var(--radius);
+  background: #000;
+}
+.playlist-yt-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+  border-radius: var(--radius);
+}
+
+/* External link button */
+.playlist-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 1.25rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+}
+.playlist-link-btn:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-gold);
+}
+
+/* Delete button */
+.playlist-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(192,40,80,0.3);
+  border-radius: var(--radius);
+  color: rgba(192,40,80,0.7);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.playlist-delete-btn:hover {
+  border-color: #c02850;
+  color: #c02850;
+  background: rgba(192,40,80,0.08);
+}
+
+/* Empty state */
+.playlist-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 3rem 0;
+}

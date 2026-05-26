@@ -560,7 +560,7 @@
      Resource calculations
   ---------------------------------------------------------- */
   function calcResourceMax(pts)     { return 5 + ((pts || 0) * 5); }
-  function calcInjuryDamage()       { return (state.injCommon||0)*1 + (state.injHarsh||0)*2 + (state.injCritical||0)*3 + (state.injFatal||0)*5; }
+  function calcInjuryDamage()       { return (state.injCommon||0)*1 + (state.injHarsh||0)*2 + (state.injCritical||0)*3 + (state.injFatal||0)*4; }
   function calcHpCur()              { return Math.max(0, calcResourceMax(state.hpMax) - calcInjuryDamage()); }
   function calcManCur()             { return Math.max(0, calcResourceMax(state.manMax) - (state.manaSpent||0)); }
   function calcStamCur()            { return Math.max(0, calcResourceMax(state.stamMax) - (state.stamSpent||0)); }
