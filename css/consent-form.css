@@ -1,0 +1,293 @@
+/* ============================================================
+   Consent Form — RPG Consent Checklist
+   ============================================================ */
+
+/* ---- Top fields ---- */
+.cf-top-fields {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.cf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.cf-field label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cf-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.65rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.cf-input:focus { outline: none; border-color: var(--accent-purple); }
+
+/* Rating buttons */
+.cf-rating-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.cf-rating-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.25rem;
+}
+.cf-rating-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.cf-rating-btn.active {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: #fff;
+}
+
+/* ---- Legend ---- */
+.cf-legend {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8rem;
+}
+.cf-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-primary);
+}
+
+/* ---- Main checklist grid ---- */
+.cf-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 720px) { .cf-main-grid { grid-template-columns: 1fr; } }
+
+.cf-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+}
+.cf-section-title {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Sub-category label (e.g. "Romance") */
+.cf-sub-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0.6rem 0 0.2rem;
+}
+
+/* Each checklist row */
+.cf-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(42,53,104,0.4);
+}
+.cf-row:last-child { border-bottom: none; }
+
+.cf-row-label {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+.cf-row-label.indent {
+  padding-left: 0.75rem;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+.cf-row-label.custom-label { font-style: italic; color: var(--text-muted); }
+
+/* GYR radio group */
+.cf-gyr {
+  display: flex;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+/* Radio label buttons styled G / Y / R */
+.cf-radio-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  transition: all 0.15s;
+  user-select: none;
+  flex-shrink: 0;
+}
+.cf-radio-label input { display: none; }
+
+.cf-radio-label.g { border-radius: 3px; }
+.cf-radio-label.y { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border: none; }
+.cf-radio-label.r { border-radius: 50%; }
+
+/* Active states */
+.cf-radio-label.g.selected { background: #3a9; border-color: #3a9; color: #fff; }
+.cf-radio-label.y.selected { background: #cc9a00; color: #fff; }
+.cf-radio-label.r.selected { background: #c44; border-color: #c44; color: #fff; }
+
+/* Custom topic input */
+.cf-custom-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.25rem;
+  min-width: 80px;
+  transition: border-color var(--transition);
+}
+.cf-custom-input:focus { outline: none; border-color: var(--accent-purple); }
+.cf-custom-input::placeholder { color: var(--text-muted); font-style: italic; }
+
+/* Additional topics & follow-up */
+.cf-full-width {
+  grid-column: 1 / -1;
+}
+.cf-follow-up-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  width: 100%;
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.55;
+  transition: border-color var(--transition);
+  margin-top: 0.4rem;
+}
+.cf-follow-up-input:focus { outline: none; border-color: var(--accent-purple); }
+.cf-follow-up-label {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Save button */
+.cf-save-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.cf-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.cf-save-btn:hover:not(:disabled) { background: #5060c0; }
+.cf-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.cf-save-status { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ---- DM view: player list ---- */
+.cf-player-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+.cf-player-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.cf-player-card:hover { border-color: var(--border-glow); background: var(--bg-card-hover); }
+.cf-player-name { flex: 1; font-size: 0.9rem; color: var(--text-primary); }
+.cf-player-date { font-size: 0.7rem; color: var(--text-muted); }
+.cf-view-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.cf-view-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+/* ---- View-only mode (DM reading a player's form) ---- */
+.cf-view-only .cf-radio-label { pointer-events: none; }
+.cf-view-only .cf-custom-input { pointer-events: none; }
+.cf-view-only .cf-input { pointer-events: none; }
+.cf-view-only .cf-rating-btn { pointer-events: none; }
+.cf-view-banner {
+  background: rgba(139,164,248,0.1);
+  border: 1px solid rgba(139,164,248,0.3);
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

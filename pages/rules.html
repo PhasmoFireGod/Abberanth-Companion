@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Rules — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="../css/timelines.css" />
+  <link rel="stylesheet" href="../css/editable-page.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -44,18 +44,34 @@
   </aside>
 
   <main id="main">
-    <header class="page-header" style="margin-bottom:0.5rem;">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Campaign groups — assign players and link journals &amp; sessions.</p>
-    </header>
-
-    <div class="tl-header-bar">
-      <!-- Create button shown by JS when DM is logged in -->
-      <button id="create-timeline-btn" class="tl-create-btn" style="display:none;">+ New Timeline</button>
+    <div class="ep-header-bar">
+      <div>
+        <h1 style="font-family:var(--font-heading);font-size:1.6rem;color:var(--accent-gold);">🔖 Basic Rules</h1>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0.2rem;">The rules and mechanics of Abberanth.</p>
+      </div>
+      <button class="ep-edit-toggle" id="ep-edit-toggle" style="display:none;">✏️ Edit Rules</button>
     </div>
 
-    <div id="timeline-grid" class="tl-grid">
-      <p class="tl-empty">Loading…</p>
+    <!-- View mode -->
+    <div id="ep-view-wrap">
+      <div class="ep-content-view" id="ep-content-view">
+        <p class="ep-content-empty">Rules will appear here once the GM has written them.</p>
+      </div>
+    </div>
+
+    <!-- Edit mode (DM only) -->
+    <div id="ep-edit-wrap" class="ep-edit-wrap" style="display:none;">
+      <p class="ep-edit-hint">
+        Supports basic formatting: <code>## Heading</code>, <code>### Sub-heading</code>,
+        <code>**bold**</code>, <code>*italic*</code>, <code>- list item</code>.
+        Blank line = new paragraph.
+      </p>
+      <textarea class="ep-textarea" id="ep-textarea"
+        placeholder="## Core Mechanics&#10;&#10;Write your rules here..."></textarea>
+      <div class="ep-edit-actions">
+        <button class="ep-cancel-btn" id="ep-cancel-btn">Cancel</button>
+        <button class="ep-save-btn"   id="ep-save-btn">Save</button>
+      </div>
     </div>
   </main>
 
@@ -67,7 +83,8 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
-  <script src="../js/timelines.js"></script>
   <script src="../js/main.js"></script>
+  <script>window.EP_PAGE_ID = 'rules';</script>
+  <script src="../js/editable-page.js"></script>
 </body>
 </html>

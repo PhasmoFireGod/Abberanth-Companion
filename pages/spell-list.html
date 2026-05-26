@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Spells — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="../css/timelines.css" />
+  <link rel="stylesheet" href="../css/spells.css" />
 </head>
 <body>
   <aside id="sidebar">
-    <div id="sidebar-logo">
-      <span class="logo-title">Abberanth</span>
-      <span class="logo-subtitle">Companion</span>
-    </div>
+    <div id="sidebar-logo"><span class="logo-title">Abberanth</span><span class="logo-subtitle">Companion</span></div>
     <nav>
       <span class="nav-section-label">Home</span>
       <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
@@ -37,26 +34,16 @@
       <a href="bard-songs.html"><span class="nav-icon">🎶</span> Bard Songs</a>
     </nav>
     <button id="dice-trigger">🎲 Roll Dice</button>
-    <div id="sidebar-footer">
-      <span id="sidebar-user-email"></span>
-      <button id="logout-btn">Sign Out</button>
-    </div>
+    <div id="sidebar-footer"><span id="sidebar-user-email"></span><button id="logout-btn">Sign Out</button></div>
   </aside>
 
   <main id="main">
-    <header class="page-header" style="margin-bottom:0.5rem;">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Campaign groups — assign players and link journals &amp; sessions.</p>
+    <header class="page-header">
+      <h1>📚 Spells</h1>
+      <p class="page-subtitle">All spells available in Abberanth — canonical and community-approved.</p>
     </header>
-
-    <div class="tl-header-bar">
-      <!-- Create button shown by JS when DM is logged in -->
-      <button id="create-timeline-btn" class="tl-create-btn" style="display:none;">+ New Timeline</button>
-    </div>
-
-    <div id="timeline-grid" class="tl-grid">
-      <p class="tl-empty">Loading…</p>
-    </div>
+    <div class="spell-filter-bar" id="spell-filter-bar"></div>
+    <div class="spell-grid" id="spell-grid"><p style="color:var(--text-muted);">Loading…</p></div>
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -65,9 +52,10 @@
   <script src="../js/config.js"></script>
   <script src="../js/firebase-init.js"></script>
   <script src="../js/auth-guard.js"></script>
+  <script src="../js/spells-data.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
-  <script src="../js/timelines.js"></script>
+  <script src="../js/spell-list.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timelines — Abberanth Companion</title>
+  <title>Consent Form — Abberanth Companion</title>
   <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="../css/timelines.css" />
+  <link rel="stylesheet" href="../css/consent-form.css" />
 </head>
 <body>
   <aside id="sidebar">
-    <div id="sidebar-logo">
-      <span class="logo-title">Abberanth</span>
-      <span class="logo-subtitle">Companion</span>
-    </div>
+    <div id="sidebar-logo"><span class="logo-title">Abberanth</span><span class="logo-subtitle">Companion</span></div>
     <nav>
       <span class="nav-section-label">Home</span>
       <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
@@ -37,25 +34,40 @@
       <a href="bard-songs.html"><span class="nav-icon">🎶</span> Bard Songs</a>
     </nav>
     <button id="dice-trigger">🎲 Roll Dice</button>
-    <div id="sidebar-footer">
-      <span id="sidebar-user-email"></span>
-      <button id="logout-btn">Sign Out</button>
-    </div>
+    <div id="sidebar-footer"><span id="sidebar-user-email"></span><button id="logout-btn">Sign Out</button></div>
   </aside>
 
   <main id="main">
-    <header class="page-header" style="margin-bottom:0.5rem;">
-      <h1>📜 Timelines</h1>
-      <p class="page-subtitle">Campaign groups — assign players and link journals &amp; sessions.</p>
+    <header class="page-header" style="margin-bottom:1rem;">
+      <h1>🤝 Consent Form</h1>
+      <p class="page-subtitle">RPG Consent Checklist — mark your comfort level with each topic.</p>
     </header>
 
-    <div class="tl-header-bar">
-      <!-- Create button shown by JS when DM is logged in -->
-      <button id="create-timeline-btn" class="tl-create-btn" style="display:none;">+ New Timeline</button>
+    <!-- DM view-only banner (hidden by default) -->
+    <div id="cf-view-banner" class="cf-view-banner" style="display:none;"></div>
+
+    <!-- DM: player list section -->
+    <div id="cf-player-list-section" style="display:none;">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">
+        Click any player to view their submitted consent form.
+        <button class="cf-view-btn" id="cf-own-form-link" style="margin-left:1rem;">View / Edit My Form</button>
+      </p>
+      <div class="cf-player-list" id="cf-player-list"></div>
     </div>
 
-    <div id="timeline-grid" class="tl-grid">
-      <p class="tl-empty">Loading…</p>
+    <!-- Form section (player fills out, or DM views read-only) -->
+    <div id="cf-form-section" style="display:none;">
+      <!-- Dynamically built by consent-form.js -->
+      <div id="cf-main"></div>
+
+      <!-- Save button (hidden when DM is viewing a player's form) -->
+      <div class="cf-save-row" id="cf-save-row">
+        <button class="cf-save-btn" id="cf-save-btn">Save Form</button>
+        <span class="cf-save-status" id="cf-save-status"></span>
+        <span style="font-size:0.72rem;color:var(--text-muted);">
+          Your responses are saved privately — only the GM can view them.
+        </span>
+      </div>
     </div>
   </main>
 
@@ -67,7 +79,17 @@
   <script src="../js/auth-guard.js"></script>
   <script src="../js/dice.js"></script>
   <script src="../js/dice-ui.js"></script>
-  <script src="../js/timelines.js"></script>
+  <script src="../js/consent-form.js"></script>
   <script src="../js/main.js"></script>
+  <script>
+    // Hide save button when DM is viewing a player's form
+    window.onAuthReady(() => {
+      if (window.isDM) {
+        const saveRow = document.getElementById('cf-save-row');
+        // Save row hidden initially; shown when DM opens their own form
+        if (saveRow) saveRow.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
