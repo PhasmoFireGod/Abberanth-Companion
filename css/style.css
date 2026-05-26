@@ -113,6 +113,27 @@ a:hover { color: #e0a84a; }
   text-transform: uppercase;
   color: var(--text-muted);
   padding: 1rem 1.25rem 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: color var(--transition);
+}
+.nav-section-label:hover { color: var(--text-primary); }
+
+/* Collapse arrow indicator */
+.nav-collapse-arrow {
+  font-size: 0.5rem;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+.nav-section-label:hover .nav-collapse-arrow { opacity: 1; }
+
+/* Hidden nav links (collapsed section) */
+#sidebar nav a.nav-link-hidden {
+  display: none;
 }
 
 #sidebar nav a {
