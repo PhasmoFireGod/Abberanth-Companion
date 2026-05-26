@@ -119,64 +119,7 @@
      well: null = universal (no well requirement)
      well: { name, minLevel } = requires that many points in that well
   ---------------------------------------------------------- */
-  const SPELLS = [
-    {
-      id:      'mend',
-      name:    'Mend',
-      cost:    1,
-      well:    null,
-      desc:    'Fix an item or small structure within a 5×5 meter cube. Examples: a small chunk of wall, a pocket watch.',
-      scaling: null,
-    },
-    {
-      id:      'candle',
-      name:    'Candle',
-      cost:    1,
-      well:    null,
-      desc:    'Spark or snuff a candle-sized flame.',
-      scaling: null,
-    },
-    {
-      id:      'breeze',
-      name:    'Breeze',
-      cost:    1,
-      well:    null,
-      desc:    'Cool a 10×10 meter area with a gentle wind.',
-      scaling: null,
-    },
-    {
-      id:      'aide',
-      name:    'Aide',
-      cost:    1,
-      well:    null,
-      desc:    'Grant temporary 1d10 HP on a target. No dice explosion. Cannot regrow limbs, remove scars, or stop bleeding.',
-      scaling: null,
-    },
-    {
-      id:      'puddle',
-      name:    'Puddle',
-      cost:    1,
-      well:    null,
-      desc:    'Create a 12×12×1 cm puddle of clean water.',
-      scaling: null,
-    },
-    {
-      id:      'magic-missile',
-      name:    'Magic Missile',
-      cost:    5,
-      well:    { name: 'Arcane', minLevel: 1 },
-      desc:    'Create a singular missile of arcane nature. Each additional mana spent adds 1 bolt. Each bolt deals 1d10 damage.',
-      scaling: '+1 mana → +1 bolt (each bolt deals 1d10 damage)',
-    },
-    {
-      id:      'prestidigitation',
-      name:    'Prestidigitation',
-      cost:    5,
-      well:    { name: 'Arcane', minLevel: 1 },
-      desc:    'Choose one effect (base duration 60 minutes). Adding 1 mana extends duration by 10 minutes or adds another effect.\n\nEffects:\n• Ignite or snuff all candles, torches, or campfires in a 50×50 meter radius.\n• Create a small sensory effect that deals no damage.\n• Clean or soil an object within a 1×1 meter cube (add +1 meter per extra mana).\n• Chill, warm, or flavor something within a 1×1 meter cube (add +1 meter per extra mana).\n• Add colour, make a mark, or place a symbol on a structure.',
-      scaling: '+1 mana → +10 minutes duration, or add another effect',
-    },
-  ];
+  function getSpells() { return window.SPELL_DATA || []; }
 
   /** Spell slots = floor(manMax / 3) + 1 */
   function calcSpellSlots() {
@@ -185,16 +128,24 @@
 
   /** Return spells the player currently qualifies to use */
   function availableSpells() {
-    return SPELLS.filter(spell => {
-      if (!spell.well) return true;
-      const pts = state.wells?.[spell.well.name] || 0;
-      return pts >= spell.well.minLevel;
+    return getSpells().filter(spell => {
+      if (!spell.wells || spell.wells.length === 0) return true;
+      return spell.wells.every(req => {
+        const pts = state.wells?.[req.name] || 0;
+        return pts >= req.minLevel;
+      });
     });
+  }
+
+  /** Human-readable well requirement label */
+  function wellsLabel(spell) {
+    if (!spell.wells || spell.wells.length === 0) return 'Universal';
+    return spell.wells.map(w => `${w.name} ${w.minLevel}+`).join(' + ');
   }
 
   /** Spells already equipped (by id) */
   function equippedSpells() {
-    return (state.spells || []).filter(id => SPELLS.find(s => s.id === id));
+    return (state.spells || []).filter(id => getSpells().find(s => s.id === id));
   }
 
   function _featureKey(slot, featureName) { return `${slot}:${featureName}`; }
@@ -885,14 +836,14 @@
     // Render one row per slot
     for (let i = 0; i < slots; i++) {
       const spellId = equipped[i] || null;
-      const spell   = spellId ? SPELLS.find(s => s.id === spellId) : null;
+      const spell   = spellId ? getSpells().find(s => s.id === spellId) : null;
 
       const row = document.createElement('div');
       row.className = 'cs-spell-slot' + (spell ? ' filled' : '');
 
       if (spell) {
         const costLabel = `${spell.cost} mana`;
-        const wellLabel = spell.well ? `${spell.well.name} ${spell.well.minLevel}+` : 'Universal';
+        const wellLabel = wellsLabel(spell);
         row.innerHTML = `
           <div class="cs-spell-info">
             <div class="cs-spell-name">${spell.name}</div>
@@ -1007,7 +958,7 @@
     } else {
       available.forEach(spell => {
         const alreadyEquipped = equipped.includes(spell.id);
-        const wellLabel = spell.well ? `${spell.well.name} ${spell.well.minLevel}+` : 'Universal';
+        const wellLabel = wellsLabel(spell);
         const row = document.createElement('div');
         row.style.cssText = `
           padding: 0.65rem 0.75rem;
