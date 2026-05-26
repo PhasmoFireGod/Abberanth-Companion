@@ -204,6 +204,31 @@
   color: var(--accent-gold);
 }
 
+/* Edit + Delete button group */
+.playlist-session-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* Edit button */
+.playlist-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.playlist-edit-btn:hover {
+  border-color: var(--accent-purple);
+  color: var(--accent-gold);
+  background: rgba(102,80,216,0.08);
+}
+
 /* Delete button */
 .playlist-delete-btn {
   background: transparent;
@@ -220,6 +245,41 @@
   border-color: #c02850;
   color: #c02850;
   background: rgba(192,40,80,0.08);
+}
+
+/* Edit session modal */
+.playlist-edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.playlist-edit-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 500px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.playlist-edit-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.1rem;
 }
 
 /* Empty state */

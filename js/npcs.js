@@ -46,7 +46,7 @@
       snap.forEach(doc => {
         const d = doc.data();
         if (!dmEmails.includes((d.email || '').toLowerCase()))
-          _players.push({ uid: d.uid || doc.id, email: d.email || doc.id });
+          _players.push({ uid: d.uid || doc.id, email: d.email || doc.id, username: d.username || null });
       });
     } catch (e) { console.warn('Could not load players:', e); }
   }
@@ -312,7 +312,7 @@
       const checked = vis[p.uid] === true;
       html += `
         <label class="npc-vis-toggle ${checked ? 'active' : ''}" data-uid="${esc(p.uid)}">
-          <input type="checkbox" ${checked ? 'checked' : ''} /> ${esc(p.email)}
+          <input type="checkbox" ${checked ? 'checked' : ''} /> ${esc(p.username || p.email)}
         </label>
       `;
     });

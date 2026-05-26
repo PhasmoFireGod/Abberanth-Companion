@@ -1,0 +1,360 @@
+/* ============================================================
+   Timelines (Campaign Groups) Page
+   ============================================================ */
+
+/* ---- Header bar ---- */
+.tl-header-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.tl-create-btn {
+  margin-left: auto;
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.tl-create-btn:hover { background: #5060c0; }
+
+/* ---- Timeline grid ---- */
+.tl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.tl-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.tl-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(102,80,216,0.12);
+}
+
+.tl-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.tl-card-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tl-card-name {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.02em;
+}
+.tl-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tl-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.65rem;
+  margin-top: auto;
+}
+.tl-card-links {
+  display: flex;
+  gap: 0.75rem;
+}
+.tl-card-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition);
+  font-size: 0.7rem;
+}
+.tl-card-links a:hover { color: var(--accent-gold); }
+
+.tl-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+/* ---- Timeline modal ---- */
+.tl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.tl-modal-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  width: 460px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-modal-color-bar {
+  height: 5px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.tl-modal-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.tl-modal-name {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+}
+.tl-modal-desc {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.tl-name-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  transition: border-color var(--transition);
+  letter-spacing: 0.02em;
+}
+.tl-name-input:focus { outline: none; border-color: var(--accent-purple); }
+
+.tl-desc-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.55;
+  transition: border-color var(--transition);
+}
+.tl-desc-input:focus { outline: none; border-color: var(--accent-purple); }
+
+.tl-modal-section-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.35rem;
+}
+
+/* Color picker */
+.tl-color-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.tl-color-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.tl-color-btn:hover,
+.tl-color-btn.active { border-color: #fff; transform: scale(1.15); }
+.tl-color-btn:disabled { cursor: default; opacity: 0.5; }
+
+/* Member list */
+.tl-member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tl-member-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.25rem 0.7rem 0.25rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  user-select: none;
+}
+.tl-member-toggle.active {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(88,152,232,0.1);
+}
+.tl-member-toggle input[type="checkbox"] {
+  accent-color: var(--accent-teal);
+  width: 12px; height: 12px; cursor: pointer;
+}
+.tl-member-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Quick links */
+.tl-quick-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.tl-quick-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--accent-gold);
+  text-decoration: none;
+  padding: 0.4rem 0.65rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+}
+.tl-quick-link:hover {
+  border-color: var(--accent-gold);
+  background: rgba(201,146,58,0.08);
+  color: var(--accent-gold);
+}
+
+/* Modal actions */
+.tl-modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+.tl-save-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.tl-save-btn:hover { background: #5060c0; }
+.tl-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.tl-cancel-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.tl-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(192,40,80,0.4);
+  border-radius: var(--radius);
+  color: #c02850;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  margin-right: auto;
+  transition: all var(--transition);
+}
+.tl-delete-btn:hover { background: rgba(192,40,80,0.1); border-color: #c02850; }
+
+/* ---- Timeline filter pills (used in journal + playlist) ---- */
+.tl-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+.tl-filter-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+.tl-filter-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.tl-filter-pill:hover { border-color: var(--border-glow); color: var(--text-primary); }
+.tl-filter-pill.active {
+  color: #fff;
+  border-color: transparent;
+}
+.tl-filter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

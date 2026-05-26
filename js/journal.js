@@ -5,12 +5,14 @@
 
 (function () {
 
-  let _user         = null;
-  let _tab          = 'personal';   // 'personal' | 'group'
-  let _entries      = [];
-  let _currentId    = null;
-  let _saveTimer    = null;
-  let _dirty        = false;
+  let _user              = null;
+  let _tab               = 'personal';   // 'personal' | 'group'
+  let _entries           = [];
+  let _currentId         = null;
+  let _saveTimer         = null;
+  let _dirty             = false;
+  let _timelines         = [];
+  let _currentTimelineId = null;   // null = all timelines
 
   /* ----------------------------------------------------------
      Firestore references
@@ -26,11 +28,64 @@
   }
 
   /* ----------------------------------------------------------
+     Timelines
+  ---------------------------------------------------------- */
+  async function loadTimelines() {
+    try {
+      let snap;
+      try { snap = await window._db.collection('timelines').orderBy('createdAt').get(); }
+      catch (_) { snap = await window._db.collection('timelines').get(); }
+
+      let all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _timelines = window.isDM
+        ? all
+        : all.filter(t => (t.members || []).includes(_user?.uid));
+    } catch (e) {
+      console.warn('Could not load timelines:', e);
+      _timelines = [];
+    }
+  }
+
+  function renderTimelineFilter() {
+    const bar = document.getElementById('journal-timeline-filter');
+    if (!bar) return;
+
+    const pills = [
+      { id: null, name: 'All', color: null },
+      ..._timelines,
+    ].map(tl => {
+      const active = _currentTimelineId === tl.id;
+      const dotHtml = tl.color
+        ? `<span class="tl-filter-dot" style="background:${esc(tl.color)};"></span>` : '';
+      const style = (active && tl.color) ? `background:${esc(tl.color)};` : '';
+      return `<button class="tl-filter-pill${active ? ' active' : ''}"
+        data-tlid="${esc(tl.id || '')}" style="${style}">
+        ${dotHtml}${esc(tl.name)}
+      </button>`;
+    }).join('');
+
+    bar.innerHTML = `<span class="tl-filter-label">Campaign:</span>${pills}`;
+
+    bar.querySelectorAll('.tl-filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _currentTimelineId = btn.dataset.tlid || null;
+        renderTimelineFilter();
+        loadEntries();
+      });
+    });
+  }
+
+  /* ----------------------------------------------------------
      Boot
   ---------------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
     window.onAuthReady(async (user) => {
       _user = user;
+      // Check for ?tl= URL param (from timeline quick-link)
+      const urlTl = new URLSearchParams(location.search).get('tl');
+      if (urlTl) _currentTimelineId = urlTl;
+      await loadTimelines();
+      renderTimelineFilter();
       bindUI();
       await loadEntries();
     });
@@ -44,21 +99,28 @@
     if (listEl) listEl.innerHTML = '<p class="journal-empty-list">Loading…</p>';
 
     try {
-      const snap = await activeRef()
-        .orderBy('updatedAt', 'desc')
-        .get();
-      _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await activeRef().orderBy('updatedAt', 'desc').get();
+      let entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Client-side filter by timeline (avoids composite index requirement)
+      if (_currentTimelineId) {
+        entries = entries.filter(e => e.timelineId === _currentTimelineId);
+      }
+      _entries = entries;
     } catch (e) {
       // updatedAt index might not exist yet — fall back to unordered
       try {
         const snap = await activeRef().get();
-        _entries = snap.docs
+        let entries = snap.docs
           .map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => {
             const at = a.updatedAt?.toMillis?.() ?? 0;
             const bt = b.updatedAt?.toMillis?.() ?? 0;
             return bt - at;
           });
+        if (_currentTimelineId) {
+          entries = entries.filter(e => e.timelineId === _currentTimelineId);
+        }
+        _entries = entries;
       } catch (e2) {
         _entries = [];
         console.warn('Journal load failed:', e2);
@@ -91,8 +153,9 @@
       const when = entry.updatedAt?.toDate
         ? entry.updatedAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         : '';
-      const author = _tab === 'group' && entry.authorEmail
-        ? `<br/>${entry.authorEmail}` : '';
+      const authorDisplay = entry.authorUsername || entry.authorEmail;
+      const author = _tab === 'group' && authorDisplay
+        ? `<br/>${authorDisplay}` : '';
 
       item.innerHTML = `
         <div class="journal-entry-title">${esc(entry.title || 'Untitled')}</div>
@@ -125,8 +188,8 @@
     // Author tag (group only)
     const authorEl = document.getElementById('journal-author-tag');
     if (authorEl) {
-      if (_tab === 'group' && entry.authorEmail) {
-        authorEl.textContent = `by ${entry.authorEmail}`;
+      if (_tab === 'group' && (entry.authorUsername || entry.authorEmail)) {
+        authorEl.textContent = `by ${entry.authorUsername || entry.authorEmail}`;
         authorEl.style.display = 'block';
       } else {
         authorEl.style.display = 'none';
@@ -149,11 +212,16 @@
   ---------------------------------------------------------- */
   async function newEntry() {
     const data = {
-      title:     '',
-      content:   '',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      ..._tab === 'group' ? { authorUid: _user.uid, authorEmail: _user.email } : {},
+      title:      '',
+      content:    '',
+      updatedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      timelineId: _currentTimelineId || null,
+      ..._tab === 'group' ? {
+        authorUid:      _user.uid,
+        authorEmail:    _user.email,
+        authorUsername: window._username || null,
+      } : {},
     };
 
     try {

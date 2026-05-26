@@ -266,7 +266,7 @@
             // Section header per player
             const header = document.createElement('div');
             header.className   = 'dm-player-header';
-            header.textContent = `👤 ${p.email}`;
+            header.textContent = `👤 ${p.username || p.email}`;
             listEl.appendChild(header);
 
             try {
