@@ -564,7 +564,7 @@
   function calcInjuryDamage()       { return (state.injCommon||0)*1 + (state.injHarsh||0)*2 + (state.injCritical||0)*3 + (state.injFatal||0)*4; }
 
   /* Arcane Vampirism: HP pts + Mana pts merge into one combined Mana pool */
-  function calcArcaneManaMax()      { return calcResourceMax((state.hpMax||0) + (state.manMax||0)); }
+  function calcArcaneManaMax()      { return calcResourceMax(state.hpMax) + calcResourceMax(state.manMax); }
 
   function calcHpCur() {
     if (state.arcaneVampirism) {
