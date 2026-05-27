@@ -276,9 +276,11 @@
       additionalTopics: [],
     };
 
-    // Selected GYR radios
+    // Selected GYR radios (skip legend demo elements which have no data-key/data-val)
     main.querySelectorAll('.cf-radio-label.selected').forEach(label => {
-      data.responses[label.dataset.key] = label.dataset.val;
+      const key = label.dataset.key;
+      const val = label.dataset.val;
+      if (key && val) data.responses[key] = val;
     });
 
     // Custom topic text + response
