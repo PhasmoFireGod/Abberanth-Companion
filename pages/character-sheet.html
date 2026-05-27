@@ -180,80 +180,171 @@
     </section>
 
     <!-- ===== Body (2-col) ===== -->
-    <div class="cs-body">
+    <!-- ===== Body (2-col) ===== -->
+<div class="cs-body">
 
-      <!-- ---- Left Column ---- -->
-      <div class="cs-left">
+  <!-- ===== Full Width Attributes ===== -->
+  <section class="cs-section cs-full-span">
 
-        <!-- Attributes -->
-        <section class="cs-section">
-          <div class="cs-section-title">
-            Attributes
-            <span class="cs-section-note">— pts + racial = total</span>
-          </div>
+    <div class="cs-section-title">
+      Attributes
+      <span class="cs-section-note">— pts + racial = total</span>
+    </div>
 
-          <!-- Each row: name | input | dice btn | = | total -->
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Strength</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Strength" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Strength (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Strength">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Speed</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Speed" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Speed (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Speed">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Constitution</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Constitution" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Constitution (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Constitution">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Wisdom</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Wisdom" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Wisdom (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Wisdom">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Intelligence</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Intelligence" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Intelligence (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Intelligence">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Charisma</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Charisma" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Charisma (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Charisma">0</span>
-          </div>
-          <div class="cs-attr-row">
-            <span class="cs-attr-name">Willpower</span>
-            <input type="number" class="cs-num-input" value="0"
-              data-type="attr" data-key="Willpower" />
-            <button class="cs-dice-btn" data-level="0" title="Roll Willpower (skill 0)">🎲</button>
-            <span class="cs-attr-eq">=</span>
-            <span class="cs-attr-total" id="cs-attr-total-Willpower">0</span>
-            <span class="cs-will-sep">·</span>
-            <button class="cs-will-btn cs-will-spend-btn" id="cs-will-spend" title="Spend 1 Willpower">−</button>
-            <span class="cs-will-cur" id="cs-will-cur">0</span>
-            <span class="cs-will-label">left</span>
-          </div>
-        </section>
+    <!-- Strength -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Strength</span>
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Strength" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Strength (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Strength">0</span>
+    </div>
+
+    <!-- Speed -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Speed</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Speed" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Speed (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Speed">0</span>
+    </div>
+
+    <!-- Constitution -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Constitution</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Constitution" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Constitution (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Constitution">0</span>
+    </div>
+
+    <!-- Wisdom -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Wisdom</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Wisdom" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Wisdom (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Wisdom">0</span>
+    </div>
+
+    <!-- Intelligence -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Intelligence</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Intelligence" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Intelligence (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Intelligence">0</span>
+    </div>
+
+    <!-- Charisma -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Charisma</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Charisma" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Charisma (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Charisma">0</span>
+    </div>
+
+    <!-- Willpower -->
+    <div class="cs-attr-row">
+      <span class="cs-attr-name">Willpower</span>
+
+      <input type="number"
+             class="cs-num-input"
+             value="0"
+             data-type="attr"
+             data-key="Willpower" />
+
+      <button class="cs-dice-btn"
+              data-level="0"
+              title="Roll Willpower (skill 0)">🎲</button>
+
+      <span class="cs-attr-eq">=</span>
+
+      <span class="cs-attr-total"
+            id="cs-attr-total-Willpower">0</span>
+
+      <span class="cs-will-sep">·</span>
+
+      <button class="cs-will-btn cs-will-spend-btn"
+              id="cs-will-spend"
+              title="Spend 1 Willpower">−</button>
+
+      <span class="cs-will-cur"
+            id="cs-will-cur">0</span>
+
+      <span class="cs-will-label">left</span>
+    </div>
+
+  </section>
+
+  <!-- ===== Left Column ===== -->
+  <div class="cs-left">
 
         <!-- Resources -->
         <section class="cs-section">

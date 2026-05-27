@@ -22,8 +22,8 @@
            desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.' },
     },
 
-    Arachnei: {
-      label: 'Arachnei (Saltici)',
+    Arachnis: {
+      label: 'Arachnis (Saltici)',
       A: { type: 'multi_stat', stats: [{ attr: 'Wisdom', value: -1 }, { attr: 'Intelligence', value: 2 }] },
       B: { type: 'passive', name: 'Predatory Leap',
            desc: 'These species are excellent jumpers. When jumping and attacking an enemy, add +1 per meter of jump to the damage.' },

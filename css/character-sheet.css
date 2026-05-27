@@ -392,6 +392,8 @@
 }
 
 /* ---------- Main Body Grid ---------- */
+/* ---------- Main Body Grid ---------- */
+
 .cs-body {
   display: grid;
   grid-template-columns: 270px 1fr;
@@ -399,12 +401,19 @@
   align-items: start;
 }
 
+/* Full width sections */
+.cs-full-span {
+  grid-column: 1 / -1;
+}
+
+/* Left + right stacks */
 .cs-left,
 .cs-right {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
+
 
 /* Generic section card */
 .cs-section {
