@@ -180,7 +180,23 @@
       </div>
     `;
 
-    main.innerHTML = topHtml + legendHtml + `<div class="cf-main-grid">${sectionsHtml}${additionalHtml}${followHtml}</div>`;
+    const saveHtml = !viewOnly ? `
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <button class="cf-save-btn" id="cf-save-btn">Save Form</button>
+        <span class="cf-save-status" id="cf-save-status"></span>
+        <span style="font-size:0.72rem;color:var(--text-muted);">
+          Your responses are saved privately — only the GM can view them.
+        </span>
+      </div>` : '';
+
+    main.innerHTML = topHtml + legendHtml +
+      `<div class="cf-main-grid">${sectionsHtml}${additionalHtml}${followHtml}</div>` +
+      saveHtml;
+
+    // Wire save button immediately after building the DOM
+    if (!viewOnly) {
+      document.getElementById('cf-save-btn')?.addEventListener('click', saveForm);
+    }
 
     if (!viewOnly) {
       // Rating buttons
@@ -408,7 +424,6 @@
         await loadOwnForm();
       }
 
-      document.getElementById('cf-save-btn')?.addEventListener('click', saveForm);
     });
   });
 

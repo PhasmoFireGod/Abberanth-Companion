@@ -35,6 +35,7 @@
   // Drawing state
   let _drawing      = false;
   let _drawPoints   = [];   // [[lat, lng], ...]
+  let _clickTimer   = null; // debounce single-click vs double-click
   let _previewLine  = null;
   let _previewPoly  = null;
   let _drawMarkers  = [];
@@ -160,11 +161,12 @@
     if (_leafMap) { _leafMap.off(); _leafMap.remove(); _leafMap = null; }
 
     _leafMap = L.map('map-container', {
-      crs:      L.CRS.Simple,
-      minZoom: -4,
-      maxZoom:  4,
-      zoomSnap: 0.25,
+      crs:              L.CRS.Simple,
+      minZoom:         -4,
+      maxZoom:          4,
+      zoomSnap:         0.25,
       attributionControl: false,
+      doubleClickZoom:  false,   // we handle dblclick ourselves for drawing
     });
 
     const bounds = [[0, 0], [h, w]];
@@ -290,16 +292,20 @@
 
   function onMapClick(e) {
     if (!_drawing) return;
-    _drawPoints.push([e.latlng.lat, e.latlng.lng]);
-    updatePreview(_drawPoints);
+    // Delay 180ms — if a dblclick fires within that window, clearTimeout
+    // cancels this and no extra point is added.
+    clearTimeout(_clickTimer);
+    _clickTimer = setTimeout(() => {
+      _drawPoints.push([e.latlng.lat, e.latlng.lng]);
+      updatePreview(_drawPoints);
+    }, 180);
   }
 
   function onMapDblClick(e) {
     if (!_drawing) return;
-    L.DomEvent.stop(e.originalEvent);   // prevent Leaflet zoom-on-dblclick
-
-    // Remove the extra point added by the preceding click event
-    if (_drawPoints.length > 3) _drawPoints.pop();
+    // Kill the pending single-click point before it gets added
+    clearTimeout(_clickTimer);
+    _clickTimer = null;
 
     if (_drawPoints.length < 3) {
       showHint('Need at least 3 points — keep clicking!');

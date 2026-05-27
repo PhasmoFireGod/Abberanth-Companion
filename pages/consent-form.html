@@ -57,17 +57,8 @@
 
     <!-- Form section (player fills out, or DM views read-only) -->
     <div id="cf-form-section" style="display:none;">
-      <!-- Dynamically built by consent-form.js -->
+      <!-- Dynamically built by consent-form.js (save button is also injected there) -->
       <div id="cf-main"></div>
-
-      <!-- Save button (hidden when DM is viewing a player's form) -->
-      <div class="cf-save-row" id="cf-save-row">
-        <button class="cf-save-btn" id="cf-save-btn">Save Form</button>
-        <span class="cf-save-status" id="cf-save-status"></span>
-        <span style="font-size:0.72rem;color:var(--text-muted);">
-          Your responses are saved privately — only the GM can view them.
-        </span>
-      </div>
     </div>
   </main>
 
@@ -81,15 +72,5 @@
   <script src="../js/dice-ui.js"></script>
   <script src="../js/consent-form.js"></script>
   <script src="../js/main.js"></script>
-  <script>
-    // Hide save button when DM is viewing a player's form
-    window.onAuthReady(() => {
-      if (window.isDM) {
-        const saveRow = document.getElementById('cf-save-row');
-        // Save row hidden initially; shown when DM opens their own form
-        if (saveRow) saveRow.style.display = 'none';
-      }
-    });
-  </script>
 </body>
 </html>
