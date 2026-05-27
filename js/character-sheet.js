@@ -1375,7 +1375,7 @@ const GRANDPARENT_TRAITS = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', 'Abberanth');
-      const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+      const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/image/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
       state.portrait = data.secure_url;
