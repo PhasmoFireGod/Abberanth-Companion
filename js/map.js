@@ -197,7 +197,7 @@
       const hasChild = !!region.childMapId;
       const color    = region.color || REGION_COLORS[0];
 
-      const poly = L.polygon(region.points, {
+      const poly = L.polygon(fromFirestorePoints(region.points), {
         color,
         fillColor:   color,
         fillOpacity: 0.12,
@@ -507,11 +507,33 @@
     }
   }
 
+  /* ----------------------------------------------------------
+     Point format helpers
+     Firestore forbids nested arrays, so we convert:
+       Leaflet   [[lat,lng], ...]  ↔  Firestore  [{lat,lng}, ...]
+  ---------------------------------------------------------- */
+  function toFirestorePoints(pts) {
+    return (pts || []).map(p =>
+      Array.isArray(p) ? { lat: p[0], lng: p[1] } : { lat: p.lat, lng: p.lng }
+    );
+  }
+  function fromFirestorePoints(pts) {
+    return (pts || []).map(p =>
+      Array.isArray(p) ? p : [p.lat, p.lng]
+    );
+  }
+
   async function saveRegion(regionData, existing) {
+    // Convert points to Firestore-safe format before writing
+    const firestoreRegion = {
+      ...regionData,
+      points: toFirestorePoints(regionData.points),
+    };
+
     const regions = [...(_currentMap.regions || [])];
     const idx = existing ? regions.findIndex(r => r.id === regionData.id) : -1;
-    if (idx >= 0) regions[idx] = regionData;
-    else          regions.push(regionData);
+    if (idx >= 0) regions[idx] = firestoreRegion;
+    else          regions.push(firestoreRegion);
     try {
       await _col().doc(_currentMap.id).update({ regions });
       _currentMap.regions = regions;
