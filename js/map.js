@@ -35,7 +35,6 @@
   // Drawing state
   let _drawing      = false;
   let _drawPoints   = [];   // [[lat, lng], ...]
-  let _clickTimer   = null; // debounce single-click vs double-click
   let _previewLine  = null;
   let _previewPoly  = null;
   let _drawMarkers  = [];
@@ -292,20 +291,17 @@
 
   function onMapClick(e) {
     if (!_drawing) return;
-    // Delay 180ms — if a dblclick fires within that window, clearTimeout
-    // cancels this and no extra point is added.
-    clearTimeout(_clickTimer);
-    _clickTimer = setTimeout(() => {
-      _drawPoints.push([e.latlng.lat, e.latlng.lng]);
-      updatePreview(_drawPoints);
-    }, 180);
+    _drawPoints.push([e.latlng.lat, e.latlng.lng]);
+    updatePreview(_drawPoints);
   }
 
   function onMapDblClick(e) {
     if (!_drawing) return;
-    // Kill the pending single-click point before it gets added
-    clearTimeout(_clickTimer);
-    _clickTimer = null;
+
+    // Every double-click fires exactly 2 click events before dblclick.
+    // Those 2 clicks already added 2 unwanted points — remove them both.
+    _drawPoints.pop();
+    if (_drawPoints.length > 0) _drawPoints.pop();
 
     if (_drawPoints.length < 3) {
       showHint('Need at least 3 points — keep clicking!');
