@@ -464,7 +464,7 @@ window.SPELL_DATA = [
 	  id:	"chaos-armor",
 	  name: "Chaos Armor",
 	  cost:	50,
-	  wella: [{name: "Chaos", minLevel: 5 }, {name: "Fortitude", minLevel: 1 }],
+	  wells: [{name: "Chaos", minLevel: 5 }, {name: "Fortitude", minLevel: 1 }],
 	  desc:	`You or an ally are covered by a black, purple, and blue layer that looks like small flames licking off the body. This armor can absorb up to 10 attacks then disappates, unless you expel the attacks in tandem with your own or as a reaction.`,
 	  scaling: null,
   },
