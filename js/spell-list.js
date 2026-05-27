@@ -46,7 +46,8 @@
 
     const spells = allSpells().filter(s => {
       if (_filter === 'All') return true;
-      const well = s.well?.name || s.wellRequired || null;
+      // spells-data.js uses `wells` (plural); submitted spells use `wellRequired`
+      const well = s.wells?.name || s.well?.name || s.wellRequired || null;
       return well === _filter;
     });
 
@@ -59,9 +60,12 @@
       const card = document.createElement('div');
       card.className = 'spell-card' + (spell.isSubmission ? ' community' : '');
 
-      const well = spell.well?.name || spell.wellRequired;
-      const wellLine = well
-        ? `<div class="spell-well">Requires ${esc(well)}${spell.well?.minLevel ? ` ${spell.well.minLevel}+` : spell.wellMinLevel ? ` ${spell.wellMinLevel}+` : ''}</div>`
+      // Resolve well name + min level regardless of singular/plural field name
+      const wellObj  = spell.wells || spell.well || null;
+      const wellName = wellObj?.name || spell.wellRequired || null;
+      const wellMin  = wellObj?.minLevel || spell.wellMinLevel || null;
+      const wellLine = wellName
+        ? `<div class="spell-well">Requires ${esc(wellName)}${wellMin ? ` ${wellMin}+` : ''}</div>`
         : '';
 
       const scaling = spell.scaling || spell.scalingDesc;
