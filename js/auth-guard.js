@@ -26,8 +26,9 @@
     try {
       const snap = await window._db.collection('players').doc(user.uid).get();
       const data = snap.data() || {};
-      window._username    = data.username || null;
-      window._userDisplay = data.username || user.email;
+      window._username    = data.username  || null;
+      window._userDisplay = data.username  || user.email;
+      window._avatarUrl   = data.avatarUrl || null;
     } catch (_) {
       window._username    = null;
       window._userDisplay = user.email;
@@ -50,6 +51,15 @@
           placeholder="YourUsername"
           value="${window._username ? escAttr(window._username) : ''}" />
         <p class="um-hint">2–20 characters. Can include spaces.</p>
+
+        <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.75rem;">
+          ${window._avatarUrl
+            ? `<img id="um-avatar-preview" src="${escAttr(window._avatarUrl)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;" />`
+            : `<div id="um-avatar-preview" style="width:48px;height:48px;border-radius:50%;background:var(--bg-surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🧙</div>`}
+          <label style="cursor:pointer;font-size:0.78rem;color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius);padding:0.3rem 0.65rem;" for="um-avatar-file" id="um-avatar-label">📁 Upload Avatar</label>
+          <input type="file" id="um-avatar-file" accept="image/*" style="display:none;" />
+        </div>
+
         <div class="um-actions">
           ${optional ? '<button class="um-cancel-btn" id="um-cancel">Cancel</button>' : ''}
           <button class="um-save-btn" id="um-save">Save Username</button>
@@ -68,6 +78,56 @@
 
     input.addEventListener('keydown', e => { if (e.key === 'Enter') saveUsername(); });
     document.getElementById('um-save').addEventListener('click', saveUsername);
+
+    // Avatar upload
+    document.getElementById('um-avatar-file').addEventListener('change', async e => {
+      const file  = e.target.files[0];
+      if (!file) return;
+      const label = document.getElementById('um-avatar-label');
+      if (label) label.textContent = 'Uploading…';
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'Abberanth');
+        const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
+        await window._db.collection('players').doc(user.uid).update({ avatarUrl: data.secure_url });
+        window._avatarUrl = data.secure_url;
+        // Update sidebar avatar if present
+        const sidebarAvatar = document.getElementById('sidebar-avatar');
+        if (sidebarAvatar) {
+          sidebarAvatar.src = data.secure_url;
+        } else {
+          const footer    = document.getElementById('sidebar-footer');
+          const displayEl = document.getElementById('sidebar-user-email');
+          if (footer && displayEl) {
+            const img = document.createElement('img');
+            img.id            = 'sidebar-avatar';
+            img.src           = data.secure_url;
+            img.alt           = 'Avatar';
+            img.style.cssText = 'width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;display:block;margin-bottom:0.3rem;';
+            img.onerror       = () => img.remove();
+            footer.insertBefore(img, displayEl);
+          }
+        }
+        // Update preview in modal
+        const preview = document.getElementById('um-avatar-preview');
+        if (preview) {
+          const img = document.createElement('img');
+          img.id            = 'um-avatar-preview';
+          img.src           = data.secure_url;
+          img.style.cssText = 'width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;';
+          preview.replaceWith(img);
+        }
+        if (label) label.textContent = '✓ Done';
+        setTimeout(() => { if (label) label.textContent = '📁 Upload Avatar'; }, 2000);
+      } catch (err) {
+        console.error('Avatar upload failed:', err);
+        if (label) label.textContent = '✗ Failed';
+        setTimeout(() => { if (label) label.textContent = '📁 Upload Avatar'; }, 2500);
+      }
+    });
 
     async function saveUsername() {
       const val = input.value.trim();
@@ -118,8 +178,18 @@
     }
 
     if (displayEl) {
+      // Avatar
+      if (window._avatarUrl && !document.getElementById('sidebar-avatar')) {
+        const img = document.createElement('img');
+        img.id             = 'sidebar-avatar';
+        img.src            = window._avatarUrl;
+        img.alt            = 'Avatar';
+        img.style.cssText  = 'width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;display:block;margin-bottom:0.3rem;';
+        img.onerror        = () => img.remove();
+        footer.insertBefore(img, displayEl);
+      }
       displayEl.textContent = window._userDisplay || user.email;
-      displayEl.title       = 'Click to change username';
+      displayEl.title       = 'Click to change username or avatar';
       if (!displayEl.dataset.bound) {
         displayEl.dataset.bound = '1';
         displayEl.addEventListener('click', () => showUsernameModal(user, true));

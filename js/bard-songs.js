@@ -387,37 +387,41 @@
   /* ----------------------------------------------------------
      File uploads
   ---------------------------------------------------------- */
-  async function handleUpload(e, type) {
-    const file = e.target.files[0];
-    if (!file || !_stg()) return;
+ async function handleUpload(e, type) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const isAudio   = type === 'audio';
-    const urlInput  = document.getElementById(isAudio ? 'bf-audio-url' : 'bf-cover-url');
-    const preview   = document.getElementById(isAudio ? 'bf-audio-preview' : 'bf-cover-preview');
-    const btn       = document.querySelector(`label[for="bf-${isAudio ? 'audio' : 'cover'}-file"]`);
-    const folder    = isAudio ? 'bard-audio' : 'bard-covers';
+  const isAudio  = type === 'audio';
+  const urlInput = document.getElementById(isAudio ? 'bf-audio-url' : 'bf-cover-url');
+  const preview  = document.getElementById(isAudio ? 'bf-audio-preview' : 'bf-cover-preview');
+  const btn      = document.querySelector(`label[for="bf-${isAudio ? 'audio' : 'cover'}-file"]`);
 
-    btn.textContent = 'Uploading…';
-    try {
-      const id  = _editingId || `tmp-${Date.now()}`;
-      const ext = file.name.split('.').pop();
-      const ref = _stg().ref(`${folder}/${id}.${ext}`);
-      await ref.put(file);
-      const url = await ref.getDownloadURL();
-      urlInput.value = url;
+  btn.textContent = 'Uploading…';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'Abberanth');
 
-      preview.innerHTML = isAudio
-        ? `<audio controls preload="metadata" class="bs-audio"><source src="${esc(url)}" /></audio>`
-        : `<img src="${esc(url)}" style="max-height:60px;border-radius:6px;" />`;
+    const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+    const data = await res.json();
 
-      btn.textContent = '✓ Done';
-      setTimeout(() => { btn.textContent = isAudio ? '🎵 Upload' : '📁 Upload'; }, 2000);
-    } catch (err) {
-      console.error('Upload failed:', err);
-      btn.textContent = '✗ Failed';
-      setTimeout(() => { btn.textContent = isAudio ? '🎵 Upload' : '📁 Upload'; }, 2500);
-    }
+    if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
+
+    const url = data.secure_url;
+    urlInput.value = url;
+
+    preview.innerHTML = isAudio
+      ? `<audio controls preload="metadata" class="bs-audio"><source src="${esc(url)}" /></audio>`
+      : `<img src="${esc(url)}" style="max-height:60px;border-radius:6px;" />`;
+
+    btn.textContent = '✓ Done';
+    setTimeout(() => { btn.textContent = isAudio ? '🎵 Upload' : '📁 Upload'; }, 2000);
+  } catch (err) {
+    console.error('Upload failed:', err);
+    btn.textContent = '✗ Failed';
+    setTimeout(() => { btn.textContent = isAudio ? '🎵 Upload' : '📁 Upload'; }, 2500);
   }
+}
 
   /* ----------------------------------------------------------
      Save / Delete

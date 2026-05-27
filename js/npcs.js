@@ -73,13 +73,14 @@
   function _storage() { return window._storage || (window._storage = firebase.storage()); }
 
   async function uploadImage(file, npcId, field) {
-    const ext  = file.name.split('.').pop();
-    const path = `npc-images/${npcId}/${field}.${ext}`;
-    const ref  = _storage().ref(path);
-    await ref.put(file);
-    return await ref.getDownloadURL();
-  }
-
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'Abberanth');
+  const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
+  return data.secure_url;
+}
   async function loadPlayers() {
     try {
       const dmEmails = (SITE_CONFIG.dmEmails || []).map(e => e.toLowerCase());

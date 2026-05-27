@@ -21,6 +21,5 @@ window._auth = firebase.auth();
 try { window._db      = firebase.firestore(); } catch (e) { window._db      = null; }
 
 // Storage — only if CDN script was loaded
-try { window._storage = firebase.storage();   } catch (e) { window._storage = null; }
-
+try { window._storage = firebase.storage(); } catch (e) { window._storage = null; console.error('Storage init failed:', e); }
 window.firebaseReady = true;

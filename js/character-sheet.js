@@ -10,29 +10,153 @@
   /* ----------------------------------------------------------
      Grandparent Trait Registry
   ---------------------------------------------------------- */
-  const GRANDPARENT_TRAITS = {
+const GRANDPARENT_TRAITS = {
+	
+	'Arachnis (Ageleni)':{
+		
+		label: 'Arachnis (Ageleni)',
+		
+		A: {
+			type: 'stat_bonus',
+			attr: 'Charisma',
+			value: 1
+		},
+		B: {
+			type: 'feature',
+			name: 'Trap Artist'
+			restType: 'short',
+			maxUses: 3,
+			desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.',
+		},
+		C: {
+			type: 'stat_bonus',
+			attr: 'Intelligence',
+			value: 1
+		}
+		D: {
+      type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    },
+	},
 
-    Arachnis: {
-      label: 'Arachnis (Arachne)',
-      A: { type: 'stat_bonus', attr: 'Speed', value: 1 },
-      B: { type: 'feature', name: 'Patient Hunter', restType: 'short', maxUses: 3,
-           desc: 'This species is known for their patience in hunting and then exploding with speed. Three times per short rest, you may choose to stay still for one turn. After the turn of no motion, your speed increases by 10 for a turn.' },
-      C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
-      D: { type: 'feature', name: 'Silk', restType: 'long', maxUses: 3,
-           desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.' },
+  'Arachnis (Arachne)': {
+
+    label: 'Arachnis (Arachne)',
+
+    A: {
+      type: 'stat_bonus',
+      attr: 'Speed',
+      value: 1
     },
 
-    Arachnis: {
-      label: 'Arachnis (Saltici)',
-      A: { type: 'multi_stat', stats: [{ attr: 'Wisdom', value: -1 }, { attr: 'Intelligence', value: 2 }] },
-      B: { type: 'passive', name: 'Predatory Leap',
-           desc: 'These species are excellent jumpers. When jumping and attacking an enemy, add +1 per meter of jump to the damage.' },
-      C: { type: 'stat_bonus', attr: 'Speed', value: 1 },
-      D: { type: 'feature', name: 'Silk', restType: 'long', maxUses: 3,
-           desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.' },
+    B: {
+      type: 'feature',
+      name: 'Patient Hunter',
+      restType: 'short',
+      maxUses: 3,
+      desc: 'This species is known for their patience in hunting and then exploding with speed. Three times per short rest, you may choose to stay still for one turn. After the turn of no motion, your speed increases by 10 for a turn.'
     },
 
-    Baaphakin: {
+    C: {
+      type: 'stat_bonus',
+      attr: 'Intelligence',
+      value: 1
+    },
+
+    D: {
+      type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    }
+
+  },
+  
+  'Arachnis (Lycosi)': {
+	  
+	  label: 'Arachnis Lycosi',
+	  
+	  A: {
+		  type: 'multi_stat',
+		  stats: [
+		  {attr: 'Constitution', value: -1 },
+			  {attr: 'Speed', value: 2 }
+			  ]
+	  },
+	  B: {
+		  type: 'feature',
+		  name: 'Hunter`s Grasp',
+		  restType: 'short',
+		  maxUses: 3,
+		  desc: 'These species are excellent at holding their prey. By using this, you may increase your grapple challenge by +5 3 times per short rest.',
+	  },
+	  C: {
+		  type: 'stat_bonus',
+		  attr: 'Intelligence',
+		  value: 1,
+	  }
+	  D: {
+      type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    }
+  },
+  
+  'Arachnis (Mygalomorph)': {
+	  
+	  label: 'Arachnis (Mygalomorph)',
+	  
+	  A: {
+		  type: 'multi_stat',
+		  stats: [
+		  {attr: 'Intelligence', value: -1 },
+			  {attr: 'Strength', value: 2 },
+	  ]
+	  },
+	  B: {
+		  
+
+  'Arachnis (Saltici)': {
+
+    label: 'Arachnis (Saltici)',
+
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Wisdom', value: -1 },
+        { attr: 'Intelligence', value: 2 }
+      ]
+    },
+
+    B: {
+      type: 'passive',
+      name: 'Predatory Leap',
+      desc: 'These species are excellent jumpers. When jumping and attacking an enemy, add +1 per meter of jump to the damage.'
+    },
+
+    C: {
+      type: 'stat_bonus',
+      attr: 'Speed',
+      value: 1
+    },
+
+    D: {
+      type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    }
+
+  },
+
+    'Baaphakin (Basic)': {
       label: 'Baaphakin (Basic)',
       A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
       B: { type: 'passive', name: 'Headbutt',
@@ -42,7 +166,7 @@
            desc: 'You can climb surfaces at full speed that are no more than 90 degrees in angle.' },
     },
 
-    Corvannis: {
+    'Corvannis (Ravann)': {
       label: 'Corvannis (Ravann)',
       A: { type: 'multi_stat', stats: [{ attr: 'Constitution', value: -1 }, { attr: 'Intelligence', value: 2 }] },
       B: { type: 'feature', name: 'Echo', restType: 'daily', maxUses: 3,
@@ -51,7 +175,7 @@
       D: { type: 'passive', name: 'Flight', desc: 'You can fly at speed.' },
     },
 
-    Felinataur: {
+    'Felinataur (Maine Coon)': {
       label: 'Felinataur (Maine Coon)',
       A: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
       B: { type: 'passive', name: 'One with the Forest',
@@ -318,6 +442,7 @@
       inventory: [],      // [{ id, name, qty, notes }, ...]
       armor: Object.fromEntries(ARMOR_SLOT_DEFS.map(s => [s.key, { name: '', value: 0 }])),
       tailedRace: false, wingedRace: false,
+      portrait: '',
     };
   }
 
@@ -1222,6 +1347,50 @@
     set('cs-special',      state.specialFeature);
 
     updateAttrTotals();
+
+    // Portrait
+    const portraitImg = document.getElementById('cs-portrait-img');
+    const portraitPh  = document.getElementById('cs-portrait-placeholder');
+    if (portraitImg && portraitPh) {
+      if (state.portrait) {
+        portraitImg.src           = state.portrait;
+        portraitImg.style.display = 'block';
+        portraitPh.style.display  = 'none';
+      } else {
+        portraitImg.style.display = 'none';
+        portraitPh.style.display  = 'flex';
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------
+     Portrait upload (Cloudinary)
+  ---------------------------------------------------------- */
+  async function handlePortraitUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const label = document.querySelector('label[for="cs-portrait-file"]');
+    if (label) label.textContent = 'Uploading…';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'Abberanth');
+      const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
+      state.portrait = data.secure_url;
+      schedSave();
+      const img = document.getElementById('cs-portrait-img');
+      const ph  = document.getElementById('cs-portrait-placeholder');
+      if (img) { img.src = data.secure_url; img.style.display = 'block'; }
+      if (ph)  { ph.style.display = 'none'; }
+      if (label) label.textContent = '✓ Done';
+      setTimeout(() => { if (label) label.textContent = '📁 Portrait'; }, 2000);
+    } catch (err) {
+      console.error('Portrait upload failed:', err);
+      if (label) label.textContent = '✗ Failed';
+      setTimeout(() => { if (label) label.textContent = '📁 Portrait'; }, 2500);
+    }
   }
 
   /* ----------------------------------------------------------
@@ -1238,6 +1407,7 @@
     if (saveBtn) saveBtn.addEventListener('click', saveNow);
 
     document.getElementById('cs-inv-add-btn')?.addEventListener('click', addInventoryItem);
+    document.getElementById('cs-portrait-file')?.addEventListener('change', handlePortraitUpload);
 
     // Willpower spend button
     document.getElementById('cs-will-spend')?.addEventListener('click', () => {

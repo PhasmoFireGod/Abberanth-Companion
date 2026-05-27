@@ -26,12 +26,15 @@
   function _col()      { return window._db.collection('monsters'); }
   function _stg()      { return window._storage; }
 
-  async function uploadImage(file, id, field) {
-    const ext  = file.name.split('.').pop();
-    const ref  = _stg().ref(`monster-images/${id}/${field}.${ext}`);
-    await ref.put(file);
-    return ref.getDownloadURL();
-  }
+ async function uploadImage(file, id, field) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'Abberanth');
+  const res  = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/auto/upload', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'Upload failed');
+  return data.secure_url;
+}
 
   async function loadPlayers() {
     if (!window.isDM) return;
@@ -331,7 +334,7 @@
   ---------------------------------------------------------- */
   async function handleUpload(e, field) {
     const file = e.target.files[0];
-    if (!file || !_stg()) return;
+    if (!file) return;
     const btn     = document.querySelector(`label[for="mf-${field}-file"]`);
     const urlInput = document.getElementById(`mf-${field}`);
     const preview  = document.getElementById(`mf-${field}-preview`);
