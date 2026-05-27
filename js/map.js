@@ -173,8 +173,7 @@
     _leafMap.fitBounds(bounds);
 
     if (window.isDM) {
-      _leafMap.on('click',    onMapClick);
-      _leafMap.on('dblclick', onMapDblClick);
+      _leafMap.on('click',     onMapClick);
       _leafMap.on('mousemove', onMapMouseMove);
     }
   }
@@ -276,7 +275,7 @@
     document.getElementById('map-container').classList.add('map-drawing-mode');
     document.getElementById('tb-draw').style.display   = 'none';
     document.getElementById('tb-cancel').style.display = '';
-    showHint('Click to add points · Double-click to finish · Min 3 points');
+    showHint('Click to place points · Click the ◆ first point to close the region · Min 3 points');
   }
 
   function cancelDrawing() {
@@ -291,26 +290,24 @@
 
   function onMapClick(e) {
     if (!_drawing) return;
-    _drawPoints.push([e.latlng.lat, e.latlng.lng]);
-    updatePreview(_drawPoints);
-  }
 
-  function onMapDblClick(e) {
-    if (!_drawing) return;
+    // If we have 3+ points, check if the click landed on the first point.
+    // If so, close the polygon and open the region dialog.
+    if (_drawPoints.length >= 3) {
+      const firstLatLng = L.latLng(_drawPoints[0][0], _drawPoints[0][1]);
+      const clickPx     = _leafMap.latLngToContainerPoint(e.latlng);
+      const firstPx     = _leafMap.latLngToContainerPoint(firstLatLng);
 
-    // Every double-click fires exactly 2 click events before dblclick.
-    // Those 2 clicks already added 2 unwanted points — remove them both.
-    _drawPoints.pop();
-    if (_drawPoints.length > 0) _drawPoints.pop();
-
-    if (_drawPoints.length < 3) {
-      showHint('Need at least 3 points — keep clicking!');
-      return;
+      if (clickPx.distanceTo(firstPx) <= 15) {
+        const points = [..._drawPoints];
+        cancelDrawing();
+        openRegionCreateDialog(points);
+        return;
+      }
     }
 
-    const points = [..._drawPoints];
-    cancelDrawing();
-    openRegionCreateDialog(points);
+    _drawPoints.push([e.latlng.lat, e.latlng.lng]);
+    updatePreview(_drawPoints);
   }
 
   function onMapMouseMove(e) {
@@ -326,12 +323,19 @@
       _previewLine = L.polyline(pts, previewStyle()).addTo(_leafMap);
     }
     pts.forEach((pt, i) => {
+      const isFirst = i === 0;
+      const canClose = isFirst && pts.length >= 3;
       const m = L.circleMarker(pt, {
-        radius: i === 0 ? 7 : 4,
-        color: '#8ba4f8',
-        fillColor: i === 0 ? '#c9923a' : '#8ba4f8',
-        fillOpacity: 1, weight: 2,
+        radius:      isFirst ? 10 : 5,
+        color:       isFirst ? '#c9923a' : '#8ba4f8',
+        fillColor:   isFirst ? '#c9923a' : '#8ba4f8',
+        fillOpacity: 1,
+        weight:      isFirst ? 3 : 2,
       }).addTo(_leafMap);
+      // Show a tooltip on the first point when it can be clicked to close
+      if (canClose) {
+        m.bindTooltip('Click to close region', { permanent: false, className: 'map-tooltip' });
+      }
       _drawMarkers.push(m);
     });
   }
