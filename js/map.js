@@ -465,44 +465,49 @@
     if (h) h.style.display = 'none';
   }
 
-  /* ----------------------------------------------------------
-     Token Placement
-  ---------------------------------------------------------- */
-  let _placingToken = false;
+/* ----------------------------------------------------------
+   Token Placement
+---------------------------------------------------------- */
+let _placingToken = false;
 
-  function startTokenPlacement() {
-    if (_drawing) cancelDrawing();
-    _placingToken = true;
-    showHint('Click anywhere on the map to place a token.');
+function startTokenPlacement() {
+  if (_drawing) cancelDrawing();
+  _placingToken = true;
+  showHint('Click anywhere on the map to place a token.');
+}
+
+async function placeToken(latlng) {
+  const name = prompt('Token name?');
+  if (!name) {
+    _placingToken = false;
+    hideHint();
+    return;
   }
 
-  async function placeToken(latlng) {
-    const name = prompt('Token name?');
-    if (!name) {
-      _placingToken = false;
-      hideHint();
-      return;
+  const token = {
+    id: `t${Date.now()}`,
+    name,
+    imageUrl: '',
+    position: {
+      lat: latlng.lat,
+      lng: latlng.lng,
+    },
+  };
+
+  async function saveToken(token) {
+    try {
+      const tokens = [...(_currentMap.tokens || []), token];
+      await _col().doc(_currentMap.id).update({ tokens });
+    } catch (e) {
+      console.error('Failed to save token:', e);
     }
-
-    const token = {
-      id: `t${Date.now()}`,
-      name,
-      imageUrl: '', 
-      position: {
-        lat: latlng.lat,
-        lng: latlng.lng,
-      },
-    };
-
-   async function saveToken(token) {
-  try {
-    const tokens = [...(_currentMap.tokens || []), token];
-    await _col().doc(_currentMap.id).update({ tokens });
-  } catch (e) {
-    console.error('Failed to save token:', e);
   }
 
-  }
+  // Call `saveToken` to save the token
+  await saveToken(token);
+  _placingToken = false;
+  hideHint();
+}  // <-- This closes `placeToken`
 
   /* ----------------------------------------------------------
      Region dialogs
