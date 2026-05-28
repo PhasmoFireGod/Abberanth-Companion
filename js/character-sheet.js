@@ -97,8 +97,8 @@ const GRANDPARENT_TRAITS = {
 	  C: {
 		  type: 'stat_bonus',
 		  attr: 'Intelligence',
-		  value: 1,
-	  }
+		  value: 1
+	  },
 	  D: {
       type: 'feature',
       name: 'Silk',
