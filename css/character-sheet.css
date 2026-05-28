@@ -1039,4 +1039,20 @@
   width: 50px !important;
 }
 
+/* Identity inputs */
+.cs-identity-grid .cs-text-input {
+  width: 100%;
+  max-width: 160px;
+}
+
+/* Resource pts inputs */
+.cs-resource-track .cs-num-input {
+  width: 50px !important;
+}
+
+/* Skill inputs */
+.cs-skills-grid .cs-num-input {
+  width: 50px !important;
+}
+
 .cs
