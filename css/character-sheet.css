@@ -1,8 +1,3 @@
-/Here is the **complete updated `character-sheet.css`** with the **stats grid layout** integrated. I've preserved all your existing styles and added the necessary CSS to align the stats as requested.
-
----
-
-```css
 /* ============================================================
    Abberanth Companion — Character Sheet Styles
    ============================================================ */
@@ -109,7 +104,9 @@
   margin-left: 0.5rem;
 }
 
-/* ---------- Stats Grid Layout ---------- */
+/* ============================================================
+   Stats Grid Layout (NEW)
+   ============================================================ */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -132,75 +129,7 @@
   text-align: center;
 }
 
-/* ---------- Input Styles ---------- */
-.cs-text-input,
-.cs-select {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.825rem;
-  padding: 0.38rem 0.6rem;
-  width: 100%;
-  transition: border-color var(--transition);
-}
-
-.cs-text-input:focus,
-.cs-select:focus {
-  outline: none;
-  border-color: var(--accent-purple);
-}
-
-.cs-select { cursor: pointer; }
-
-/* Compact number input for point-buy values */
-.cs-num-input {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  padding: 0.25rem 0;
-  width: 40px;
-  text-align: center;
-  -moz-appearance: textfield;
-  transition: border-color var(--transition);
-  flex-shrink: 0;
-}
-.cs-num-input::-webkit-outer-spin-button,
-.cs-num-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.cs-num-input:focus { outline: none; border-color: var(--accent-purple); }
-
-/* Wide number for things like AC, moves */
-.cs-num-input.wide { width: 56px; }
-
-/* Inline dice button */
-.cs-dice-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition);
-  flex-shrink: 0;
-  padding: 0;
-  line-height: 1;
-}
-.cs-dice-btn:hover {
-  background: var(--accent-purple);
-  border-color: var(--accent-purple);
-  color: #fff;
-}
-
-/* Override existing .cs-attr-row to work with the grid */
+/* Override .cs-attr-row to remove bottom borders in the grid */
 .cs-attr-row {
   display: flex;
   align-items: center;
@@ -208,8 +137,8 @@
   padding: 0.5rem;
   border-bottom: none;
 }
-
 .cs-attr-row:last-child { border-bottom: none; }
+/* ============================================================ */
 
 .cs-attr-name {
   flex: 1;
@@ -1089,205 +1018,5 @@
   font-size: 0.8rem;
   color: var(--text-muted);
 }
-
-.cs-rest-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.cs-rest-option {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem 0.75rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all var(--transition);
-  user-select: none;
-}
-.cs-rest-option:has(input:checked) {
-  border-color: var(--accent-purple);
-  background: rgba(102,80,216,0.1);
-}
-.cs-rest-option:hover { border-color: var(--border-glow); }
-
-.cs-rest-option input[type="checkbox"] {
-  accent-color: var(--accent-purple);
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.cs-rest-option-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.cs-rest-option-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.cs-rest-option-name.hp   { color: #d888cc; }
-.cs-rest-option-name.mana { color: #80b0f8; }
-.cs-rest-option-name.stam { color: #70d8f0; }
-.cs-rest-option-name.will { color: #c078e0; }
-
-.cs-rest-option-desc {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-}
-
-.cs-rest-panel-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 0.25rem;
-}
-
-.cs-rest-cancel-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  padding: 0.4rem 0.9rem;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.cs-rest-cancel-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
-
-.cs-rest-confirm-btn {
-  background: var(--accent-purple);
-  border: none;
-  border-radius: var(--radius);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.4rem 1.1rem;
-  cursor: pointer;
-  transition: background var(--transition);
-}
-.cs-rest-confirm-btn:hover { background: #5060c0; }
-
-/* ---------- Effort Checkbox ---------- */
-.cs-effort-label {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  cursor: pointer;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.cs-effort-label input[type="checkbox"] {
-  accent-color: var(--accent-teal);
-  width: 12px;
-  height: 12px;
-  cursor: pointer;
-}
-
-.cs-effort-tag {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  padding: 0.08rem 0.35rem;
-  transition: all var(--transition);
-  white-space: nowrap;
-}
-
-.cs-effort-label:has(input:checked) .cs-effort-tag {
-  color: var(--accent-teal);
-  border-color: rgba(88,152,232,0.5);
-  background: rgba(88,152,232,0.1);
-}
-
-.cs-dice-btn--effort {
-  border-color: var(--accent-teal) !important;
-  color: var(--accent-teal) !important;
-}
-
-/* ---------- Inventory ---------- */
-.cs-inventory-section {
-  margin-top: 1.25rem;
-}
-
-.cs-inventory-empty {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-style: italic;
-  padding: 0.25rem 0 0.5rem;
-}
-
-.cs-inv-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto 1fr auto;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.cs-inv-row:last-child { border-bottom: none; }
-
-.cs-inv-name,
-.cs-inv-notes {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  padding: 0.28rem 0.5rem;
-  width: 100%;
-  transition: border-color var(--transition);
-}
-.cs-inv-name:focus,
-.cs-inv-notes:focus { outline: none; border-color: var(--accent-purple); }
-.cs-inv-notes { color: var(--text-muted); }
-
-.cs-inv-qty-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-shrink: 0;
-}
-
-.cs-inv-qty {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  min-width: 1.4rem;
-  text-align: center;
-}
-
-.cs-inv-qty-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition);
-  padding: 0;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.cs-inv-qty-btn:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
 
 .cs
