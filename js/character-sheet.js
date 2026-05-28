@@ -120,7 +120,23 @@ const GRANDPARENT_TRAITS = {
 	  ]
 	  },
 	  B: {
-		  
+		  type: 'passive',
+		  name: 'Gentle Giant',
+		  desc; 'This species is capable of handling things delicately while also being firm. Do not take penalties for being too far over a strength check.'			
+	  },
+	C: {	
+		type: 'stat_bonus',	
+		attr: 'Constitution',
+		value: 1
+	},
+	D: {
+		 type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    }
+  },
 
   'Arachnis (Saltici)': {
 
