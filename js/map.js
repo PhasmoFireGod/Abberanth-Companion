@@ -423,7 +423,7 @@
         m.bindTooltip('Click to close region', { permanent: false, className: 'map-tooltip' });
       }
       _drawMarkers.push(m);
-    };
+    });
   }
 
   function updatePreviewWithCursor(pts, cursor) {
