@@ -232,15 +232,25 @@ const GRANDPARENT_TRAITS = {
            desc: 'You can transform into something or someone perfectly (3 times per long rest) or perform an imperfect shift with tells (3 times per short rest). Staying in a shift longer than 24 hours may cause you to develop a shell.' },
     },
 
-    Not: {
-      label: 'Not',
-      A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
-      B: { type: 'feature', name: 'Abberkin', restType: 'short', maxUses: 1,
-           desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.' },
-      C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
-      D: { type: 'feature', name: 'A Little Off', restType: 'daily', maxUses: 3,
-           desc: 'You are a shapeshifter but your form, finalized or otherwise, always has tells — a second mouth, an extra eye — always hidden somewhere. You can shift what bits you can shift 3 times per day.' },
-    },
+Not: {
+  label: 'Not',
+  A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+  B: {
+    type: 'feature',
+    name: 'Abberkin',
+    restType: 'short',
+    maxUses: 1,
+    desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.',
+  }, // <-- Added comma
+  C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+  D: {
+    type: 'feature',
+    name: 'A Little Off',
+    restType: 'daily',
+    maxUses: 3,
+    desc: 'You are a shapeshifter but your form, finalized or otherwise, always has tells — a second mouth, an extra eye — always hidden somewhere. You can shift what bits you can shift 3 times per day.',
+  }, // <-- Added comma
+},
 
     Unicorn: {
       label: 'Unicorn',
