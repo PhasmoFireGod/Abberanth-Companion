@@ -476,29 +476,114 @@
     hideHint();
   }
 
-  async function placeToken(latlng) {
-    const name = prompt('Token name?');
-    if (!name) {
-      cancelTokenPlacement();
-      return;
-    }
-
-    const avatarUrl = prompt('Custom Avatar Image URL? (Leave empty for fallback style layout)');
-
-    const token = {
-      id: `t${Date.now()}`,
-      name,
-      imageUrl: avatarUrl || '',
-      position: {
-        lat: latlng.lat,
-        lng: latlng.lng,
-      },
-    };
-
+  function placeToken(latlng) {
     _placingToken = false;
     hideHint();
+    openTokenCreateDialog(latlng);
+  }
 
-    await saveToken(token);
+  /* ----------------------------------------------------------
+     Token Creation Dialog (Cloudinary Engine Integrated)
+  ---------------------------------------------------------- */
+  function openTokenCreateDialog(latlng) {
+    removeEl('map-token-dialog');
+
+    const wrap = document.createElement('div');
+    wrap.id = 'map-token-dialog';
+    wrap.className = 'map-dialog-overlay';
+    wrap.innerHTML = `
+      <div class="map-dialog">
+        <div class="map-dialog-title">New Token Anchor</div>
+
+        <div class="map-dialog-field">
+          <label>Token / Actor Name *</label>
+          <input class="map-dialog-input" id="mt-name" type="text" placeholder="Character or Monster name…" />
+        </div>
+
+        <div class="map-dialog-field">
+          <label>Token Artwork</label>
+          <div class="map-upload-row">
+            <input class="map-dialog-input" id="mt-url" type="url" placeholder="Paste asset URL, or upload →" />
+            <label class="map-upload-btn" for="mt-token-file">📁 Upload</label>
+            <input type="file" id="mt-token-file" accept="image/*" style="display:none;" />
+          </div>
+          <p class="map-dialog-hint" id="mt-status">Supports PNG, JPG, or transparent WebP tokens.</p>
+          <div id="mt-preview" style="display:flex; justify-content:center; margin-top:0.4rem;"></div>
+        </div>
+
+        <div class="map-dialog-actions">
+          <button class="map-dialog-cancel-btn" id="mt-cancel">Cancel</button>
+          <button class="map-dialog-save-btn"   id="mt-save">Place Token</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+    document.getElementById('mt-name').focus();
+
+    const urlInput = document.getElementById('mt-url');
+    const statusText = document.getElementById('mt-status');
+    const previewDiv = document.getElementById('mt-preview');
+
+    function updatePreview(url) {
+      if (!url) return;
+      previewDiv.innerHTML = `
+        <div class="map-token-wrap">
+          <img src="${esc(url)}" style="width:100%; height:100%; object-fit:cover;" />
+        </div>`;
+    }
+
+    urlInput.addEventListener('blur', e => updatePreview(e.target.value.trim()));
+
+    document.getElementById('mt-token-file').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      statusText.textContent = "Uploading asset to Cloudinary...";
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'abberanth_uploads');
+
+      try {
+        const res = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/image/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error('Cloudinary target rejected request payload.');
+        
+        const data = await res.json();
+        urlInput.value = data.secure_url;
+        statusText.textContent = "Upload successful!";
+        updatePreview(data.secure_url);
+      } catch (err) {
+        alert("Token upload failed: " + err.message);
+        statusText.textContent = "Upload failed. Fallback to copy-pasting an external image path.";
+      }
+    });
+
+    document.getElementById('mt-cancel').addEventListener('click', () => removeEl('map-token-dialog'));
+
+    document.getElementById('mt-save').addEventListener('click', async () => {
+      const name = document.getElementById('mt-name').value.trim();
+      if (!name) { alert('Please target a valid name string.'); return; }
+
+      const btn = document.getElementById('mt-save');
+      btn.disabled = true; btn.textContent = 'Placing…';
+
+      const token = {
+        id: `t${Date.now()}`,
+        name,
+        imageUrl: urlInput.value.trim() || '',
+        position: {
+          lat: latlng.lat,
+          lng: latlng.lng,
+        },
+      };
+
+      await saveToken(token);
+      removeEl('map-token-dialog');
+    });
   }
 
   /* ----------------------------------------------------------
