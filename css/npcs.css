@@ -101,7 +101,8 @@
   background: var(--bg-card);
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-lg);
-  width: 840px; /* Increased from 680px for a significantly roomier look */
+  width: 840px; 
+  min-height: 520px; /* Gives the card a substantial baseline height */
   max-width: calc(100vw - 2rem);
   max-height: 90vh;
   overflow-y: auto;
@@ -118,8 +119,8 @@
 }
 
 .npc-modal-portrait {
-  width: 180px; /* Bumped up slightly to scale nicely with the larger popup */
-  height: 224px;
+  width: 240px; /* Made wider to support larger artwork scaling */
+  height: 300px; /* Made significantly taller */
   object-fit: cover;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -128,8 +129,8 @@
 }
 
 .npc-modal-portrait-placeholder {
-  width: 180px; /* Bumped up slightly to track portrait changes */
-  height: 224px;
+  width: 240px; 
+  height: 300px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg-surface);
@@ -290,7 +291,8 @@
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  width: 720px; /* Increased from 540px to comfortably allow double-column scaling */
+  width: 720px; 
+  min-height: 480px; /* Provides consistent height for input layouts */
   max-width: calc(100vw - 2rem);
   max-height: 90vh;
   overflow-y: auto;
@@ -338,7 +340,7 @@
 
 .npc-form-textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 160px; /* Raised baseline area for writing long backstories */
   line-height: 1.55;
 }
 
