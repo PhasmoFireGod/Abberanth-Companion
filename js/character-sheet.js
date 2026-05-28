@@ -11,61 +11,26 @@
      Grandparent Trait Registry
   ---------------------------------------------------------- */
 const GRANDPARENT_TRAITS = {
-	
-	'Arachnis (Ageleni)':{
-		
-		label: 'Arachnis (Ageleni)',
-		
-		A: {
-			type: 'stat_bonus',
-			attr: 'Charisma',
-			value: 1
-		},
-		B: {
-			type: 'feature',
-			name: 'Trap Artist',
-			restType: 'short',
-			maxUses: 3,
-			desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.'
-		},
-		C: {
-			type: 'stat_bonus',
-			attr: 'Intelligence',
-			value: 1
-		},
-		D: {
-      type: 'feature',
-      name: 'Silk',
-      restType: 'long',
-      maxUses: 3,
-      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
-    }
-	},
 
-  'Arachnis (Arachne)': {
-
-    label: 'Arachnis (Arachne)',
-
+  'Arachnis (Ageleni)': {
+    label: 'Arachnis (Ageleni)',
     A: {
       type: 'stat_bonus',
-      attr: 'Speed',
+      attr: 'Charisma',
       value: 1
     },
-
     B: {
       type: 'feature',
-      name: 'Patient Hunter',
+      name: 'Trap Artist',
       restType: 'short',
       maxUses: 3,
-      desc: 'This species is known for their patience in hunting and then exploding with speed. Three times per short rest, you may choose to stay still for one turn. After the turn of no motion, your speed increases by 10 for a turn.'
+      desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.'
     },
-
     C: {
       type: 'stat_bonus',
       attr: 'Intelligence',
       value: 1
     },
-
     D: {
       type: 'feature',
       name: 'Silk',
@@ -73,33 +38,28 @@ const GRANDPARENT_TRAITS = {
       maxUses: 3,
       desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
     }
-
   },
-  
-  'Arachnis (Lycosi)': {
-	  
-	  label: 'Arachnis Lycosi',
-	  
-	  A: {
-		  type: 'multi_stat',
-		  stats: [
-		  {attr: 'Constitution', value: -1 },
-			  {attr: 'Speed', value: 2 }
-			  ]
-	  },
-	  B: {
-		  type: 'feature',
-		  name: 'Hunter`s Grasp',
-		  restType: 'short',
-		  maxUses: 3,
-		  desc: 'These species are excellent at holding their prey. By using this, you may increase your grapple challenge by +5 3 times per short rest.',
-	  },
-	  C: {
-		  type: 'stat_bonus',
-		  attr: 'Intelligence',
-		  value: 1
-	  },
-	  D: {
+
+  'Arachnis (Arachne)': {
+    label: 'Arachnis (Arachne)',
+    A: {
+      type: 'stat_bonus',
+      attr: 'Speed',
+      value: 1
+    },
+    B: {
+      type: 'feature',
+      name: 'Patient Hunter',
+      restType: 'short',
+      maxUses: 3,
+      desc: 'This species is known for their patience in hunting and then exploding with speed. Three times per short rest, you may choose to stay still for one turn. After the turn of no motion, your speed increases by 10 for a turn.'
+    },
+    C: {
+      type: 'stat_bonus',
+      attr: 'Intelligence',
+      value: 1
+    },
+    D: {
       type: 'feature',
       name: 'Silk',
       restType: 'long',
@@ -107,30 +67,58 @@ const GRANDPARENT_TRAITS = {
       desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
     }
   },
-  
+
+  'Arachnis (Lycosi)': {
+    label: 'Arachnis Lycosi',
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Constitution', value: -1 },
+        { attr: 'Speed', value: 2 }
+      ]
+    },
+    B: {
+      type: 'feature',
+      name: 'Hunter`s Grasp',
+      restType: 'short',
+      maxUses: 3,
+      desc: 'These species are excellent at holding their prey. By using this, you may increase your grapple challenge by +5 3 times per short rest.'
+    },
+    C: {
+      type: 'stat_bonus',
+      attr: 'Intelligence',
+      value: 1
+    },
+    D: {
+      type: 'feature',
+      name: 'Silk',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
+    }
+  },
+
   'Arachnis (Mygalomorph)': {
-	  
-	  label: 'Arachnis (Mygalomorph)',
-	  
-	  A: {
-		  type: 'multi_stat',
-		  stats: [
-		  {attr: 'Intelligence', value: -1 },
-			  {attr: 'Strength', value: 2 },
-	  ]
-	  },
-	  B: {
-		  type: 'passive',
-		  name: 'Gentle Giant',
-		  desc; 'This species is capable of handling things delicately while also being firm. Do not take penalties for being too far over a strength check.'			
-	  },
-	C: {	
-		type: 'stat_bonus',	
-		attr: 'Constitution',
-		value: 1
-	},
-	D: {
-		 type: 'feature',
+    label: 'Arachnis (Mygalomorph)',
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Intelligence', value: -1 },
+        { attr: 'Strength', value: 2 }
+      ]
+    },
+    B: {
+      type: 'passive',
+      name: 'Gentle Giant',
+      desc: 'This species is capable of handling things delicately while also being firm. Do not take penalties for being too far over a strength check.'
+    },
+    C: {
+      type: 'stat_bonus',
+      attr: 'Constitution',
+      value: 1
+    },
+    D: {
+      type: 'feature',
       name: 'Silk',
       restType: 'long',
       maxUses: 3,
@@ -139,9 +127,7 @@ const GRANDPARENT_TRAITS = {
   },
 
   'Arachnis (Saltici)': {
-
     label: 'Arachnis (Saltici)',
-
     A: {
       type: 'multi_stat',
       stats: [
@@ -149,19 +135,16 @@ const GRANDPARENT_TRAITS = {
         { attr: 'Intelligence', value: 2 }
       ]
     },
-
     B: {
       type: 'passive',
       name: 'Predatory Leap',
       desc: 'These species are excellent jumpers. When jumping and attacking an enemy, add +1 per meter of jump to the damage.'
     },
-
     C: {
       type: 'stat_bonus',
       attr: 'Speed',
       value: 1
     },
-
     D: {
       type: 'feature',
       name: 'Silk',
@@ -169,100 +152,172 @@ const GRANDPARENT_TRAITS = {
       maxUses: 3,
       desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
     }
-
   },
 
-    'Baaphakin (Basic)': {
-      label: 'Baaphakin (Basic)',
-      A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
-      B: { type: 'passive', name: 'Headbutt',
-           desc: 'When you headbutt a target, add +5 to the rolls and push back the target by as many meters you ran before headbutting.' },
-      C: { type: 'stat_bonus', attr: 'Wisdom', value: 1 },
-      D: { type: 'passive', name: 'Wall Climb',
-           desc: 'You can climb surfaces at full speed that are no more than 90 degrees in angle.' },
+  'Baaphakin (Basic)': {
+    label: 'Baaphakin (Basic)',
+    A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+    B: {
+      type: 'passive',
+      name: 'Headbutt',
+      desc: 'When you headbutt a target, add +5 to the rolls and push back the target by as many meters you ran before headbutting.'
     },
+    C: { type: 'stat_bonus', attr: 'Wisdom', value: 1 },
+    D: {
+      type: 'passive',
+      name: 'Wall Climb',
+      desc: 'You can climb surfaces at full speed that are no more than 90 degrees in angle.'
+    }
+  },
 
-    'Corvannis (Ravann)': {
-      label: 'Corvannis (Ravann)',
-      A: { type: 'multi_stat', stats: [{ attr: 'Constitution', value: -1 }, { attr: 'Intelligence', value: 2 }] },
-      B: { type: 'feature', name: 'Echo', restType: 'daily', maxUses: 3,
-           desc: 'When you hear a sound or voice, you can repeat it perfectly for one hour, three times per day.' },
-      C: { type: 'stat_bonus', attr: 'Wisdom', value: 1 },
-      D: { type: 'passive', name: 'Flight', desc: 'You can fly at speed.' },
+  'Corvannis (Ravann)': {
+    label: 'Corvannis (Ravann)',
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Constitution', value: -1 },
+        { attr: 'Intelligence', value: 2 }
+      ]
     },
-
-    'Felinataur (Maine Coon)': {
-      label: 'Felinataur (Maine Coon)',
-      A: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
-      B: { type: 'passive', name: 'One with the Forest',
-           desc: 'You thrive in the forest. You roll, keep, or add 5 to rolls made in the forest. Nature rolls are auto-won — no roll needed.' },
-      C: { type: 'stat_bonus', attr: 'Speed', value: 1 },
-      D: { type: 'passive', name: 'Claws',
-           desc: 'You have claws and can use them as a Melee attack in addition to Brawl.' },
+    B: {
+      type: 'feature',
+      name: 'Echo',
+      restType: 'daily',
+      maxUses: 3,
+      desc: 'When you hear a sound or voice, you can repeat it perfectly for one hour, three times per day.'
     },
+    C: { type: 'stat_bonus', attr: 'Wisdom', value: 1 },
+    D: {
+      type: 'passive',
+      name: 'Flight',
+      desc: 'You can fly at speed.'
+    }
+  },
 
-    Gearkind: {
-      label: 'Gearkind',
-      A: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
-      B: { type: 'passive', name: 'Sensory Deprivation',
-           desc: 'You do not physically feel pain. You do not gain penalties when injured.' },
-      C: { type: 'stat_bonus', attr: 'Strength', value: 1 },
-      D: { type: 'feature', name: 'Adaptability', restType: 'long', maxUses: 3,
-           desc: 'Reroll any skill check. Can be used up to 3 times per long rest.' },
+  'Felinataur (Maine Coon)': {
+    label: 'Felinataur (Maine Coon)',
+    A: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
+    B: {
+      type: 'passive',
+      name: 'One with the Forest',
+      desc: 'You thrive in the forest. You roll, keep, or add 5 to rolls made in the forest. Nature rolls are auto-won — no roll needed.'
     },
+    C: { type: 'stat_bonus', attr: 'Speed', value: 1 },
+    D: {
+      type: 'passive',
+      name: 'Claws',
+      desc: 'You have claws and can use them as a Melee attack in addition to Brawl.'
+    }
+  },
 
-    Human: {
-      label: 'Human',
-      A: { type: 'multi_stat', stats: [{ attr: 'Strength', value: -1 }, { attr: 'Willpower', value: 2 }] },
-      B: { type: 'feature', name: 'Resolve', restType: 'combat', maxUses: 1,
-           desc: 'Reroll a failed Willpower check once per combat.' },
-      C: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
-      D: { type: 'feature', name: 'Adaptability', restType: 'long', maxUses: 3,
-           desc: 'Reroll any skill check. Can be used up to 3 times per long rest.' },
+  Gearkind: {
+    label: 'Gearkind',
+    A: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+    B: {
+      type: 'passive',
+      name: 'Sensory Deprivation',
+      desc: 'You do not physically feel pain. You do not gain penalties when injured.'
     },
+    C: { type: 'stat_bonus', attr: 'Strength', value: 1 },
+    D: {
+      type: 'feature',
+      name: 'Adaptability',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'Reroll any skill check. Can be used up to 3 times per long rest.'
+    }
+  },
 
-    Mimic: {
-      label: 'Mimic',
-      A: { type: 'stat_bonus', attr: 'Speed', value: 1 },
-      B: { type: 'feature', name: 'Abberkin', restType: 'short', maxUses: 1,
-           desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.' },
-      C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
-      D: { type: 'dual_feature', name: 'Shift',
-           maxUsesLong: 3, maxUsesShort: 3,
-           desc: 'You can transform into something or someone perfectly (3 times per long rest) or perform an imperfect shift with tells (3 times per short rest). Staying in a shift longer than 24 hours may cause you to develop a shell.' },
+  Human: {
+    label: 'Human',
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Strength', value: -1 },
+        { attr: 'Willpower', value: 2 }
+      ]
     },
-
-Not: {
-  label: 'Not',
-  A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
-  B: {
-    type: 'feature',
-    name: 'Abberkin',
-    restType: 'short',
-    maxUses: 1,
-    desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.',
-  }, // <-- Added comma
-  C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
-  D: {
-    type: 'feature',
-    name: 'A Little Off',
-    restType: 'daily',
-    maxUses: 3,
-    desc: 'You are a shapeshifter but your form, finalized or otherwise, always has tells — a second mouth, an extra eye — always hidden somewhere. You can shift what bits you can shift 3 times per day.',
-  }, // <-- Added comma
-},
-
-    Unicorn: {
-      label: 'Unicorn',
-      A: { type: 'multi_stat', stats: [{ attr: 'Speed', value: 2 }, { attr: 'Wisdom', value: -1 }] },
-      B: { type: 'passive', name: 'Stab',
-           desc: 'You have a natural stabbing implement rolled with your Weapon (One-Handed) skill with advantage (+1 rolled die).' },
-      C: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
-      D: { type: 'feature', name: 'Vibe Check', restType: 'daily', maxUses: 3,
-           desc: 'Boost your Insight check by +5. Usable 3 times per day.' },
+    B: {
+      type: 'feature',
+      name: 'Resolve',
+      restType: 'combat',
+      maxUses: 1,
+      desc: 'Reroll a failed Willpower check once per combat.'
     },
+    C: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+    D: {
+      type: 'feature',
+      name: 'Adaptability',
+      restType: 'long',
+      maxUses: 3,
+      desc: 'Reroll any skill check. Can be used up to 3 times per long rest.'
+    }
+  },
 
-  };
+  Mimic: {
+    label: 'Mimic',
+    A: { type: 'stat_bonus', attr: 'Speed', value: 1 },
+    B: {
+      type: 'feature',
+      name: 'Abberkin',
+      restType: 'short',
+      maxUses: 1,
+      desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.'
+    },
+    C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+    D: {
+      type: 'dual_feature',
+      name: 'Shift',
+      maxUsesLong: 3,
+      maxUsesShort: 3,
+      desc: 'You can transform into something or someone perfectly (3 times per long rest) or perform an imperfect shift with tells (3 times per short rest). Staying in a shift longer than 24 hours may cause you to develop a shell.'
+    }
+  },
+
+  Not: {
+    label: 'Not',
+    A: { type: 'stat_bonus', attr: 'Constitution', value: 1 },
+    B: {
+      type: 'feature',
+      name: 'Abberkin',
+      restType: 'short',
+      maxUses: 1,
+      desc: 'This species thrives on survival by tendrils. These tendrils can reach up to 5 meters per 1 Constitution and can be used as extra limbs. Tendrils form once per short rest.'
+    },
+    C: { type: 'stat_bonus', attr: 'Intelligence', value: 1 },
+    D: {
+      type: 'feature',
+      name: 'A Little Off',
+      restType: 'daily',
+      maxUses: 3,
+      desc: 'You are a shapeshifter but your form, finalized or otherwise, always has tells — a second mouth, an extra eye — always hidden somewhere. You can shift what bits you can shift 3 times per day.'
+    }
+  },
+
+  Unicorn: {
+    label: 'Unicorn',
+    A: {
+      type: 'multi_stat',
+      stats: [
+        { attr: 'Speed', value: 2 },
+        { attr: 'Wisdom', value: -1 }
+      ]
+    },
+    B: {
+      type: 'passive',
+      name: 'Stab',
+      desc: 'You have a natural stabbing implement rolled with your Weapon (One-Handed) skill with advantage (+1 rolled die).'
+    },
+    C: { type: 'stat_bonus', attr: 'Willpower', value: 1 },
+    D: {
+      type: 'feature',
+      name: 'Vibe Check',
+      restType: 'daily',
+      maxUses: 3,
+      desc: 'Boost your Insight check by +5. Usable 3 times per day.'
+    }
+  }
+};
 
   /* ----------------------------------------------------------
      Spell Registry
