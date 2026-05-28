@@ -984,6 +984,4 @@
       const mapId = new URLSearchParams(location.search).get('id') || null;
       await loadMap(mapId);
     });
-  });
-
-  });
+  })();
