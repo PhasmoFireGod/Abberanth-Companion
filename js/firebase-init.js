@@ -18,8 +18,7 @@ firebase.initializeApp(firebaseConfig);
 window._auth = firebase.auth();
 
 // Firestore — only if CDN script was loaded
-try { window._db      = firebase.firestore(); } catch (e) { window._db      = null; }
+try { window._db = firebase.firestore(); } catch (e) { window._db = null; }
 
-// Storage — only if CDN script was loaded
-try { window._storage = firebase.storage(); } catch (e) { window._storage = null; console.error('Storage init failed:', e); }
+// Remove the Storage initialization since you're not using it
 window.firebaseReady = true;
