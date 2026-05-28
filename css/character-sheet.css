@@ -1026,5 +1026,17 @@
   color: var(--text-primary) !important;   /* Light text */
   border: 1px solid var(--border) !important; /* Visible border */
 }
+/* Fix stat box layout */
+.stat-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.stat-box .cs-num-input {
+  width: 50px !important;
+}
 
 .cs
