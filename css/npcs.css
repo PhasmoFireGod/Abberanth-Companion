@@ -101,7 +101,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-lg);
-  width: 680px;
+  width: 840px; /* Increased from 680px for a significantly roomier look */
   max-width: calc(100vw - 2rem);
   max-height: 90vh;
   overflow-y: auto;
@@ -118,8 +118,8 @@
 }
 
 .npc-modal-portrait {
-  width: 160px;
-  height: 200px;
+  width: 180px; /* Bumped up slightly to scale nicely with the larger popup */
+  height: 224px;
   object-fit: cover;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -128,8 +128,8 @@
 }
 
 .npc-modal-portrait-placeholder {
-  width: 160px;
-  height: 200px;
+  width: 180px; /* Bumped up slightly to track portrait changes */
+  height: 224px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg-surface);
@@ -290,7 +290,7 @@
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  width: 540px;
+  width: 720px; /* Increased from 540px to comfortably allow double-column scaling */
   max-width: calc(100vw - 2rem);
   max-height: 90vh;
   overflow-y: auto;
