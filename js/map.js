@@ -32,11 +32,10 @@
   let _leafMap      = null;
   let _regionLayers = {};
   let _tokenLayers  = {};
-  let _mapListener  = null; // Handle real-time disconnects
+  let _mapListener  = null; // Track snapshot un-subscriber
 
-  // Drawing & Placement state
+  // Drawing state
   let _drawing      = false;
-  let _placingToken = false;
   let _drawPoints   = [];   // [[lat, lng], ...]
   let _previewLine  = null;
   let _previewPoly  = null;
@@ -65,10 +64,10 @@
   }
 
   /* ----------------------------------------------------------
-     Load a specific map (Real-Time Snapshot Engine)
+     Load a specific map with Real-Time Synced Listeners
   ---------------------------------------------------------- */
   async function loadMap(mapId) {
-    // Unsubscribe from previous map channels
+    // Clean up any existing map real-time session
     if (_mapListener) {
       _mapListener();
       _mapListener = null;
@@ -76,34 +75,37 @@
 
     try {
       if (mapId) {
+        // Attach active listener to target document
         _mapListener = _col().doc(mapId).onSnapshot(doc => {
           if (!doc.exists) { showError('Map not found.'); return; }
-          handleMapUpdate({ id: doc.id, ...doc.data() });
-        }, e => console.error("Sync channel error:", e));
+          processMapData({ id: doc.id, ...doc.data() });
+        }, err => {
+          console.warn('Map stream error:', err);
+          showError('Stream failed: ' + err.message);
+        });
       } else {
+        // Fallback or initialization lookup for Level 0
         const snap = await _col()
           .where('level',    '==', 0)
           .where('parentId', '==', null)
           .limit(1)
           .get();
-          
         if (snap.empty) { _currentMap = null; showEmptyState(); return; }
-        const initialDoc = snap.docs[0];
         
-        _mapListener = _col().doc(initialDoc.id).onSnapshot(doc => {
-          if (doc.exists) handleMapUpdate({ id: doc.id, ...doc.data() });
-        });
+        // Re-route tracking to the identified dynamic ID
+        loadMap(snap.docs[0].id);
       }
     } catch (e) {
       console.warn('Map initialization failed:', e);
-      showError('Could not link data feeds: ' + e.message);
+      showError('Could not sync map: ' + e.message);
     }
   }
 
   /* ----------------------------------------------------------
-     Process Real-time Updates Safely
+     Process Map Updates Safely for Players & DMs
   ---------------------------------------------------------- */
-  function handleMapUpdate(mapData) {
+  function processMapData(mapData) {
+    // Real-time authentication validation loop
     if (!window.isDM) {
       const vis = mapData.visibility || {};
       const uid = _user?.uid;
@@ -113,36 +115,35 @@
       }
     }
 
-    const standardDisplayRequired = !_currentMap || _currentMap.id !== mapData.id || _currentMap.imageUrl !== mapData.imageUrl;
+    // Capture reactive state differences safely
+    const imageChanged = !_currentMap || _currentMap.imageUrl !== mapData.imageUrl;
     _currentMap = mapData;
 
-    if (standardDisplayRequired) {
-      displayMap(_currentMap);
-    } else {
-      document.getElementById('map-name').textContent = _currentMap.name || 'Unnamed Map';
-      renderRegions(_currentMap.regions || []);
-      renderTokens(_currentMap.tokens || []);
-    }
-  }
-
-  /* ----------------------------------------------------------
-     Display a loaded map
-  ---------------------------------------------------------- */
-  async function displayMap(mapData) {
     document.getElementById('map-empty').style.display     = 'none';
     document.getElementById('map-container').style.display = 'block';
     document.getElementById('map-name').textContent = mapData.name || 'Unnamed Map';
 
-    await buildBreadcrumb(mapData);
+    buildBreadcrumb(mapData);
     if (window.isDM) renderToolbar();
 
     if (mapData.imageUrl && mapData.imageWidth && mapData.imageHeight) {
-      setupLeaflet(mapData.imageUrl, mapData.imageWidth, mapData.imageHeight);
+      // Re-initialize engine canvas frame layout rules only on core source changes
+      if (imageChanged || !_leafMap) {
+        setupLeaflet(mapData.imageUrl, mapData.imageWidth, mapData.imageHeight);
+      }
       renderRegions(mapData.regions || []);
       renderTokens(mapData.tokens || []);
     } else {
+      if (_leafMap) { _leafMap.off(); _leafMap.remove(); _leafMap = null; }
       showNoImageState(mapData);
     }
+  }
+
+  /* ----------------------------------------------------------
+     Display a loaded map (Legacy interface wrapper)
+  ---------------------------------------------------------- */
+  async function displayMap(mapData) {
+    processMapData(mapData);
   }
 
   /* ----------------------------------------------------------
@@ -234,7 +235,7 @@
       poly.bindTooltip(tip, { sticky: true, className: 'map-tooltip' });
 
       poly.on('click', e => {
-        if (_drawing || _placingToken) return;
+        if (_drawing) return;
         if (region.childMapId) {
           navigateTo(region.childMapId);
         } else if (window.isDM) {
@@ -269,13 +270,11 @@
     (tokens || []).forEach(token => {
       if (!token.position) return;
 
-      const userTokenImg = token.imageUrl || 'https://via.placeholder.com/48?text=Hero';
-
       const icon = L.divIcon({
         className: 'map-token',
         html: `
           <div class="map-token-wrap">
-            <img src="${userTokenImg}" alt="${esc(token.name)}" />
+            <img src="${token.imageUrl || '../assets/default-token.png'}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%236650d8\'><circle cx=\'12\' cy=\'12\' r=\'10\'/></svg>'}" />
           </div>
         `,
         iconSize: [48, 48],
@@ -284,7 +283,10 @@
 
       const marker = L.marker(
         [token.position.lat, token.position.lng],
-        { icon, draggable: window.isDM }
+        {
+          icon,
+          draggable: window.isDM,
+        }
       );
 
       marker.bindTooltip(token.name || 'Player', {
@@ -343,7 +345,7 @@
     document.getElementById('tb-edit').addEventListener('click',   () => openMapEditor(_currentMap));
     document.getElementById('tb-draw').addEventListener('click',   startDrawing);
     document.getElementById('tb-cancel').addEventListener('click', cancelDrawing);
-    document.getElementById('tb-token').addEventListener('click',  startTokenPlacement);
+    document.getElementById('tb-token').addEventListener('click', startTokenPlacement);
   }
 
   /* ----------------------------------------------------------
@@ -351,10 +353,10 @@
   ---------------------------------------------------------- */
   function startDrawing() {
     if (!_leafMap) { alert('Upload a map image first.'); return; }
-    if (_placingToken) cancelTokenPlacement();
     _drawing    = true;
     _drawPoints = [];
-    document.getElementById('map-container').classList.add('map-drawing-mode');
+    _placingToken = false;
+    document.getElementById('map-container').className = 'map-drawing-mode';
     document.getElementById('tb-draw').style.display   = 'none';
     document.getElementById('tb-cancel').style.display = '';
     showHint('Click to place points · Click the first point to close the region · Min 3 points');
@@ -364,7 +366,7 @@
     _drawing    = false;
     _drawPoints = [];
     clearPreview();
-    document.getElementById('map-container').classList.remove('map-drawing-mode');
+    document.getElementById('map-container').className = '';
     document.getElementById('tb-draw').style.display   = '';
     document.getElementById('tb-cancel').style.display = 'none';
     hideHint();
@@ -434,6 +436,7 @@
     }
   }
 
+  // Preview styling rules
   function clearPreview() {
     if (_previewLine) { _previewLine.remove(); _previewLine = null; }
     if (_previewPoly) { _previewPoly.remove(); _previewPoly = null; }
@@ -456,134 +459,43 @@
     h.textContent = text;
     h.style.display = 'block';
   }
-  
   function hideHint() {
     const h = document.getElementById('map-draw-hint');
     if (h) h.style.display = 'none';
   }
 
   /* ----------------------------------------------------------
-     Token Placement Mode
+     Token Placement
   ---------------------------------------------------------- */
+  let _placingToken = false;
+
   function startTokenPlacement() {
     if (_drawing) cancelDrawing();
     _placingToken = true;
     showHint('Click anywhere on the map to place a token.');
   }
 
-  function cancelTokenPlacement() {
-    _placingToken = false;
-    hideHint();
-  }
-
-  function placeToken(latlng) {
-    _placingToken = false;
-    hideHint();
-    openTokenCreateDialog(latlng);
-  }
-
-  /* ----------------------------------------------------------
-     Token Creation Dialog (Cloudinary Engine Integrated)
-  ---------------------------------------------------------- */
-  function openTokenCreateDialog(latlng) {
-    removeEl('map-token-dialog');
-
-    const wrap = document.createElement('div');
-    wrap.id = 'map-token-dialog';
-    wrap.className = 'map-dialog-overlay';
-    wrap.innerHTML = `
-      <div class="map-dialog">
-        <div class="map-dialog-title">New Token Anchor</div>
-
-        <div class="map-dialog-field">
-          <label>Token / Actor Name *</label>
-          <input class="map-dialog-input" id="mt-name" type="text" placeholder="Character or Monster name…" />
-        </div>
-
-        <div class="map-dialog-field">
-          <label>Token Artwork</label>
-          <div class="map-upload-row">
-            <input class="map-dialog-input" id="mt-url" type="url" placeholder="Paste asset URL, or upload →" />
-            <label class="map-upload-btn" for="mt-token-file">📁 Upload</label>
-            <input type="file" id="mt-token-file" accept="image/*" style="display:none;" />
-          </div>
-          <p class="map-dialog-hint" id="mt-status">Supports PNG, JPG, or transparent WebP tokens.</p>
-          <div id="mt-preview" style="display:flex; justify-content:center; margin-top:0.4rem;"></div>
-        </div>
-
-        <div class="map-dialog-actions">
-          <button class="map-dialog-cancel-btn" id="mt-cancel">Cancel</button>
-          <button class="map-dialog-save-btn"   id="mt-save">Place Token</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(wrap);
-    document.getElementById('mt-name').focus();
-
-    const urlInput = document.getElementById('mt-url');
-    const statusText = document.getElementById('mt-status');
-    const previewDiv = document.getElementById('mt-preview');
-
-    function updatePreview(url) {
-      if (!url) return;
-      previewDiv.innerHTML = `
-        <div class="map-token-wrap">
-          <img src="${esc(url)}" style="width:100%; height:100%; object-fit:cover;" />
-        </div>`;
+  async function placeToken(latlng) {
+    const name = prompt('Token name?');
+    if (!name) {
+      _placingToken = false;
+      hideHint();
+      return;
     }
 
-    urlInput.addEventListener('blur', e => updatePreview(e.target.value.trim()));
+    const token = {
+      id: `t${Date.now()}`,
+      name,
+      imageUrl: '', 
+      position: {
+        lat: latlng.lat,
+        lng: latlng.lng,
+      },
+    };
 
-    document.getElementById('mt-token-file').addEventListener('change', async e => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      statusText.textContent = "Uploading asset to Cloudinary...";
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'abberanth_uploads');
-
-      try {
-        const res = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/image/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!res.ok) throw new Error('Cloudinary target rejected request payload.');
-        
-        const data = await res.json();
-        urlInput.value = data.secure_url;
-        statusText.textContent = "Upload successful!";
-        updatePreview(data.secure_url);
-      } catch (err) {
-        alert("Token upload failed: " + err.message);
-        statusText.textContent = "Upload failed. Fallback to copy-pasting an external image path.";
-      }
-    });
-
-    document.getElementById('mt-cancel').addEventListener('click', () => removeEl('map-token-dialog'));
-
-    document.getElementById('mt-save').addEventListener('click', async () => {
-      const name = document.getElementById('mt-name').value.trim();
-      if (!name) { alert('Please target a valid name string.'); return; }
-
-      const btn = document.getElementById('mt-save');
-      btn.disabled = true; btn.textContent = 'Placing…';
-
-      const token = {
-        id: `t${Date.now()}`,
-        name,
-        imageUrl: urlInput.value.trim() || '',
-        position: {
-          lat: latlng.lat,
-          lng: latlng.lng,
-        },
-      };
-
-      await saveToken(token);
-      removeEl('map-token-dialog');
-    });
+    await saveToken(token);
+    _placingToken = false;
+    hideHint();
   }
 
   /* ----------------------------------------------------------
@@ -715,16 +627,14 @@
   }
 
   /* ----------------------------------------------------------
-     Tokens Data Operations
+     Tokens Mutation Storage Pipeline
   ---------------------------------------------------------- */
   async function saveToken(tokenData) {
     const tokens = [...(_currentMap.tokens || [])];
     tokens.push(tokenData);
-
     try {
       await _col().doc(_currentMap.id).update({ tokens });
       _currentMap.tokens = tokens;
-      renderTokens(tokens);
     } catch (e) {
       alert('Failed to save token: ' + e.message);
     }
@@ -735,11 +645,7 @@
     const idx = tokens.findIndex(t => t.id === tokenId);
     if (idx < 0) return;
 
-    tokens[idx].position = {
-      lat: latlng.lat,
-      lng: latlng.lng,
-    };
-
+    tokens[idx].position = { lat: latlng.lat, lng: latlng.lng };
     try {
       await _col().doc(_currentMap.id).update({ tokens });
       _currentMap.tokens = tokens;
@@ -750,11 +656,9 @@
 
   async function deleteToken(tokenId) {
     const tokens = (_currentMap.tokens || []).filter(t => t.id !== tokenId);
-
     try {
       await _col().doc(_currentMap.id).update({ tokens });
       _currentMap.tokens = tokens;
-      renderTokens(tokens);
     } catch (e) {
       alert('Failed to delete token: ' + e.message);
     }
@@ -768,7 +672,6 @@
       Array.isArray(p) ? { lat: p[0], lng: p[1] } : { lat: p.lat, lng: p.lng }
     );
   }
-  
   function fromFirestorePoints(pts) {
     return (pts || []).map(p =>
       Array.isArray(p) ? p : [p.lat, p.lng]
@@ -788,7 +691,6 @@
     try {
       await _col().doc(_currentMap.id).update({ regions });
       _currentMap.regions = regions;
-      renderRegions(regions);
     } catch (e) { alert('Save failed: ' + e.message); }
   }
 
@@ -797,7 +699,6 @@
     try {
       await _col().doc(_currentMap.id).update({ regions });
       _currentMap.regions = regions;
-      renderRegions(regions);
     } catch (e) { alert('Delete failed: ' + e.message); }
   }
 
@@ -814,14 +715,13 @@
         description: '',
         visibility:  { all: false },
         regions:     [],
-        tokens:      []
       });
       return ref.id;
     } catch (e) { alert('Could not create child map: ' + e.message); return null; }
   }
 
   /* ----------------------------------------------------------
-     Map Editor Dialog (Integrated Cloudinary Client)
+     Map editor dialog (create / edit a map's info + image)
   ---------------------------------------------------------- */
   function openMapEditor(mapData) {
     removeEl('map-editor-dialog');
@@ -909,15 +809,16 @@
 
     document.getElementById('me-url').addEventListener('blur', e => detectDims(e.target.value.trim()));
 
+    // Safe Cloudinary file selection target extraction logic
     document.getElementById('me-img-file').addEventListener('change', async e => {
-      const file = e.target.files[0];
-      if (!file) return;
+      const targetFile = e.target.files?.[0];
+      if (!targetFile) return;
 
-      const uploadHint = document.getElementById('me-dims');
-      uploadHint.textContent = "Uploading to Cloudinary...";
+      const hintEl = document.getElementById('me-dims');
+      hintEl.textContent = 'Uploading image to Cloudinary…';
 
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', targetFile);
       formData.append('upload_preset', 'abberanth_uploads');
 
       try {
@@ -925,17 +826,16 @@
           method: 'POST',
           body: formData,
         });
-
-        if (!res.ok) throw new Error('Network server upload failed.');
-        
         const data = await res.json();
-        const url = data.secure_url;
-        
-        document.getElementById('me-url').value = url;
-        detectDims(url);
+        if (data.secure_url) {
+          document.getElementById('me-url').value = data.secure_url;
+          detectDims(data.secure_url);
+        } else {
+          hintEl.textContent = 'Upload failed.';
+        }
       } catch (err) {
-        alert("Upload failed: " + err.message);
-        uploadHint.textContent = "Upload rejected. Try copy-pasting an image URL directly.";
+        console.error(err);
+        hintEl.textContent = 'Upload error.';
       }
     });
 
@@ -969,7 +869,7 @@
         level:       mapData?.level    ?? 0,
         parentId:    mapData?.parentId ?? null,
         regions:     mapData?.regions  ?? [],
-        tokens:      mapData?.tokens   ?? []
+        tokens:      mapData?.tokens   ?? [],
       };
 
       const btn = document.getElementById('me-save');
@@ -983,7 +883,6 @@
           const u = new URL(location.href);
           u.searchParams.set('id', ref.id);
           history.replaceState({ mapId: ref.id }, '', u.toString());
-          loadMap(ref.id);
         }
         removeEl('map-editor-dialog');
       } catch (e) {
@@ -996,7 +895,7 @@
       document.getElementById('me-delete').addEventListener('click', async () => {
         if (!confirm(`Delete "${mapData.name}"? Any regions linking to this map will be broken.`)) return;
         try {
-          if (_mapListener) _mapListener(); 
+          if (_mapListener) { _mapListener(); _mapListener = null; }
           await _col().doc(mapData.id).delete();
           removeEl('map-editor-dialog');
           if (mapData.parentId) {
