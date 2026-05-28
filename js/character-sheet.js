@@ -26,20 +26,20 @@ const GRANDPARENT_TRAITS = {
 			name: 'Trap Artist',
 			restType: 'short',
 			maxUses: 3,
-			desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.',
+			desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.'
 		},
 		C: {
 			type: 'stat_bonus',
 			attr: 'Intelligence',
 			value: 1
-		}
+		},
 		D: {
       type: 'feature',
       name: 'Silk',
       restType: 'long',
       maxUses: 3,
       desc: 'You can create 50 meters of silk rope and 25 meters of sticky silk rope 3 times per long rest.'
-    },
+    }
 	},
 
   'Arachnis (Arachne)': {
