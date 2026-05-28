@@ -23,7 +23,7 @@ const GRANDPARENT_TRAITS = {
 		},
 		B: {
 			type: 'feature',
-			name: 'Trap Artist'
+			name: 'Trap Artist',
 			restType: 'short',
 			maxUses: 3,
 			desc: 'This species is known for building sit and wait traps. When arming a trap that you will be leaving, activate this to roll +5 more for the setup 3 times per short rest.',
