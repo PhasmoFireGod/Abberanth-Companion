@@ -31,9 +31,12 @@
   let _currentMap   = null;
   let _leafMap      = null;
   let _regionLayers = {};
+  let _tokenLayers  = {};
+  let _mapListener  = null; // Handle real-time disconnects
 
-  // Drawing state
+  // Drawing & Placement state
   let _drawing      = false;
+  let _placingToken = false;
   let _drawPoints   = [];   // [[lat, lng], ...]
   let _previewLine  = null;
   let _previewPoly  = null;
@@ -62,34 +65,47 @@
   }
 
   /* ----------------------------------------------------------
-     Load a specific map (or world map if no ID given)
+     Load a specific map (Real-Time Snapshot Engine)
   ---------------------------------------------------------- */
   async function loadMap(mapId) {
+    // Unsubscribe from previous map channels
+    if (_mapListener) {
+      _mapListener();
+      _mapListener = null;
+    }
+
     try {
       if (mapId) {
-        const snap = await _col().doc(mapId).get();
-        if (!snap.exists) { showError('Map not found.'); return; }
-        _currentMap = { id: snap.id, ...snap.data() };
+        _mapListener = _col().doc(mapId).onSnapshot(doc => {
+          if (!doc.exists) { showError('Map not found.'); return; }
+          handleMapUpdate({ id: doc.id, ...doc.data() });
+        }, e => console.error("Sync channel error:", e));
       } else {
-        // Find world map (level 0, no parent)
         const snap = await _col()
           .where('level',    '==', 0)
           .where('parentId', '==', null)
           .limit(1)
           .get();
+          
         if (snap.empty) { _currentMap = null; showEmptyState(); return; }
-        const doc = snap.docs[0];
-        _currentMap = { id: doc.id, ...doc.data() };
+        const initialDoc = snap.docs[0];
+        
+        _mapListener = _col().doc(initialDoc.id).onSnapshot(doc => {
+          if (doc.exists) handleMapUpdate({ id: doc.id, ...doc.data() });
+        });
       }
     } catch (e) {
-      console.warn('Map load failed:', e);
-      showError('Could not load map: ' + e.message);
-      return;
+      console.warn('Map initialization failed:', e);
+      showError('Could not link data feeds: ' + e.message);
     }
+  }
 
-    // Visibility check for players
+  /* ----------------------------------------------------------
+     Process Real-time Updates Safely
+  ---------------------------------------------------------- */
+  function handleMapUpdate(mapData) {
     if (!window.isDM) {
-      const vis = _currentMap.visibility || {};
+      const vis = mapData.visibility || {};
       const uid = _user?.uid;
       if (!vis.all && !(uid && vis[uid])) {
         showError('This map has not been revealed yet.');
@@ -97,7 +113,16 @@
       }
     }
 
-    displayMap(_currentMap);
+    const standardDisplayRequired = !_currentMap || _currentMap.id !== mapData.id || _currentMap.imageUrl !== mapData.imageUrl;
+    _currentMap = mapData;
+
+    if (standardDisplayRequired) {
+      displayMap(_currentMap);
+    } else {
+      document.getElementById('map-name').textContent = _currentMap.name || 'Unnamed Map';
+      renderRegions(_currentMap.regions || []);
+      renderTokens(_currentMap.tokens || []);
+    }
   }
 
   /* ----------------------------------------------------------
@@ -114,6 +139,7 @@
     if (mapData.imageUrl && mapData.imageWidth && mapData.imageHeight) {
       setupLeaflet(mapData.imageUrl, mapData.imageWidth, mapData.imageHeight);
       renderRegions(mapData.regions || []);
+      renderTokens(mapData.tokens || []);
     } else {
       showNoImageState(mapData);
     }
@@ -165,7 +191,7 @@
       maxZoom:          4,
       zoomSnap:         0.25,
       attributionControl: false,
-      doubleClickZoom:  false,   // we handle dblclick ourselves for drawing
+      doubleClickZoom:  false,
     });
 
     const bounds = [[0, 0], [h, w]];
@@ -185,8 +211,6 @@
     Object.values(_regionLayers).forEach(l => l.remove());
     _regionLayers = {};
     if (!_leafMap) return;
-
-    const uid = _user?.uid;
 
     (regions || []).forEach(region => {
       if (!window.isDM && region.visible === false) return;
@@ -210,7 +234,7 @@
       poly.bindTooltip(tip, { sticky: true, className: 'map-tooltip' });
 
       poly.on('click', e => {
-        if (_drawing) return;   // in draw mode, map click handles it
+        if (_drawing || _placingToken) return;
         if (region.childMapId) {
           navigateTo(region.childMapId);
         } else if (window.isDM) {
@@ -230,6 +254,61 @@
 
       poly.addTo(_leafMap);
       _regionLayers[region.id] = poly;
+    });
+  }
+  
+  /* ----------------------------------------------------------
+     Render Tokens / Markers
+  ---------------------------------------------------------- */
+  function renderTokens(tokens) {
+    Object.values(_tokenLayers).forEach(t => t.remove());
+    _tokenLayers = {};
+
+    if (!_leafMap) return;
+
+    (tokens || []).forEach(token => {
+      if (!token.position) return;
+
+      const userTokenImg = token.imageUrl || 'https://via.placeholder.com/48?text=Hero';
+
+      const icon = L.divIcon({
+        className: 'map-token',
+        html: `
+          <div class="map-token-wrap">
+            <img src="${userTokenImg}" alt="${esc(token.name)}" />
+          </div>
+        `,
+        iconSize: [48, 48],
+        iconAnchor: [24, 24],
+      });
+
+      const marker = L.marker(
+        [token.position.lat, token.position.lng],
+        { icon, draggable: window.isDM }
+      );
+
+      marker.bindTooltip(token.name || 'Player', {
+        permanent: false,
+        direction: 'top',
+        className: 'map-tooltip',
+      });
+
+      if (window.isDM) {
+        marker.on('dragend', async e => {
+          const pos = e.target.getLatLng();
+          await updateTokenPosition(token.id, pos);
+        });
+
+        marker.on('contextmenu', async e => {
+          L.DomEvent.stop(e);
+          if (confirm(`Remove token "${token.name}"?`)) {
+            await deleteToken(token.id);
+          }
+        });
+      }
+
+      marker.addTo(_leafMap);
+      _tokenLayers[token.id] = marker;
     });
   }
 
@@ -259,10 +338,12 @@
       <button class="map-tool-btn" id="tb-edit">✏️ Edit Map</button>
       <button class="map-tool-btn" id="tb-draw">⬡ Draw Region</button>
       <button class="map-tool-btn map-tool-btn--cancel" id="tb-cancel" style="display:none;">✕ Cancel Draw</button>
+      <button class="map-tool-btn" id="tb-token">📍 Place Token</button>
     `;
     document.getElementById('tb-edit').addEventListener('click',   () => openMapEditor(_currentMap));
     document.getElementById('tb-draw').addEventListener('click',   startDrawing);
     document.getElementById('tb-cancel').addEventListener('click', cancelDrawing);
+    document.getElementById('tb-token').addEventListener('click',  startTokenPlacement);
   }
 
   /* ----------------------------------------------------------
@@ -270,12 +351,13 @@
   ---------------------------------------------------------- */
   function startDrawing() {
     if (!_leafMap) { alert('Upload a map image first.'); return; }
+    if (_placingToken) cancelTokenPlacement();
     _drawing    = true;
     _drawPoints = [];
     document.getElementById('map-container').classList.add('map-drawing-mode');
     document.getElementById('tb-draw').style.display   = 'none';
     document.getElementById('tb-cancel').style.display = '';
-    showHint('Click to place points · Click the ◆ first point to close the region · Min 3 points');
+    showHint('Click to place points · Click the first point to close the region · Min 3 points');
   }
 
   function cancelDrawing() {
@@ -289,10 +371,12 @@
   }
 
   function onMapClick(e) {
+    if (_placingToken) {
+      placeToken(e.latlng);
+      return;
+    }
     if (!_drawing) return;
 
-    // If we have 3+ points, check if the click landed on the first point.
-    // If so, close the polygon and open the region dialog.
     if (_drawPoints.length >= 3) {
       const firstLatLng = L.latLng(_drawPoints[0][0], _drawPoints[0][1]);
       const clickPx     = _leafMap.latLngToContainerPoint(e.latlng);
@@ -332,7 +416,6 @@
         fillOpacity: 1,
         weight:      isFirst ? 3 : 2,
       }).addTo(_leafMap);
-      // Show a tooltip on the first point when it can be clicked to close
       if (canClose) {
         m.bindTooltip('Click to close region', { permanent: false, className: 'map-tooltip' });
       }
@@ -373,9 +456,49 @@
     h.textContent = text;
     h.style.display = 'block';
   }
+  
   function hideHint() {
     const h = document.getElementById('map-draw-hint');
     if (h) h.style.display = 'none';
+  }
+
+  /* ----------------------------------------------------------
+     Token Placement Mode
+  ---------------------------------------------------------- */
+  function startTokenPlacement() {
+    if (_drawing) cancelDrawing();
+    _placingToken = true;
+    showHint('Click anywhere on the map to place a token.');
+  }
+
+  function cancelTokenPlacement() {
+    _placingToken = false;
+    hideHint();
+  }
+
+  async function placeToken(latlng) {
+    const name = prompt('Token name?');
+    if (!name) {
+      cancelTokenPlacement();
+      return;
+    }
+
+    const avatarUrl = prompt('Custom Avatar Image URL? (Leave empty for fallback style layout)');
+
+    const token = {
+      id: `t${Date.now()}`,
+      name,
+      imageUrl: avatarUrl || '',
+      position: {
+        lat: latlng.lat,
+        lng: latlng.lng,
+      },
+    };
+
+    _placingToken = false;
+    hideHint();
+
+    await saveToken(token);
   }
 
   /* ----------------------------------------------------------
@@ -461,7 +584,6 @@
     document.body.appendChild(wrap);
     document.getElementById('rd-name').focus();
 
-    // Colour picker
     wrap.querySelectorAll('.map-color-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         wrap.querySelectorAll('.map-color-btn').forEach(b => b.classList.remove('active'));
@@ -497,7 +619,7 @@
       removeEl('map-region-dialog');
       if (link === '__new__' && childMapId) navigateTo(childMapId);
     });
-
+	
     if (existing) {
       document.getElementById('rd-delete').addEventListener('click', async () => {
         if (!confirm(`Delete region "${existing.name}"?`)) return;
@@ -508,15 +630,60 @@
   }
 
   /* ----------------------------------------------------------
+     Tokens Data Operations
+  ---------------------------------------------------------- */
+  async function saveToken(tokenData) {
+    const tokens = [...(_currentMap.tokens || [])];
+    tokens.push(tokenData);
+
+    try {
+      await _col().doc(_currentMap.id).update({ tokens });
+      _currentMap.tokens = tokens;
+      renderTokens(tokens);
+    } catch (e) {
+      alert('Failed to save token: ' + e.message);
+    }
+  }
+
+  async function updateTokenPosition(tokenId, latlng) {
+    const tokens = [...(_currentMap.tokens || [])];
+    const idx = tokens.findIndex(t => t.id === tokenId);
+    if (idx < 0) return;
+
+    tokens[idx].position = {
+      lat: latlng.lat,
+      lng: latlng.lng,
+    };
+
+    try {
+      await _col().doc(_currentMap.id).update({ tokens });
+      _currentMap.tokens = tokens;
+    } catch (e) {
+      alert('Failed to move token: ' + e.message);
+    }
+  }
+
+  async function deleteToken(tokenId) {
+    const tokens = (_currentMap.tokens || []).filter(t => t.id !== tokenId);
+
+    try {
+      await _col().doc(_currentMap.id).update({ tokens });
+      _currentMap.tokens = tokens;
+      renderTokens(tokens);
+    } catch (e) {
+      alert('Failed to delete token: ' + e.message);
+    }
+  }
+
+  /* ----------------------------------------------------------
      Point format helpers
-     Firestore forbids nested arrays, so we convert:
-       Leaflet   [[lat,lng], ...]  ↔  Firestore  [{lat,lng}, ...]
   ---------------------------------------------------------- */
   function toFirestorePoints(pts) {
     return (pts || []).map(p =>
       Array.isArray(p) ? { lat: p[0], lng: p[1] } : { lat: p.lat, lng: p.lng }
     );
   }
+  
   function fromFirestorePoints(pts) {
     return (pts || []).map(p =>
       Array.isArray(p) ? p : [p.lat, p.lng]
@@ -524,7 +691,6 @@
   }
 
   async function saveRegion(regionData, existing) {
-    // Convert points to Firestore-safe format before writing
     const firestoreRegion = {
       ...regionData,
       points: toFirestorePoints(regionData.points),
@@ -563,13 +729,14 @@
         description: '',
         visibility:  { all: false },
         regions:     [],
+        tokens:      []
       });
       return ref.id;
     } catch (e) { alert('Could not create child map: ' + e.message); return null; }
   }
 
   /* ----------------------------------------------------------
-     Map editor dialog (create / edit a map's info + image)
+     Map Editor Dialog (Integrated Cloudinary Client)
   ---------------------------------------------------------- */
   function openMapEditor(mapData) {
     removeEl('map-editor-dialog');
@@ -642,7 +809,6 @@
     document.body.appendChild(wrap);
     document.getElementById('me-name').focus();
 
-    // Detect dimensions from URL
     function detectDims(url) {
       if (!url) return;
       const img = new Image();
@@ -658,29 +824,36 @@
 
     document.getElementById('me-url').addEventListener('blur', e => detectDims(e.target.value.trim()));
 
-    // Upload
     document.getElementById('me-img-file').addEventListener('change', async e => {
       const file = e.target.files[0];
-      if (!file || !window._storage) return;
-      const btn = document.querySelector('label[for="me-img-file"]');
-      btn.textContent = 'Uploading…';
+      if (!file) return;
+
+      const uploadHint = document.getElementById('me-dims');
+      uploadHint.textContent = "Uploading to Cloudinary...";
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'abberanth_uploads');
+
       try {
-        const id  = mapData?.id || `new-${Date.now()}`;
-        const ext = file.name.split('.').pop();
-        const ref = window._storage.ref(`map-images/${id}/map.${ext}`);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
+        const res = await fetch('https://api.cloudinary.com/v1_1/dwvp6we4c/image/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error('Network server upload failed.');
+        
+        const data = await res.json();
+        const url = data.secure_url;
+        
         document.getElementById('me-url').value = url;
         detectDims(url);
-        btn.textContent = '✓ Done';
-        setTimeout(() => { btn.textContent = '📁 Upload'; }, 2000);
       } catch (err) {
-        btn.textContent = '✗ Failed';
-        setTimeout(() => { btn.textContent = '📁 Upload'; }, 2500);
+        alert("Upload failed: " + err.message);
+        uploadHint.textContent = "Upload rejected. Try copy-pasting an image URL directly.";
       }
     });
 
-    // Visibility toggles
     wrap.querySelectorAll('.map-vis-toggle').forEach(label => {
       label.querySelector('input')?.addEventListener('change', e => {
         label.classList.toggle('active', e.target.checked);
@@ -694,7 +867,6 @@
       const url  = document.getElementById('me-url').value.trim();
       if (!name) { alert('Please enter a map name.'); return; }
 
-      // Build visibility
       const vis = {};
       const allCb = document.getElementById('me-vis-all');
       if (allCb) vis.all = allCb.checked;
@@ -712,6 +884,7 @@
         level:       mapData?.level    ?? 0,
         parentId:    mapData?.parentId ?? null,
         regions:     mapData?.regions  ?? [],
+        tokens:      mapData?.tokens   ?? []
       };
 
       const btn = document.getElementById('me-save');
@@ -720,16 +893,14 @@
       try {
         if (mapData?.id) {
           await _col().doc(mapData.id).update(data);
-          _currentMap = { ..._currentMap, ...data };
         } else {
           const ref = await _col().add(data);
-          _currentMap = { id: ref.id, ...data };
           const u = new URL(location.href);
           u.searchParams.set('id', ref.id);
           history.replaceState({ mapId: ref.id }, '', u.toString());
+          loadMap(ref.id);
         }
         removeEl('map-editor-dialog');
-        displayMap(_currentMap);
       } catch (e) {
         alert('Save failed: ' + e.message);
         btn.disabled = false; btn.textContent = mapData ? 'Save Map' : 'Create Map';
@@ -740,6 +911,7 @@
       document.getElementById('me-delete').addEventListener('click', async () => {
         if (!confirm(`Delete "${mapData.name}"? Any regions linking to this map will be broken.`)) return;
         try {
+          if (_mapListener) _mapListener(); 
           await _col().doc(mapData.id).delete();
           removeEl('map-editor-dialog');
           if (mapData.parentId) {
