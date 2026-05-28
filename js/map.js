@@ -423,7 +423,7 @@
         m.bindTooltip('Click to close region', { permanent: false, className: 'map-tooltip' });
       }
       _drawMarkers.push(m);
-    });
+    )};
   }
 
   function updatePreviewWithCursor(pts, cursor) {
@@ -435,7 +435,7 @@
     } else {
       _previewLine = L.polyline(all, previewStyle()).addTo(_leafMap);
     }
-  }
+  
 
   // Preview styling rules
   function clearPreview() {
