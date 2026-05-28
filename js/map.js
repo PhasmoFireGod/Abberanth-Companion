@@ -373,10 +373,11 @@
   }
 
   function onMapClick(e) {
-    if (_placingToken) {
-      placeToken(e.latlng);
-      return;
-    }
+  if (_placingToken) {
+    openTokenCreateDialog(e.latlng);
+    _placingToken = false; // Reset mode after opening
+  }
+
     if (!_drawing) return;
 
     if (_drawPoints.length >= 3) {
@@ -493,9 +494,14 @@
       },
     };
 
-    await saveToken(token);
-    _placingToken = false;
-    hideHint();
+   async function saveToken(token) {
+  try {
+    const tokens = [...(_currentMap.tokens || []), token];
+    await _col().doc(_currentMap.id).update({ tokens });
+  } catch (e) {
+    console.error('Failed to save token:', e);
+  }
+
   }
 
   /* ----------------------------------------------------------
