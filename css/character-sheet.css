@@ -1018,5 +1018,13 @@
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+/* Fix for text boxes */
+.cs-text-input,
+.cs-num-input,
+.cs-select {
+  background: var(--bg-surface) !important; /* Dark background */
+  color: var(--text-primary) !important;   /* Light text */
+  border: 1px solid var(--border) !important; /* Visible border */
+}
 
 .cs
