@@ -967,6 +967,51 @@ async function placeToken(latlng) {
     el.style.display = 'flex';
     el.innerHTML = `<div class="map-empty-content"><p style="color:var(--text-muted);">${esc(msg)}</p></div>`;
   }
+  // Back navigation control
+const BackControl = L.Control.extend({
+  options: {
+    position: 'topleft'
+  },
+
+  onAdd: function () {
+    const container = L.DomUtil.create(
+      'div',
+      'leaflet-bar leaflet-control'
+    );
+
+    container.innerHTML = `
+      <a href="#"
+         title="Back to Parent Map"
+         style="
+           width:30px;
+           height:30px;
+           line-height:30px;
+           text-align:center;
+           font-size:18px;
+           font-weight:bold;
+           text-decoration:none;
+           display:block;
+           background:#1e2430;
+           color:white;
+         ">
+        ↩
+      </a>
+    `;
+
+    container.onclick = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (_currentMap?.parentId) {
+        navigateTo(_currentMap.parentId);
+      }
+    };
+
+    return container;
+  }
+});
+
+_leafMap.addControl(new BackControl());
 
   /* ----------------------------------------------------------
      Utility
