@@ -435,7 +435,7 @@
     } else {
       _previewLine = L.polyline(all, previewStyle()).addTo(_leafMap);
     }
-  
+  }
 
   // Preview styling rules
   function clearPreview() {
