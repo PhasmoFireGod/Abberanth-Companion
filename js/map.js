@@ -420,9 +420,9 @@ _leafMap.addControl(new BackControl());
 
   function onMapClick(e) {
   if (_placingToken) {
-    openTokenCreateDialog(e.latlng);
-    _placingToken = false; // Reset mode after opening
-  }
+  placeToken(e.latlng);
+  return;
+}
 
     if (!_drawing) return;
 
