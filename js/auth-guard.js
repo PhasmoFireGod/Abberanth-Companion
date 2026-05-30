@@ -3,7 +3,9 @@
    - Redirects unauthenticated users to login.html
    - Fetches/sets username; prompts on first login
    - Sets window.isDM, window._username, window._userDisplay
+   - Sets window._userRole: 'dm' | 'player' | 'guest'
    - Exposes window.onAuthReady(callback)
+   - Exposes window.isAtLeastPlayer() helper
    - Populates sidebar footer: display name + Sign Out
    ============================================================ */
 
@@ -20,6 +22,14 @@
     return emails.map(e => e.toLowerCase()).includes(user.email.toLowerCase());
   }
 
+  /* Role helpers — available globally after auth resolves */
+  window.isAtLeastPlayer = function () {
+    return window._userRole === 'dm' || window._userRole === 'player';
+  };
+  window.isGuest = function () {
+    return window._userRole === 'guest';
+  };
+
   /* ---- Username fetch ---- */
   async function fetchAndSetUsername(user) {
     if (!window._db) return;
@@ -29,9 +39,11 @@
       window._username    = data.username  || null;
       window._userDisplay = data.username  || user.email;
       window._avatarUrl   = data.avatarUrl || null;
+      window._userRole    = data.role      || 'guest';
     } catch (_) {
       window._username    = null;
       window._userDisplay = user.email;
+      window._userRole    = 'guest';
     }
   }
 
@@ -177,6 +189,15 @@
       footer.insertBefore(badge, footer.firstChild);
     }
 
+    /* Guest badge */
+    if (window._userRole === 'guest' && footer && !document.getElementById('sidebar-guest-badge')) {
+      const badge = document.createElement('span');
+      badge.id        = 'sidebar-guest-badge';
+      badge.className = 'sidebar-dm-badge'; // reuse styling, tweak in CSS if needed
+      badge.textContent = '👤 Guest';
+      footer.insertBefore(badge, footer.firstChild);
+    }
+
     if (displayEl) {
       // Avatar
       if (window._avatarUrl && !document.getElementById('sidebar-avatar')) {
@@ -211,12 +232,20 @@
       const ts = typeof firebase !== 'undefined' && firebase.firestore
         ? firebase.firestore.FieldValue.serverTimestamp() : null;
 
-      window._db.collection('players').doc(user.uid).set({
-        email:    user.email,
-        uid:      user.uid,
-        isDM:     !!window.isDM,
-        lastSeen: ts,
-      }, { merge: true }).catch(() => {});
+      // Read first so we never downgrade an existing role
+      window._db.collection('players').doc(user.uid).get().then(snap => {
+        const existing  = snap.data() || {};
+        const roleToSet = existing.role || (window.isDM ? 'dm' : 'guest');
+        window._userRole = roleToSet;
+
+        window._db.collection('players').doc(user.uid).set({
+          email:    user.email,
+          uid:      user.uid,
+          isDM:     !!window.isDM,
+          role:     roleToSet,
+          lastSeen: ts,
+        }, { merge: true }).catch(() => {});
+      }).catch(() => {});
     } catch (_) {}
   }
 
@@ -240,8 +269,11 @@
 
       window.isDM = checkIsDM(user);
 
-      /* Fetch username before resolving so display name is ready immediately */
+      /* Fetch username + role before resolving so everything is ready immediately */
       await fetchAndSetUsername(user);
+
+      /* DM always gets dm role regardless of what's stored */
+      if (window.isDM) window._userRole = 'dm';
 
       _user     = user;
       _resolved = true;
