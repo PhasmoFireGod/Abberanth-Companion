@@ -558,12 +558,7 @@ async function placeToken(latlng) {
     }
   }
 
-  // Call `saveToken` to save the token
-  await saveToken(token);
-  _placingToken = false;
-  hideHint();
-}  // <-- This closes `placeToken`
-
+  
   /* ----------------------------------------------------------
      Region dialogs
   ---------------------------------------------------------- */
