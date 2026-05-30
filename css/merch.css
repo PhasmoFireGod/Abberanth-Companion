@@ -1,0 +1,287 @@
+/* ============================================================
+   Abberanth Companion — Merch Page
+   ============================================================ */
+
+/* ---- Admin bar ---- */
+.merch-add-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.merch-add-btn:hover { background: #5060c0; }
+
+/* ---- Add/Edit form ---- */
+.merch-form-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.merch-form-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.03em;
+  margin-bottom: 1.25rem;
+}
+
+.merch-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.merch-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.merch-form-field.full-width { grid-column: 1 / -1; }
+
+.merch-form-field label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.merch-field-hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+}
+
+.merch-form-field input,
+.merch-form-field select,
+.merch-form-field textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+  transition: border-color var(--transition);
+}
+.merch-form-field input:focus,
+.merch-form-field select:focus,
+.merch-form-field textarea:focus { outline: none; border-color: var(--accent-purple); }
+.merch-form-field textarea { min-height: 80px; resize: vertical; }
+.merch-form-field select { appearance: none; cursor: pointer; }
+
+.merch-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.merch-form-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.merch-form-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+.merch-form-save {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.merch-form-save:hover    { background: #5060c0; }
+.merch-form-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---- Filter tabs ---- */
+.merch-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.merch-filter-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  letter-spacing: 0.03em;
+}
+.merch-filter-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+.merch-filter-btn.active {
+  background: rgba(139,164,248,0.12);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* ---- Merch grid ---- */
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.merch-empty {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  grid-column: 1 / -1;
+  padding: 2rem 0;
+}
+
+/* ---- Merch card ---- */
+.merch-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all var(--transition);
+}
+.merch-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(70,50,160,0.18);
+}
+
+.merch-card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.merch-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.merch-card-body {
+  padding: 1.1rem 1.1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.merch-card-type {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.merch-card-name {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.merch-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.merch-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.1rem 1rem;
+  border-top: 1px solid var(--border);
+  gap: 0.75rem;
+}
+
+.merch-card-price {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.merch-buy-btn {
+  background: var(--accent-purple);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.merch-buy-btn:hover { background: #5060c0; color: #fff; }
+
+/* DM action buttons on card */
+.merch-card-dm-actions {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0 1.1rem 0.75rem;
+}
+
+.merch-card-dm-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.3rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.merch-card-dm-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.merch-card-dm-btn.delete:hover { border-color: #c02850; color: #c02850; }

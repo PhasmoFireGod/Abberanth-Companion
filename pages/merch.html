@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merch — Abberanth Companion</title>
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/merch.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <div id="sidebar-logo">
+      <span class="logo-title">Abberanth</span>
+      <span class="logo-subtitle">Companion</span>
+    </div>
+    <nav>
+      <span class="nav-section-label">Home</span>
+      <a href="../index.html"><span class="nav-icon">🏰</span> Dashboard</a>
+      <a href="rules.html"><span class="nav-icon">🔖</span> Rules</a>
+      <a href="consent-form.html"><span class="nav-icon">🤝</span> Consent</a>
+      <span class="nav-section-label">Lore</span>
+      <a href="map.html"><span class="nav-icon">🗺️</span> Maps</a>
+      <a href="timelines.html"><span class="nav-icon">📜</span> Timelines</a>
+      <a href="npcs.html"><span class="nav-icon">🧙</span> NPCs</a>
+      <span class="nav-section-label">Combat</span>
+      <a href="monsters.html"><span class="nav-icon">🐉</span> Monsters</a>
+      <a href="items.html"><span class="nav-icon">🗡️</span> Items</a>
+      <a href="spell-list.html"><span class="nav-icon">📚</span> Spells</a>
+      <a href="spell-submit.html"><span class="nav-icon">✨</span> Submit Spell</a>
+      <span class="nav-section-label">Characters</span>
+      <a href="characters.html"><span class="nav-icon">⚔️</span> Player Characters</a>
+      <a href="character-sheet.html"><span class="nav-icon">📋</span> Character Sheet</a>
+      <span class="nav-section-label">Party</span>
+      <a href="journal.html"><span class="nav-icon">📔</span> Journal</a>
+      <a href="playlist.html"><span class="nav-icon">🎵</span> Sessions</a>
+      <a href="bard-songs.html"><span class="nav-icon">🎶</span> Bard Songs</a>
+      <span class="nav-section-label">Shop</span>
+      <a href="merch.html"><span class="nav-icon">🛒</span> Merch</a>
+    </nav>
+    <button id="dice-trigger">🎲 Roll Dice</button>
+    <div id="sidebar-footer">
+      <span id="sidebar-user-email"></span>
+      <button id="logout-btn">Sign Out</button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header class="page-header">
+      <h1>🛒 Merch</h1>
+      <p class="page-subtitle" id="merch-subtitle">Support Abberanth — apparel, music, and more.</p>
+    </header>
+
+    <!-- DM: add item button -->
+    <div id="merch-admin-bar" style="display:none; margin-bottom:1.5rem;">
+      <button class="merch-add-btn" id="merch-add-btn">+ Add Item</button>
+    </div>
+
+    <!-- Add/Edit form (DM only, hidden by default) -->
+    <div id="merch-form-wrap" class="merch-form-wrap" style="display:none;">
+      <div class="merch-form-title" id="merch-form-title">Add Merch Item</div>
+      <div class="merch-form-grid">
+        <div class="merch-form-field">
+          <label for="mf-name">Item Name *</label>
+          <input type="text" id="mf-name" placeholder="Abberanth Logo Tee" />
+        </div>
+        <div class="merch-form-field">
+          <label for="mf-price">Price (e.g. $24.99)</label>
+          <input type="text" id="mf-price" placeholder="$24.99" />
+        </div>
+        <div class="merch-form-field">
+          <label for="mf-type">Category</label>
+          <select id="mf-type">
+            <option value="apparel">👕 Apparel</option>
+            <option value="music">🎵 Music</option>
+            <option value="digital">📦 Digital</option>
+            <option value="other">✨ Other</option>
+          </select>
+        </div>
+        <div class="merch-form-field">
+          <label for="mf-stripe">Stripe Payment Link *</label>
+          <input type="url" id="mf-stripe" placeholder="https://buy.stripe.com/…" />
+        </div>
+        <div class="merch-form-field full-width">
+          <label for="mf-desc">Description</label>
+          <textarea id="mf-desc" placeholder="What is this item? Any sizing notes, file format, etc."></textarea>
+        </div>
+        <div class="merch-form-field full-width">
+          <label for="mf-img">Image URL <span class="merch-field-hint">(optional — paste a direct image link)</span></label>
+          <input type="url" id="mf-img" placeholder="https://…/image.png" />
+        </div>
+      </div>
+      <div class="merch-form-actions">
+        <button class="merch-form-cancel" id="mf-cancel">Cancel</button>
+        <button class="merch-form-save" id="mf-save">Save Item</button>
+      </div>
+    </div>
+
+    <!-- Category filter tabs -->
+    <div class="merch-filter-bar" id="merch-filter-bar">
+      <button class="merch-filter-btn active" data-filter="all">All</button>
+      <button class="merch-filter-btn" data-filter="apparel">👕 Apparel</button>
+      <button class="merch-filter-btn" data-filter="music">🎵 Music</button>
+      <button class="merch-filter-btn" data-filter="digital">📦 Digital</button>
+    </div>
+
+    <!-- Merch grid -->
+    <div id="merch-grid" class="merch-grid">
+      <p class="merch-empty">Loading…</p>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/firebase-init.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/dice.js"></script>
+  <script src="../js/dice-ui.js"></script>
+  <script src="../js/merch.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>
