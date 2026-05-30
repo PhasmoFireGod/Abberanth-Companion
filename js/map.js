@@ -524,16 +524,16 @@ function startTokenPlacement() {
 
 async function placeToken(latlng) {
   const name = prompt('Token name?');
-  if (!name) {
-    _placingToken = false;
-    hideHint();
-    return;
-  }
+if (!name) {
+  _placingToken = false;
+  hideHint();
+  return;
+}
 
-  const token = {
+const imageUrl = prompt('Token image URL?');
     id: `t${Date.now()}`,
     name,
-    imageUrl: '',
+   imageUrl: imageUrl || '',
     position: {
       lat: latlng.lat,
       lng: latlng.lng,
