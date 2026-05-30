@@ -881,7 +881,7 @@ window.SPELL_DATA = [
     name:    "Wither Glare",
     cost:    10,
     wells:   [{ name: "Death", minLevel: 1 }, { name: "Day", minLevel: 1 }],
-    desc:    ``,
+    desc:    `A revealing stare that accelerates minor decay on a target, causing illness-like fatigue in bright light.`,
     scaling: null,
   },
   {
@@ -889,7 +889,7 @@ window.SPELL_DATA = [
     name:    "Plague Bind",
     cost:    30,
     wells:   [{ name: "Death", minLevel: 3 }, { name: "Night", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Shadows infused with illness restrain and infect a target, spreading rot in darkness over time.`,
     scaling: null,
   },
   {
@@ -897,7 +897,7 @@ window.SPELL_DATA = [
     name:    "Entropy Lash",
     cost:    40,
     wells:   [{ name: "Death", minLevel: 4 }, { name: "Chaos", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Unstable wild energy whips out to curse with chaotic decay, random illness symptoms (fever, weakness, etc.).`,
     scaling: null,
   },
   {
@@ -905,7 +905,7 @@ window.SPELL_DATA = [
     name:    "Vitality Siphon",
     cost:    60,
     wells:   [{ name: "Death", minLevel: 6 }, { name: "Life", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Drains a sliver of life force as illness, weakening healing while stabilizing the caster's own natural vitality.`,
     scaling: null,
   },
   {
@@ -913,7 +913,7 @@ window.SPELL_DATA = [
     name:    "Miasma Vortex",
     cost:    80,
     wells:   [{ name: "Death", minLevel: 8 }, { name: "Arcane", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Raw magical winds carry entropic illness, eroding enemies in an area with escalating decay damage.`,
     scaling: null,
   },
   {
@@ -921,7 +921,7 @@ window.SPELL_DATA = [
     name:    "Terminal Omen",
     cost:    90,
     wells:   [{ name: "Death", minLevel: 9 }, { name: "Time", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Accelerates a target's timeline toward decay's end, inflicting fatal illness previews from their future/past frailty.`,
     scaling: null,
   },
   {
@@ -929,7 +929,7 @@ window.SPELL_DATA = [
     name:    "Apocalyptic Blight",
     cost:    100,
     wells:   [{ name: "Death", minLevel: 10 }, { name: "Fortitude", minLevel: 1 }],
-    desc:    ``,
+    desc:    `Fortified curse wave hardens decay into unbreakable illness, crippling physical resilience permanently until cured.`,
     scaling: null,
   },
   {
